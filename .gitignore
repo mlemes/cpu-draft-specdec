@@ -1,0 +1,13 @@
+# Large or machine-local artifacts live on /mnt/hdd1/cpu-draft-specdec, never in the repository.
+third_party/
+data/*
+!data/AGENTS.md
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.npy
+*.parquet
+experiments/**/results/*/raw/
+.venv/
+__pycache__/

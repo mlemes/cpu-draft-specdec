@@ -1,0 +1,48 @@
+{
+  "run_id": "a1-8b-20261121T010622Z",
+  "utc_timestamp": "2026-11-21T01:07:42Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 6,
+    "smt_control": "off",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 6956032
+  },
+  "git_commit": "6b24a49510e16aaf555630b1ef653c94d6920a39",
+  "files": [
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "bytes": 5027783488,
+      "sha256": "d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785"
+    }
+  ],
+  "extra": {
+    "options": {
+      "out": "experiments/stage-a-feasibility/a1-gpu-target-bench/results/a1-8b-20261121T010622Z",
+      "model": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "llama_bench": "/home/mlemes/Projects/research/cpu-draft-specdec/third_party/llama.cpp/build/bin/llama-bench",
+      "depths": [
+        0,
+        512,
+        2048
+      ],
+      "verify_n": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "reps": 5
+    },
+    "nvidia_smi_before": "2001, 8192, 1, 16",
+    "nvidia_smi_after": "2001, 8192, 3, 16"
+  }
+}

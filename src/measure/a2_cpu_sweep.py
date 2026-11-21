@@ -9,6 +9,7 @@ import os
 import pathlib
 import signal
 import subprocess
+import tempfile
 import sys
 import time
 from typing import Any, Callable
@@ -285,10 +286,13 @@ def _run_llama_bench(
         "-o",
         "jsonl",
     ]
+    # Temporary files instead of pipes: llama.cpp logs enough on stderr to fill a pipe and block.
+    out_f = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
+    err_f = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
     proc = subprocess.Popen(
         cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=out_f,
+        stderr=err_f,
         text=True,
         env=env,
     )
@@ -311,7 +315,10 @@ def _run_llama_bench(
             except subprocess.TimeoutExpired:
                 continue
 
-        stdout_text, stderr_text = proc.communicate(timeout=5)
+        proc.wait(timeout=5)
+        out_f.seek(0)
+        err_f.seek(0)
+        stdout_text, stderr_text = out_f.read(), err_f.read()
         if proc.returncode != 0:
             tail = _stderr_tail(stderr_text)
             msg = f"llama-bench exited with code {proc.returncode}"
@@ -322,6 +329,8 @@ def _run_llama_bench(
     finally:
         _kill_and_reap(proc)
         active_procs["bench"] = None
+        out_f.close()
+        err_f.close()
 
 
 def _llama_bench_version(llama_bench: str) -> str | None:

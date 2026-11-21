@@ -1,0 +1,2408 @@
+{
+  "model": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+  "sizes": [16384, 32768, 65536],
+  "ctx": 1024,
+  "freq_files": ["/mnt/hdd1/cpu-draft-specdec/corpora/derived/general.txt", "/mnt/hdd1/cpu-draft-specdec/corpora/derived/pt_fin.txt", "/mnt/hdd1/cpu-draft-specdec/corpora/derived/json.txt"],
+  "rows": [
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 0,
+      "n_positions": 811,
+      "mass": {"16384": 0.9197661211, "32768": 0.9682181242, "65536": 0.9902547923},
+      "greedy_in": {"16384": 0.9334155364, "32768": 0.9765721332, "65536": 0.9950678175},
+      "actual_in": {"16384": 0.8828606658, "32768": 0.9531442663, "65536": 0.9889025894}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 1,
+      "n_positions": 719,
+      "mass": {"16384": 0.9575455946, "32768": 0.9806116686, "65536": 0.9904413967},
+      "greedy_in": {"16384": 0.9707927677, "32768": 0.9874826147, "65536": 0.9944367177},
+      "actual_in": {"16384": 0.9429763561, "32768": 0.9735744089, "65536": 0.9874826147}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 2,
+      "n_positions": 823,
+      "mass": {"16384": 0.8637349612, "32768": 0.9239056147, "65536": 0.9729123905},
+      "greedy_in": {"16384": 0.8845686513, "32768": 0.9368165249, "65536": 0.9781287971},
+      "actual_in": {"16384": 0.8541919806, "32768": 0.9161603888, "65536": 0.9684082625}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 3,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9177083641, "32768": 0.9617820084, "65536": 0.9883321989},
+      "greedy_in": {"16384": 0.9393939394, "32768": 0.9784946237, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.8973607038, "32768": 0.9393939394, "65536": 0.9843597263}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 4,
+      "n_positions": 967,
+      "mass": {"16384": 0.880970775, "32768": 0.9428283196, "65536": 0.9812649966},
+      "greedy_in": {"16384": 0.8903826267, "32768": 0.9462254395, "65536": 0.9824198552},
+      "actual_in": {"16384": 0.8562564633, "32768": 0.9317476732, "65536": 0.9751809721}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 5,
+      "n_positions": 799,
+      "mass": {"16384": 0.9537092252, "32768": 0.9828118196, "65536": 0.9952966684},
+      "greedy_in": {"16384": 0.9649561952, "32768": 0.9874843554, "65536": 0.9987484355},
+      "actual_in": {"16384": 0.9524405507, "32768": 0.9799749687, "65536": 0.9949937422}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 6,
+      "n_positions": 953,
+      "mass": {"16384": 0.9340031226, "32768": 0.9711041674, "65536": 0.9849472911},
+      "greedy_in": {"16384": 0.9475341028, "32768": 0.9758656873, "65536": 0.9853095488},
+      "actual_in": {"16384": 0.9233997901, "32768": 0.963273872, "65536": 0.9832109129}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 7,
+      "n_positions": 916,
+      "mass": {"16384": 0.9379410668, "32768": 0.9723084452, "65536": 0.9851705408},
+      "greedy_in": {"16384": 0.96069869, "32768": 0.9825327511, "65536": 0.9912663755},
+      "actual_in": {"16384": 0.9017467249, "32768": 0.9465065502, "65536": 0.9683406114}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 8,
+      "n_positions": 1004,
+      "mass": {"16384": 0.892505335, "32768": 0.9490723555, "65536": 0.9862970409},
+      "greedy_in": {"16384": 0.906374502, "32768": 0.9571713147, "65536": 0.9910358566},
+      "actual_in": {"16384": 0.8725099602, "32768": 0.9302788845, "65536": 0.9790836653}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 9,
+      "n_positions": 997,
+      "mass": {"16384": 0.88456468, "32768": 0.9365619228, "65536": 0.9751065174},
+      "greedy_in": {"16384": 0.8996990973, "32768": 0.9448345035, "65536": 0.9779338014},
+      "actual_in": {"16384": 0.850551655, "32768": 0.9167502508, "65536": 0.963891675}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 10,
+      "n_positions": 771,
+      "mass": {"16384": 0.9169211963, "32768": 0.9562782955, "65536": 0.9767230695},
+      "greedy_in": {"16384": 0.9325551232, "32768": 0.9571984436, "65536": 0.9753566796},
+      "actual_in": {"16384": 0.878080415, "32768": 0.9286640726, "65536": 0.9507133593}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 11,
+      "n_positions": 811,
+      "mass": {"16384": 0.9595233869, "32768": 0.9869764374, "65536": 0.9961760819},
+      "greedy_in": {"16384": 0.9704069051, "32768": 0.990135635, "65536": 0.9987669544},
+      "actual_in": {"16384": 0.9630086313, "32768": 0.9815043157, "65536": 0.9950678175}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 12,
+      "n_positions": 749,
+      "mass": {"16384": 0.9177181388, "32768": 0.9536787906, "65536": 0.9809422096},
+      "greedy_in": {"16384": 0.9372496662, "32768": 0.958611482, "65536": 0.9839786382},
+      "actual_in": {"16384": 0.909212283, "32768": 0.9546061415, "65536": 0.9786381842}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 13,
+      "n_positions": 981,
+      "mass": {"16384": 0.8448118452, "32768": 0.9143188879, "65536": 0.9809242365},
+      "greedy_in": {"16384": 0.8552497452, "32768": 0.9184505607, "65536": 0.9847094801},
+      "actual_in": {"16384": 0.8287461774, "32768": 0.9062181448, "65536": 0.9765545362}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 14,
+      "n_positions": 700,
+      "mass": {"16384": 0.9173596195, "32768": 0.955213093, "65536": 0.9831239805},
+      "greedy_in": {"16384": 0.9342857143, "32768": 0.9628571429, "65536": 0.9857142857},
+      "actual_in": {"16384": 0.9071428571, "32768": 0.9585714286, "65536": 0.98}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 15,
+      "n_positions": 692,
+      "mass": {"16384": 0.9023076764, "32768": 0.9487751419, "65536": 0.9850632702},
+      "greedy_in": {"16384": 0.926300578, "32768": 0.960982659, "65536": 0.9913294798},
+      "actual_in": {"16384": 0.8901734104, "32768": 0.9450867052, "65536": 0.9768786127}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 16,
+      "n_positions": 751,
+      "mass": {"16384": 0.9117488308, "32768": 0.9381202724, "65536": 0.9909768874},
+      "greedy_in": {"16384": 0.9227696405, "32768": 0.9440745672, "65536": 0.9946737683},
+      "actual_in": {"16384": 0.896138482, "32768": 0.9347536618, "65536": 0.9880159787}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 17,
+      "n_positions": 753,
+      "mass": {"16384": 0.9358511814, "32768": 0.9732788656, "65536": 0.9862967645},
+      "greedy_in": {"16384": 0.9508632138, "32768": 0.9814077025, "65536": 0.9867197875},
+      "actual_in": {"16384": 0.9375830013, "32768": 0.973439575, "65536": 0.984063745}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 18,
+      "n_positions": 833,
+      "mass": {"16384": 0.9506737357, "32768": 0.970213835, "65536": 0.9854752477},
+      "greedy_in": {"16384": 0.9591836735, "32768": 0.9723889556, "65536": 0.9867947179},
+      "actual_in": {"16384": 0.9483793517, "32768": 0.9675870348, "65536": 0.9855942377}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 19,
+      "n_positions": 711,
+      "mass": {"16384": 0.9270368954, "32768": 0.9678887503, "65536": 0.9904383015},
+      "greedy_in": {"16384": 0.9338959212, "32768": 0.9746835443, "65536": 0.9915611814},
+      "actual_in": {"16384": 0.8931082982, "32768": 0.9507735584, "65536": 0.9845288326}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 20,
+      "n_positions": 736,
+      "mass": {"16384": 0.9412454405, "32768": 0.9827506467, "65536": 0.9939333376},
+      "greedy_in": {"16384": 0.9565217391, "32768": 0.9891304348, "65536": 0.9986413043},
+      "actual_in": {"16384": 0.9361413043, "32768": 0.9904891304, "65536": 0.995923913}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 21,
+      "n_positions": 690,
+      "mass": {"16384": 0.9172212412, "32768": 0.95400931, "65536": 0.9789882124},
+      "greedy_in": {"16384": 0.9362318841, "32768": 0.9594202899, "65536": 0.9826086957},
+      "actual_in": {"16384": 0.9130434783, "32768": 0.9565217391, "65536": 0.9797101449}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 22,
+      "n_positions": 855,
+      "mass": {"16384": 0.9551198473, "32768": 0.9828250158, "65536": 0.9948463937},
+      "greedy_in": {"16384": 0.9707602339, "32768": 0.9894736842, "65536": 0.9988304094},
+      "actual_in": {"16384": 0.950877193, "32768": 0.9824561404, "65536": 0.9964912281}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 23,
+      "n_positions": 886,
+      "mass": {"16384": 0.9165582264, "32768": 0.9569520896, "65536": 0.9808291182},
+      "greedy_in": {"16384": 0.927765237, "32768": 0.9627539503, "65536": 0.9830699774},
+      "actual_in": {"16384": 0.8961625282, "32768": 0.9492099323, "65536": 0.9695259594}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 24,
+      "n_positions": 845,
+      "mass": {"16384": 0.9012880412, "32768": 0.9402370235, "65536": 0.9854842903},
+      "greedy_in": {"16384": 0.9100591716, "32768": 0.9455621302, "65536": 0.9881656805},
+      "actual_in": {"16384": 0.8911242604, "32768": 0.9325443787, "65536": 0.9834319527}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 25,
+      "n_positions": 670,
+      "mass": {"16384": 0.8754394734, "32768": 0.9244685809, "65536": 0.9828336041},
+      "greedy_in": {"16384": 0.8880597015, "32768": 0.9343283582, "65536": 0.9865671642},
+      "actual_in": {"16384": 0.8626865672, "32768": 0.9119402985, "65536": 0.9686567164}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 26,
+      "n_positions": 763,
+      "mass": {"16384": 0.8647504902, "32768": 0.9137086868, "65536": 0.9747096078},
+      "greedy_in": {"16384": 0.868938401, "32768": 0.9134993447, "65536": 0.9750982962},
+      "actual_in": {"16384": 0.8453473132, "32768": 0.8938401048, "65536": 0.9633027523}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 27,
+      "n_positions": 882,
+      "mass": {"16384": 0.9228117937, "32768": 0.9773033294, "65536": 0.9894529831},
+      "greedy_in": {"16384": 0.9399092971, "32768": 0.985260771, "65536": 0.9920634921},
+      "actual_in": {"16384": 0.8979591837, "32768": 0.9637188209, "65536": 0.985260771}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 28,
+      "n_positions": 864,
+      "mass": {"16384": 0.9414380237, "32768": 0.9779963514, "65536": 0.9913778853},
+      "greedy_in": {"16384": 0.9513888889, "32768": 0.9803240741, "65536": 0.9930555556},
+      "actual_in": {"16384": 0.9282407407, "32768": 0.96875, "65536": 0.9837962963}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 29,
+      "n_positions": 760,
+      "mass": {"16384": 0.9322367617, "32768": 0.972910569, "65536": 0.9888832667},
+      "greedy_in": {"16384": 0.9473684211, "32768": 0.9776315789, "65536": 0.9907894737},
+      "actual_in": {"16384": 0.9105263158, "32768": 0.9657894737, "65536": 0.9842105263}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 30,
+      "n_positions": 860,
+      "mass": {"16384": 0.9449370597, "32768": 0.9607129338, "65536": 0.9804531737},
+      "greedy_in": {"16384": 0.9558139535, "32768": 0.9639534884, "65536": 0.9813953488},
+      "actual_in": {"16384": 0.9418604651, "32768": 0.9593023256, "65536": 0.9802325581}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 31,
+      "n_positions": 927,
+      "mass": {"16384": 0.8611041657, "32768": 0.9148094761, "65536": 0.970001725},
+      "greedy_in": {"16384": 0.8673139159, "32768": 0.9126213592, "65536": 0.9708737864},
+      "actual_in": {"16384": 0.8565264293, "32768": 0.9115426106, "65536": 0.9730312837}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 32,
+      "n_positions": 827,
+      "mass": {"16384": 0.9028773796, "32768": 0.9479110209, "65536": 0.9796311533},
+      "greedy_in": {"16384": 0.9359129383, "32768": 0.9625151149, "65536": 0.9854897219},
+      "actual_in": {"16384": 0.869407497, "32768": 0.9274486094, "65536": 0.9564691657}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 33,
+      "n_positions": 759,
+      "mass": {"16384": 0.9247029195, "32768": 0.9600700667, "65536": 0.9885477642},
+      "greedy_in": {"16384": 0.9380764163, "32768": 0.9670619236, "65536": 0.9907773386},
+      "actual_in": {"16384": 0.9143610013, "32768": 0.95256917, "65536": 0.9841897233}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 34,
+      "n_positions": 841,
+      "mass": {"16384": 0.9379095994, "32768": 0.9745716219, "65536": 0.9906869582},
+      "greedy_in": {"16384": 0.950059453, "32768": 0.9821640904, "65536": 0.9940546968},
+      "actual_in": {"16384": 0.9131985731, "32768": 0.9726516052, "65536": 0.9845422117}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 35,
+      "n_positions": 795,
+      "mass": {"16384": 0.9263292887, "32768": 0.9645335446, "65536": 0.9918753755},
+      "greedy_in": {"16384": 0.9446540881, "32768": 0.9710691824, "65536": 0.9924528302},
+      "actual_in": {"16384": 0.8943396226, "32768": 0.9509433962, "65536": 0.986163522}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 36,
+      "n_positions": 709,
+      "mass": {"16384": 0.9138136595, "32768": 0.9508786886, "65536": 0.9825852088},
+      "greedy_in": {"16384": 0.922425952, "32768": 0.9534555712, "65536": 0.9858956276},
+      "actual_in": {"16384": 0.8815232722, "32768": 0.9351198872, "65536": 0.976022567}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 37,
+      "n_positions": 882,
+      "mass": {"16384": 0.9572213891, "32768": 0.9803098927, "65536": 0.9922150903},
+      "greedy_in": {"16384": 0.970521542, "32768": 0.9863945578, "65536": 0.9954648526},
+      "actual_in": {"16384": 0.947845805, "32768": 0.9727891156, "65536": 0.9875283447}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 38,
+      "n_positions": 862,
+      "mass": {"16384": 0.9158534237, "32768": 0.9445993695, "65536": 0.9662095295},
+      "greedy_in": {"16384": 0.9222737819, "32768": 0.9443155452, "65536": 0.9663573086},
+      "actual_in": {"16384": 0.9048723898, "32768": 0.9373549884, "65536": 0.9547563805}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 39,
+      "n_positions": 793,
+      "mass": {"16384": 0.8789436791, "32768": 0.9327600146, "65536": 0.9774285755},
+      "greedy_in": {"16384": 0.9142496847, "32768": 0.9558638083, "65536": 0.9873896595},
+      "actual_in": {"16384": 0.8436317781, "32768": 0.9054224464, "65536": 0.9621689786}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 40,
+      "n_positions": 841,
+      "mass": {"16384": 0.8897285138, "32768": 0.9362890145, "65536": 0.9786158082},
+      "greedy_in": {"16384": 0.8989298454, "32768": 0.9393579073, "65536": 0.9821640904},
+      "actual_in": {"16384": 0.8632580262, "32768": 0.9191438763, "65536": 0.9678953627}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 41,
+      "n_positions": 778,
+      "mass": {"16384": 0.9431507037, "32768": 0.9799726297, "65536": 0.9902468891},
+      "greedy_in": {"16384": 0.9537275064, "32768": 0.9845758355, "65536": 0.9948586118},
+      "actual_in": {"16384": 0.9293059126, "32768": 0.9730077121, "65536": 0.9845758355}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 42,
+      "n_positions": 849,
+      "mass": {"16384": 0.9191057547, "32768": 0.9779844667, "65536": 0.9937255339},
+      "greedy_in": {"16384": 0.9210836278, "32768": 0.9799764429, "65536": 0.9964664311},
+      "actual_in": {"16384": 0.9104829211, "32768": 0.9564193168, "65536": 0.9870435807}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 43,
+      "n_positions": 831,
+      "mass": {"16384": 0.9682573784, "32768": 0.9873870182, "65536": 0.9940554263},
+      "greedy_in": {"16384": 0.980746089, "32768": 0.991576414, "65536": 0.9963898917},
+      "actual_in": {"16384": 0.9542719615, "32768": 0.9783393502, "65536": 0.9843561974}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 44,
+      "n_positions": 778,
+      "mass": {"16384": 0.9328575061, "32768": 0.959618006, "65536": 0.9849834844},
+      "greedy_in": {"16384": 0.9485861183, "32768": 0.9627249357, "65536": 0.9858611825},
+      "actual_in": {"16384": 0.8933161954, "32768": 0.9318766067, "65536": 0.9742930591}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 45,
+      "n_positions": 743,
+      "mass": {"16384": 0.9414465893, "32768": 0.9705507789, "65536": 0.9843062512},
+      "greedy_in": {"16384": 0.9623149394, "32768": 0.9798115747, "65536": 0.9838492598},
+      "actual_in": {"16384": 0.9205921938, "32768": 0.9596231494, "65536": 0.9811574697}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 46,
+      "n_positions": 739,
+      "mass": {"16384": 0.8659087701, "32768": 0.9233287284, "65536": 0.9858430621},
+      "greedy_in": {"16384": 0.8700947226, "32768": 0.9296346414, "65536": 0.9891745602},
+      "actual_in": {"16384": 0.848443843, "32768": 0.9161028417, "65536": 0.9864682003}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 47,
+      "n_positions": 921,
+      "mass": {"16384": 0.9162631142, "32768": 0.9611600969, "65536": 0.987076148},
+      "greedy_in": {"16384": 0.9402823018, "32768": 0.9739413681, "65536": 0.9923995657},
+      "actual_in": {"16384": 0.9022801303, "32768": 0.9533116178, "65536": 0.9858849077}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 48,
+      "n_positions": 866,
+      "mass": {"16384": 0.9135549248, "32768": 0.9765010924, "65536": 0.9880414815},
+      "greedy_in": {"16384": 0.9249422633, "32768": 0.9838337182, "65536": 0.9907621247},
+      "actual_in": {"16384": 0.8891454965, "32768": 0.9584295612, "65536": 0.9826789838}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 49,
+      "n_positions": 993,
+      "mass": {"16384": 0.918250235, "32768": 0.9473290721, "65536": 0.9870730095},
+      "greedy_in": {"16384": 0.9234642497, "32768": 0.947633434, "65536": 0.9879154079},
+      "actual_in": {"16384": 0.9023162135, "32768": 0.9365558912, "65536": 0.9848942598}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 50,
+      "n_positions": 820,
+      "mass": {"16384": 0.9323921515, "32768": 0.9545681108, "65536": 0.9928575926},
+      "greedy_in": {"16384": 0.9451219512, "32768": 0.9585365854, "65536": 0.9963414634},
+      "actual_in": {"16384": 0.9231707317, "32768": 0.9475609756, "65536": 0.9829268293}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 51,
+      "n_positions": 779,
+      "mass": {"16384": 0.9155843057, "32768": 0.9533957695, "65536": 0.9732227716},
+      "greedy_in": {"16384": 0.9306803594, "32768": 0.9563543004, "65536": 0.973042362},
+      "actual_in": {"16384": 0.8947368421, "32768": 0.9319640565, "65536": 0.9537869063}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 52,
+      "n_positions": 835,
+      "mass": {"16384": 0.9257963578, "32768": 0.9550214511, "65536": 0.9750278788},
+      "greedy_in": {"16384": 0.9413173653, "32768": 0.9628742515, "65536": 0.9760479042},
+      "actual_in": {"16384": 0.9125748503, "32768": 0.9568862275, "65536": 0.9748502994}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 53,
+      "n_positions": 706,
+      "mass": {"16384": 0.9147195874, "32768": 0.9605867271, "65536": 0.9826399828},
+      "greedy_in": {"16384": 0.9362606232, "32768": 0.9660056657, "65536": 0.9872521246},
+      "actual_in": {"16384": 0.8838526912, "32768": 0.9518413598, "65536": 0.9773371105}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 54,
+      "n_positions": 767,
+      "mass": {"16384": 0.9059119735, "32768": 0.9587257014, "65536": 0.9767055069},
+      "greedy_in": {"16384": 0.9230769231, "32768": 0.9674054759, "65536": 0.9804432855},
+      "actual_in": {"16384": 0.8474576271, "32768": 0.924380704, "65536": 0.9491525424}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 55,
+      "n_positions": 849,
+      "mass": {"16384": 0.9551410561, "32768": 0.9876723871, "65536": 0.9971343243},
+      "greedy_in": {"16384": 0.9705535925, "32768": 0.9917550059, "65536": 1},
+      "actual_in": {"16384": 0.925795053, "32768": 0.9799764429, "65536": 0.9964664311}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 56,
+      "n_positions": 724,
+      "mass": {"16384": 0.9260205375, "32768": 0.9646375714, "65536": 0.9869283385},
+      "greedy_in": {"16384": 0.9475138122, "32768": 0.9723756906, "65536": 0.9903314917},
+      "actual_in": {"16384": 0.9074585635, "32768": 0.9640883978, "65536": 0.9889502762}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 57,
+      "n_positions": 754,
+      "mass": {"16384": 0.9656121206, "32768": 0.9898893954, "65536": 0.9966377794},
+      "greedy_in": {"16384": 0.9787798408, "32768": 0.9933687003, "65536": 0.9986737401},
+      "actual_in": {"16384": 0.9575596817, "32768": 0.9827586207, "65536": 0.9880636605}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 58,
+      "n_positions": 812,
+      "mass": {"16384": 0.9074996906, "32768": 0.9690809576, "65536": 0.9831455862},
+      "greedy_in": {"16384": 0.9236453202, "32768": 0.9827586207, "65536": 0.9876847291},
+      "actual_in": {"16384": 0.8780788177, "32768": 0.9445812808, "65536": 0.974137931}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 59,
+      "n_positions": 979,
+      "mass": {"16384": 0.9312355982, "32768": 0.9831747336, "65536": 0.9899586126},
+      "greedy_in": {"16384": 0.9397344229, "32768": 0.9856996936, "65536": 0.9918283963},
+      "actual_in": {"16384": 0.9162410623, "32768": 0.9775280899, "65536": 0.9846782431}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 60,
+      "n_positions": 773,
+      "mass": {"16384": 0.9280033147, "32768": 0.9744631031, "65536": 0.9875436339},
+      "greedy_in": {"16384": 0.9430789133, "32768": 0.9805950841, "65536": 0.9922380336},
+      "actual_in": {"16384": 0.8913324709, "32768": 0.9637774903, "65536": 0.9818887451}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 61,
+      "n_positions": 850,
+      "mass": {"16384": 0.9218435802, "32768": 0.9693363274, "65536": 0.9927867882},
+      "greedy_in": {"16384": 0.9294117647, "32768": 0.9752941176, "65536": 0.9952941176},
+      "actual_in": {"16384": 0.9094117647, "32768": 0.9717647059, "65536": 0.9964705882}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 62,
+      "n_positions": 830,
+      "mass": {"16384": 0.9436830435, "32768": 0.9866169134, "65536": 0.9911663383},
+      "greedy_in": {"16384": 0.9554216867, "32768": 0.9903614458, "65536": 0.9927710843},
+      "actual_in": {"16384": 0.9301204819, "32768": 0.9795180723, "65536": 0.986746988}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 63,
+      "n_positions": 871,
+      "mass": {"16384": 0.8906805353, "32768": 0.9350450551, "65536": 0.9856335497},
+      "greedy_in": {"16384": 0.8840413318, "32768": 0.9311136625, "65536": 0.9862227325},
+      "actual_in": {"16384": 0.8909299656, "32768": 0.935706085, "65536": 0.9839265212}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 64,
+      "n_positions": 844,
+      "mass": {"16384": 0.9084531096, "32768": 0.9607768726, "65536": 0.9883535122},
+      "greedy_in": {"16384": 0.9265402844, "32768": 0.9739336493, "65536": 0.9917061611},
+      "actual_in": {"16384": 0.8933649289, "32768": 0.9561611374, "65536": 0.981042654}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 65,
+      "n_positions": 792,
+      "mass": {"16384": 0.9019529377, "32768": 0.9453516104, "65536": 0.9788248134},
+      "greedy_in": {"16384": 0.946969697, "32768": 0.9696969697, "65536": 0.9886363636},
+      "actual_in": {"16384": 0.8800505051, "32768": 0.922979798, "65536": 0.9545454545}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 66,
+      "n_positions": 795,
+      "mass": {"16384": 0.9222022455, "32768": 0.9464344175, "65536": 0.9843606377},
+      "greedy_in": {"16384": 0.9257861635, "32768": 0.9509433962, "65536": 0.9874213836},
+      "actual_in": {"16384": 0.9018867925, "32768": 0.9245283019, "65536": 0.9823899371}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 67,
+      "n_positions": 849,
+      "mass": {"16384": 0.9338671825, "32768": 0.964806234, "65536": 0.9896608053},
+      "greedy_in": {"16384": 0.9387514723, "32768": 0.9623085984, "65536": 0.9893992933},
+      "actual_in": {"16384": 0.9234393404, "32768": 0.9564193168, "65536": 0.9835100118}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 68,
+      "n_positions": 719,
+      "mass": {"16384": 0.8577382936, "32768": 0.9123131753, "65536": 0.9793122634},
+      "greedy_in": {"16384": 0.8650904033, "32768": 0.9123783032, "65536": 0.9791376912},
+      "actual_in": {"16384": 0.8331015299, "32768": 0.8984700974, "65536": 0.9707927677}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 69,
+      "n_positions": 687,
+      "mass": {"16384": 0.9577867812, "32768": 0.9856139648, "65536": 0.9918409307},
+      "greedy_in": {"16384": 0.9679767103, "32768": 0.9898107715, "65536": 0.9941775837},
+      "actual_in": {"16384": 0.9490538574, "32768": 0.9796215429, "65536": 0.9839883552}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 70,
+      "n_positions": 898,
+      "mass": {"16384": 0.8875708066, "32768": 0.9499524213, "65536": 0.9790791156},
+      "greedy_in": {"16384": 0.9086859688, "32768": 0.9599109131, "65536": 0.9810690423},
+      "actual_in": {"16384": 0.8652561247, "32768": 0.9287305122, "65536": 0.9621380846}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 71,
+      "n_positions": 845,
+      "mass": {"16384": 0.9407937175, "32768": 0.9747092799, "65536": 0.9870533988},
+      "greedy_in": {"16384": 0.9585798817, "32768": 0.9822485207, "65536": 0.9905325444},
+      "actual_in": {"16384": 0.9195266272, "32768": 0.9633136095, "65536": 0.9798816568}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 72,
+      "n_positions": 814,
+      "mass": {"16384": 0.9364809758, "32768": 0.9723275502, "65536": 0.9910746191},
+      "greedy_in": {"16384": 0.9508599509, "32768": 0.9828009828, "65536": 0.9950859951},
+      "actual_in": {"16384": 0.9324324324, "32768": 0.9656019656, "65536": 0.9877149877}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 73,
+      "n_positions": 797,
+      "mass": {"16384": 0.906111441, "32768": 0.9565235405, "65536": 0.9783050636},
+      "greedy_in": {"16384": 0.9196988708, "32768": 0.9623588457, "65536": 0.9786700125},
+      "actual_in": {"16384": 0.8971141782, "32768": 0.9623588457, "65536": 0.9836888331}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 74,
+      "n_positions": 777,
+      "mass": {"16384": 0.9233189381, "32768": 0.96027343, "65536": 0.9881944318},
+      "greedy_in": {"16384": 0.9459459459, "32768": 0.9742599743, "65536": 0.9948519949},
+      "actual_in": {"16384": 0.9073359073, "32768": 0.9588159588, "65536": 0.9922779923}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 75,
+      "n_positions": 675,
+      "mass": {"16384": 0.9457357785, "32768": 0.9787359544, "65536": 0.9899682313},
+      "greedy_in": {"16384": 0.962962963, "32768": 0.9896296296, "65536": 0.9955555556},
+      "actual_in": {"16384": 0.9244444444, "32768": 0.9733333333, "65536": 0.9822222222}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 76,
+      "n_positions": 783,
+      "mass": {"16384": 0.9448075456, "32768": 0.9847402359, "65536": 0.9970636997},
+      "greedy_in": {"16384": 0.9553001277, "32768": 0.9897828863, "65536": 1},
+      "actual_in": {"16384": 0.9361430396, "32768": 0.9833971903, "65536": 0.993614304}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 77,
+      "n_positions": 699,
+      "mass": {"16384": 0.8880089298, "32768": 0.9403143194, "65536": 0.976566954},
+      "greedy_in": {"16384": 0.9055793991, "32768": 0.9470672389, "65536": 0.9814020029},
+      "actual_in": {"16384": 0.878397711, "32768": 0.9241773963, "65536": 0.9713876967}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 78,
+      "n_positions": 881,
+      "mass": {"16384": 0.9241941764, "32768": 0.9531154253, "65536": 0.9844220886},
+      "greedy_in": {"16384": 0.9364358683, "32768": 0.9591373439, "65536": 0.9875141884},
+      "actual_in": {"16384": 0.9205448354, "32768": 0.9466515323, "65536": 0.9852440409}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 79,
+      "n_positions": 901,
+      "mass": {"16384": 0.8985970798, "32768": 0.9409142885, "65536": 0.9745973799},
+      "greedy_in": {"16384": 0.910099889, "32768": 0.9456159822, "65536": 0.9766925638},
+      "actual_in": {"16384": 0.8734739179, "32768": 0.9223085461, "65536": 0.9633740289}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 80,
+      "n_positions": 960,
+      "mass": {"16384": 0.9095599263, "32768": 0.9541347585, "65536": 0.9855154019},
+      "greedy_in": {"16384": 0.9302083333, "32768": 0.9666666667, "65536": 0.990625},
+      "actual_in": {"16384": 0.8979166667, "32768": 0.940625, "65536": 0.9854166667}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 81,
+      "n_positions": 861,
+      "mass": {"16384": 0.9268235871, "32768": 0.9725628741, "65536": 0.990393107},
+      "greedy_in": {"16384": 0.9454123113, "32768": 0.9802555168, "65536": 0.9918699187},
+      "actual_in": {"16384": 0.9117305459, "32768": 0.9570267131, "65536": 0.9837398374}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 82,
+      "n_positions": 742,
+      "mass": {"16384": 0.9149353093, "32768": 0.9522206781, "65536": 0.9759157242},
+      "greedy_in": {"16384": 0.9272237197, "32768": 0.9595687332, "65536": 0.9811320755},
+      "actual_in": {"16384": 0.9056603774, "32768": 0.9433962264, "65536": 0.9690026954}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 83,
+      "n_positions": 804,
+      "mass": {"16384": 0.9144125751, "32768": 0.9800033869, "65536": 0.9908280621},
+      "greedy_in": {"16384": 0.9315920398, "32768": 0.986318408, "65536": 0.9937810945},
+      "actual_in": {"16384": 0.9042288557, "32768": 0.9788557214, "65536": 0.986318408}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 84,
+      "n_positions": 729,
+      "mass": {"16384": 0.9297636307, "32768": 0.9697886069, "65536": 0.9848324698},
+      "greedy_in": {"16384": 0.950617284, "32768": 0.9780521262, "65536": 0.9862825789},
+      "actual_in": {"16384": 0.9218106996, "32768": 0.9739368999, "65536": 0.9849108368}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 85,
+      "n_positions": 862,
+      "mass": {"16384": 0.8912095582, "32768": 0.966656406, "65536": 0.9846186638},
+      "greedy_in": {"16384": 0.9071925754, "32768": 0.975638051, "65536": 0.9883990719},
+      "actual_in": {"16384": 0.8816705336, "32768": 0.9617169374, "65536": 0.9860788863}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 86,
+      "n_positions": 740,
+      "mass": {"16384": 0.9237410709, "32768": 0.9650266831, "65536": 0.9796286917},
+      "greedy_in": {"16384": 0.9405405405, "32768": 0.9716216216, "65536": 0.9837837838},
+      "actual_in": {"16384": 0.8635135135, "32768": 0.927027027, "65536": 0.9527027027}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 87,
+      "n_positions": 1023,
+      "mass": {"16384": 0.8450213463, "32768": 0.9189025971, "65536": 0.9647927244},
+      "greedy_in": {"16384": 0.8611925709, "32768": 0.9276637341, "65536": 0.9696969697},
+      "actual_in": {"16384": 0.8387096774, "32768": 0.9227761486, "65536": 0.9687194526}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 88,
+      "n_positions": 831,
+      "mass": {"16384": 0.9342886744, "32768": 0.9647313368, "65536": 0.9842250044},
+      "greedy_in": {"16384": 0.9482551143, "32768": 0.9687123947, "65536": 0.9879663057},
+      "actual_in": {"16384": 0.8989169675, "32768": 0.93622142, "65536": 0.9747292419}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 89,
+      "n_positions": 929,
+      "mass": {"16384": 0.9074923166, "32768": 0.9611469153, "65536": 0.9783559999},
+      "greedy_in": {"16384": 0.9203444564, "32768": 0.9709364909, "65536": 0.9817007535},
+      "actual_in": {"16384": 0.894510226, "32768": 0.9461786868, "65536": 0.9677072121}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 90,
+      "n_positions": 798,
+      "mass": {"16384": 0.9511826345, "32768": 0.9828923249, "65536": 0.9939834196},
+      "greedy_in": {"16384": 0.9661654135, "32768": 0.9899749373, "65536": 0.9974937343},
+      "actual_in": {"16384": 0.9473684211, "32768": 0.9824561404, "65536": 0.9937343358}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 91,
+      "n_positions": 761,
+      "mass": {"16384": 0.9066846684, "32768": 0.94827446, "65536": 0.9759220508},
+      "greedy_in": {"16384": 0.9250985545, "32768": 0.9605781866, "65536": 0.9802890933},
+      "actual_in": {"16384": 0.8804204993, "32768": 0.9277266754, "65536": 0.9645203679}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 92,
+      "n_positions": 722,
+      "mass": {"16384": 0.9435150759, "32768": 0.9814311892, "65536": 0.9860049712},
+      "greedy_in": {"16384": 0.9542936288, "32768": 0.9847645429, "65536": 0.9889196676},
+      "actual_in": {"16384": 0.932132964, "32768": 0.9736842105, "65536": 0.9806094183}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 93,
+      "n_positions": 783,
+      "mass": {"16384": 0.8793341792, "32768": 0.9342136505, "65536": 0.9778086728},
+      "greedy_in": {"16384": 0.8901660281, "32768": 0.9412515964, "65536": 0.9821200511},
+      "actual_in": {"16384": 0.8595146871, "32768": 0.9182630907, "65536": 0.9719029374}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 94,
+      "n_positions": 968,
+      "mass": {"16384": 0.8630481937, "32768": 0.9228042999, "65536": 0.9687934447},
+      "greedy_in": {"16384": 0.8791322314, "32768": 0.930785124, "65536": 0.972107438},
+      "actual_in": {"16384": 0.8316115702, "32768": 0.8987603306, "65536": 0.9566115702}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 95,
+      "n_positions": 782,
+      "mass": {"16384": 0.9057103156, "32768": 0.9557679541, "65536": 0.9786945287},
+      "greedy_in": {"16384": 0.9283887468, "32768": 0.9654731458, "65536": 0.9820971867},
+      "actual_in": {"16384": 0.8874680307, "32768": 0.9398976982, "65536": 0.9667519182}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 96,
+      "n_positions": 999,
+      "mass": {"16384": 0.9286016041, "32768": 0.9496103548, "65536": 0.9902101886},
+      "greedy_in": {"16384": 0.9429429429, "32768": 0.953953954, "65536": 0.992992993},
+      "actual_in": {"16384": 0.9179179179, "32768": 0.9409409409, "65536": 0.97997998}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 97,
+      "n_positions": 782,
+      "mass": {"16384": 0.9254417899, "32768": 0.9671527305, "65536": 0.9882517403},
+      "greedy_in": {"16384": 0.9411764706, "32768": 0.9718670077, "65536": 0.989769821},
+      "actual_in": {"16384": 0.9104859335, "32768": 0.9680306905, "65536": 0.9923273657}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 98,
+      "n_positions": 863,
+      "mass": {"16384": 0.955254172, "32768": 0.9827934173, "65536": 0.9941882914},
+      "greedy_in": {"16384": 0.9687137891, "32768": 0.9918887601, "65536": 0.9976825029},
+      "actual_in": {"16384": 0.9501738123, "32768": 0.976825029, "65536": 0.9965237543}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+      "row": 99,
+      "n_positions": 891,
+      "mass": {"16384": 0.954540723, "32768": 0.9745284066, "65536": 0.9978779511},
+      "greedy_in": {"16384": 0.9640852974, "32768": 0.9809203143, "65536": 1},
+      "actual_in": {"16384": 0.9450056117, "32768": 0.9696969697, "65536": 0.9955106622}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 0,
+      "n_positions": 844,
+      "mass": {"16384": 0.9672366401, "32768": 0.9833584351, "65536": 0.9915690964},
+      "greedy_in": {"16384": 0.9869668246, "32768": 0.9940758294, "65536": 0.9976303318},
+      "actual_in": {"16384": 0.9857819905, "32768": 0.9940758294, "65536": 0.9988151659}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 1,
+      "n_positions": 992,
+      "mass": {"16384": 0.9651692403, "32768": 0.9815250083, "65536": 0.99022121},
+      "greedy_in": {"16384": 0.9838709677, "32768": 0.9909274194, "65536": 0.9969758065},
+      "actual_in": {"16384": 0.9858870968, "32768": 0.9899193548, "65536": 0.9939516129}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 2,
+      "n_positions": 986,
+      "mass": {"16384": 0.9671761135, "32768": 0.9851501401, "65536": 0.9913365563},
+      "greedy_in": {"16384": 0.985801217, "32768": 0.9959432049, "65536": 0.9969574037},
+      "actual_in": {"16384": 0.9837728195, "32768": 0.9929006085, "65536": 0.9969574037}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 3,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9620881592, "32768": 0.9782106535, "65536": 0.9922561209},
+      "greedy_in": {"16384": 0.9765395894, "32768": 0.9863147605, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9833822092, "32768": 0.9892473118, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 4,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9559787813, "32768": 0.9760944437, "65536": 0.9906975117},
+      "greedy_in": {"16384": 0.9687194526, "32768": 0.9853372434, "65536": 0.9941348974},
+      "actual_in": {"16384": 0.9892473118, "32768": 0.9931573803, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 5,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9664679498, "32768": 0.9812318526, "65536": 0.9931339055},
+      "greedy_in": {"16384": 0.9794721408, "32768": 0.9892473118, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9824046921, "32768": 0.9892473118, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 6,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9638894311, "32768": 0.982822635, "65536": 0.9909249791},
+      "greedy_in": {"16384": 0.9863147605, "32768": 0.9960899316, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9833822092, "32768": 0.9960899316, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 7,
+      "n_positions": 913,
+      "mass": {"16384": 0.9619336768, "32768": 0.9795298234, "65536": 0.988071124},
+      "greedy_in": {"16384": 0.9791894852, "32768": 0.9879518072, "65536": 0.9923329682},
+      "actual_in": {"16384": 0.9802847755, "32768": 0.991237678, "65536": 0.9945235487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 8,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9686401847, "32768": 0.9830020765, "65536": 0.9911705882},
+      "greedy_in": {"16384": 0.9872922776, "32768": 0.9931573803, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.981427175, "32768": 0.9921798631, "65536": 0.9960899316}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 9,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9613653223, "32768": 0.984013108, "65536": 0.9912789721},
+      "greedy_in": {"16384": 0.981427175, "32768": 0.9931573803, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9794721408, "32768": 0.9931573803, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 10,
+      "n_positions": 961,
+      "mass": {"16384": 0.9617750028, "32768": 0.9830460543, "65536": 0.9920007594},
+      "greedy_in": {"16384": 0.9750260146, "32768": 0.9916753382, "65536": 0.9958376691},
+      "actual_in": {"16384": 0.9833506764, "32768": 0.9937565036, "65536": 0.9979188345}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 11,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9689021604, "32768": 0.9831353851, "65536": 0.9935769988},
+      "greedy_in": {"16384": 0.981427175, "32768": 0.9921798631, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9931573803, "32768": 0.9960899316, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 12,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9663384205, "32768": 0.9820856603, "65536": 0.9933333507},
+      "greedy_in": {"16384": 0.9804496579, "32768": 0.9902248289, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9882697947, "32768": 0.9931573803, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 13,
+      "n_positions": 935,
+      "mass": {"16384": 0.9639410105, "32768": 0.9797815012, "65536": 0.9922480194},
+      "greedy_in": {"16384": 0.977540107, "32768": 0.9860962567, "65536": 0.9967914439},
+      "actual_in": {"16384": 0.985026738, "32768": 0.9914438503, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 14,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9696678536, "32768": 0.9863633141, "65536": 0.9930649288},
+      "greedy_in": {"16384": 0.9843597263, "32768": 0.9960899316, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9863147605, "32768": 0.9921798631, "65536": 0.9941348974}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 15,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9734080774, "32768": 0.9875434904, "65536": 0.9942076791},
+      "greedy_in": {"16384": 0.9833822092, "32768": 0.9931573803, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9941348974, "32768": 0.9980449658, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 16,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9621130366, "32768": 0.9808004062, "65536": 0.9920904983},
+      "greedy_in": {"16384": 0.9755620723, "32768": 0.9882697947, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9824046921, "32768": 0.9931573803, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 17,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9538571581, "32768": 0.9764521943, "65536": 0.9911834957},
+      "greedy_in": {"16384": 0.972629521, "32768": 0.9863147605, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9853372434, "32768": 0.9931573803, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 18,
+      "n_positions": 908,
+      "mass": {"16384": 0.9646557124, "32768": 0.9832689794, "65536": 0.9898794979},
+      "greedy_in": {"16384": 0.9834801762, "32768": 0.9955947137, "65536": 0.9955947137},
+      "actual_in": {"16384": 0.981277533, "32768": 0.986784141, "65536": 0.9955947137}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 19,
+      "n_positions": 964,
+      "mass": {"16384": 0.9744335175, "32768": 0.9876645163, "65536": 0.9946415747},
+      "greedy_in": {"16384": 0.9917012448, "32768": 0.9979253112, "65536": 0.9989626556},
+      "actual_in": {"16384": 0.984439834, "32768": 0.9937759336, "65536": 0.9958506224}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 20,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9686490501, "32768": 0.9856436752, "65536": 0.9923612463},
+      "greedy_in": {"16384": 0.9882697947, "32768": 0.9960899316, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9843597263, "32768": 0.9970674487, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 21,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9686583869, "32768": 0.9839607889, "65536": 0.9908240976},
+      "greedy_in": {"16384": 0.9892473118, "32768": 0.9951124145, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9863147605, "32768": 0.9941348974, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 22,
+      "n_positions": 925,
+      "mass": {"16384": 0.9681470294, "32768": 0.9840122593, "65536": 0.9906204711},
+      "greedy_in": {"16384": 0.9848648649, "32768": 0.9945945946, "65536": 0.9956756757},
+      "actual_in": {"16384": 0.9881081081, "32768": 0.9935135135, "65536": 0.9978378378}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 23,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9575419381, "32768": 0.9795413509, "65536": 0.9927261858},
+      "greedy_in": {"16384": 0.9706744868, "32768": 0.9882697947, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9804496579, "32768": 0.991202346, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 24,
+      "n_positions": 985,
+      "mass": {"16384": 0.9679946096, "32768": 0.9854882354, "65536": 0.9932603305},
+      "greedy_in": {"16384": 0.9888324873, "32768": 0.9979695431, "65536": 1},
+      "actual_in": {"16384": 0.9878172589, "32768": 0.9959390863, "65536": 0.9989847716}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 25,
+      "n_positions": 973,
+      "mass": {"16384": 0.9710731913, "32768": 0.9863188332, "65536": 0.9934159885},
+      "greedy_in": {"16384": 0.9876670092, "32768": 0.9958890031, "65536": 0.9979445015},
+      "actual_in": {"16384": 0.9804727646, "32768": 0.9886947585, "65536": 0.9928057554}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 26,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9744382763, "32768": 0.9874090153, "65536": 0.9941819733},
+      "greedy_in": {"16384": 0.9892473118, "32768": 0.9960899316, "65536": 0.9990224829},
+      "actual_in": {"16384": 0.991202346, "32768": 0.9931573803, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 27,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9741661168, "32768": 0.9845118669, "65536": 0.990607096},
+      "greedy_in": {"16384": 0.9931573803, "32768": 0.9941348974, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9892473118, "32768": 0.9902248289, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 28,
+      "n_positions": 956,
+      "mass": {"16384": 0.9687670015, "32768": 0.9838265229, "65536": 0.9913974198},
+      "greedy_in": {"16384": 0.9874476987, "32768": 0.9937238494, "65536": 0.9958158996},
+      "actual_in": {"16384": 0.9884937238, "32768": 0.9968619247, "65536": 0.9979079498}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 29,
+      "n_positions": 1023,
+      "mass": {"16384": 0.967096738, "32768": 0.98431194, "65536": 0.9924480067},
+      "greedy_in": {"16384": 0.9853372434, "32768": 0.9941348974, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.981427175, "32768": 0.9941348974, "65536": 0.9960899316}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 30,
+      "n_positions": 881,
+      "mass": {"16384": 0.9675121204, "32768": 0.9826686788, "65536": 0.9911239364},
+      "greedy_in": {"16384": 0.9875141884, "32768": 0.9931895573, "65536": 0.9977298524},
+      "actual_in": {"16384": 0.989784336, "32768": 0.9943246311, "65536": 0.9954597049}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 31,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9784284631, "32768": 0.9893588661, "65536": 0.9941894281},
+      "greedy_in": {"16384": 0.9931573803, "32768": 0.9970674487, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9892473118, "32768": 0.9941348974, "65536": 0.9960899316}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 32,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9633667214, "32768": 0.9850608675, "65536": 0.9923150019},
+      "greedy_in": {"16384": 0.9833822092, "32768": 0.9951124145, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9843597263, "32768": 0.9960899316, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 33,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9652175565, "32768": 0.9799863443, "65536": 0.9928076368},
+      "greedy_in": {"16384": 0.9775171065, "32768": 0.9872922776, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9970674487, "32768": 0.9970674487, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 34,
+      "n_positions": 1023,
+      "mass": {"16384": 0.963998096, "32768": 0.9812949564, "65536": 0.9917769928},
+      "greedy_in": {"16384": 0.9755620723, "32768": 0.9882697947, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9775171065, "32768": 0.991202346, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 35,
+      "n_positions": 1023,
+      "mass": {"16384": 0.962982025, "32768": 0.9846368073, "65536": 0.9916005564},
+      "greedy_in": {"16384": 0.9833822092, "32768": 0.9970674487, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9833822092, "32768": 0.9931573803, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 36,
+      "n_positions": 1002,
+      "mass": {"16384": 0.9781509019, "32768": 0.9891773813, "65536": 0.994076693},
+      "greedy_in": {"16384": 0.9910179641, "32768": 0.997005988, "65536": 0.998003992},
+      "actual_in": {"16384": 0.9910179641, "32768": 0.996007984, "65536": 0.997005988}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 37,
+      "n_positions": 1023,
+      "mass": {"16384": 0.961260286, "32768": 0.9793798912, "65536": 0.99222573},
+      "greedy_in": {"16384": 0.972629521, "32768": 0.9843597263, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9853372434, "32768": 0.9931573803, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 38,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9676586729, "32768": 0.9862208657, "65536": 0.9920379869},
+      "greedy_in": {"16384": 0.9853372434, "32768": 0.9970674487, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9843597263, "32768": 0.9941348974, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 39,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9583388822, "32768": 0.9792566079, "65536": 0.9926641044},
+      "greedy_in": {"16384": 0.9755620723, "32768": 0.9882697947, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9833822092, "32768": 0.9921798631, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 40,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9684598635, "32768": 0.9833535264, "65536": 0.9917836974},
+      "greedy_in": {"16384": 0.9843597263, "32768": 0.991202346, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.981427175, "32768": 0.9921798631, "65536": 0.9960899316}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 41,
+      "n_positions": 903,
+      "mass": {"16384": 0.967742573, "32768": 0.9841127828, "65536": 0.9920744303},
+      "greedy_in": {"16384": 0.9867109635, "32768": 0.9933554817, "65536": 0.9966777409},
+      "actual_in": {"16384": 0.9878183832, "32768": 0.992248062, "65536": 0.9955703212}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 42,
+      "n_positions": 1009,
+      "mass": {"16384": 0.9748438561, "32768": 0.987280737, "65536": 0.993554438},
+      "greedy_in": {"16384": 0.9881070367, "32768": 0.9930624381, "65536": 0.9950445986},
+      "actual_in": {"16384": 0.9950445986, "32768": 0.9970267592, "65536": 0.9980178394}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 43,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9556415684, "32768": 0.9759464967, "65536": 0.9902763818},
+      "greedy_in": {"16384": 0.972629521, "32768": 0.9863147605, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9882697947, "32768": 0.9931573803, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 44,
+      "n_positions": 956,
+      "mass": {"16384": 0.9688515121, "32768": 0.9851426934, "65536": 0.9935249908},
+      "greedy_in": {"16384": 0.9843096234, "32768": 0.9937238494, "65536": 0.9989539749},
+      "actual_in": {"16384": 0.9822175732, "32768": 0.9979079498, "65536": 0.9989539749}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 45,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9728967325, "32768": 0.9883712386, "65536": 0.993564767},
+      "greedy_in": {"16384": 0.9892473118, "32768": 0.9990224829, "65536": 0.9990224829},
+      "actual_in": {"16384": 0.9902248289, "32768": 0.9931573803, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 46,
+      "n_positions": 944,
+      "mass": {"16384": 0.9655069478, "32768": 0.9824055247, "65536": 0.9917391828},
+      "greedy_in": {"16384": 0.9819915254, "32768": 0.9915254237, "65536": 0.9968220339},
+      "actual_in": {"16384": 0.9819915254, "32768": 0.9872881356, "65536": 0.9957627119}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 47,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9718825282, "32768": 0.9852681004, "65536": 0.992751514},
+      "greedy_in": {"16384": 0.9872922776, "32768": 0.9931573803, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9784946237, "32768": 0.9882697947, "65536": 0.9951124145}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 48,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9503518146, "32768": 0.9742722943, "65536": 0.989326486},
+      "greedy_in": {"16384": 0.9667644184, "32768": 0.9853372434, "65536": 0.9931573803},
+      "actual_in": {"16384": 0.9833822092, "32768": 0.991202346, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 49,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9735359108, "32768": 0.9861304817, "65536": 0.9932656253},
+      "greedy_in": {"16384": 0.9882697947, "32768": 0.9941348974, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9902248289, "32768": 0.9970674487, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 50,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9663085467, "32768": 0.981536868, "65536": 0.9922582058},
+      "greedy_in": {"16384": 0.9765395894, "32768": 0.9863147605, "65536": 0.9931573803},
+      "actual_in": {"16384": 0.9863147605, "32768": 0.9931573803, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 51,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9757462753, "32768": 0.9875141264, "65536": 0.994196481},
+      "greedy_in": {"16384": 0.9892473118, "32768": 0.9951124145, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9902248289, "32768": 0.9970674487, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 52,
+      "n_positions": 958,
+      "mass": {"16384": 0.9694159585, "32768": 0.9845929384, "65536": 0.9925995945},
+      "greedy_in": {"16384": 0.98434238, "32768": 0.9916492693, "65536": 0.996868476},
+      "actual_in": {"16384": 0.98434238, "32768": 0.993736952, "65536": 0.996868476}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 53,
+      "n_positions": 1007,
+      "mass": {"16384": 0.9649890248, "32768": 0.9807476495, "65536": 0.991743895},
+      "greedy_in": {"16384": 0.9801390268, "32768": 0.9870903674, "65536": 0.994041708},
+      "actual_in": {"16384": 0.9841112214, "32768": 0.9930486594, "65536": 0.9990069513}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 54,
+      "n_positions": 986,
+      "mass": {"16384": 0.9769173414, "32768": 0.9876672849, "65536": 0.9948330548},
+      "greedy_in": {"16384": 0.9929006085, "32768": 0.9949290061, "65536": 0.9989858012},
+      "actual_in": {"16384": 0.9918864097, "32768": 0.9959432049, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 55,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9729790462, "32768": 0.9845664202, "65536": 0.9947011753},
+      "greedy_in": {"16384": 0.9863147605, "32768": 0.9921798631, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9951124145, "32768": 0.9970674487, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 56,
+      "n_positions": 1000,
+      "mass": {"16384": 0.9714952417, "32768": 0.9868130544, "65536": 0.9929214717},
+      "greedy_in": {"16384": 0.99, "32768": 0.997, "65536": 0.998},
+      "actual_in": {"16384": 0.99, "32768": 0.993, "65536": 0.997}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 57,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9664831524, "32768": 0.9853708306, "65536": 0.9916614476},
+      "greedy_in": {"16384": 0.9863147605, "32768": 0.9960899316, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9853372434, "32768": 0.9941348974, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 58,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9745462851, "32768": 0.9857307947, "65536": 0.9923470621},
+      "greedy_in": {"16384": 0.9921798631, "32768": 0.9951124145, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9853372434, "32768": 0.9902248289, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 59,
+      "n_positions": 1023,
+      "mass": {"16384": 0.965266484, "32768": 0.9803836199, "65536": 0.9905429687},
+      "greedy_in": {"16384": 0.9843597263, "32768": 0.991202346, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9784946237, "32768": 0.9882697947, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 60,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9656982495, "32768": 0.9808145335, "65536": 0.9933911846},
+      "greedy_in": {"16384": 0.9765395894, "32768": 0.9882697947, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9863147605, "32768": 0.991202346, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 61,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9648265325, "32768": 0.9811739246, "65536": 0.9894958398},
+      "greedy_in": {"16384": 0.981427175, "32768": 0.9902248289, "65536": 0.9941348974},
+      "actual_in": {"16384": 0.9765395894, "32768": 0.9892473118, "65536": 0.9941348974}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 62,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9665768613, "32768": 0.9841515668, "65536": 0.991585483},
+      "greedy_in": {"16384": 0.9794721408, "32768": 0.9921798631, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9833822092, "32768": 0.9951124145, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 63,
+      "n_positions": 1002,
+      "mass": {"16384": 0.9769555329, "32768": 0.9882197647, "65536": 0.994078773},
+      "greedy_in": {"16384": 0.9910179641, "32768": 0.99500998, "65536": 0.997005988},
+      "actual_in": {"16384": 0.9930139721, "32768": 0.997005988, "65536": 0.999001996}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 64,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9680792635, "32768": 0.9846432162, "65536": 0.9935085581},
+      "greedy_in": {"16384": 0.9824046921, "32768": 0.9931573803, "65536": 0.9990224829},
+      "actual_in": {"16384": 0.981427175, "32768": 0.9951124145, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 65,
+      "n_positions": 982,
+      "mass": {"16384": 0.9577727557, "32768": 0.9833713962, "65536": 0.9903737141},
+      "greedy_in": {"16384": 0.9755600815, "32768": 0.9959266802, "65536": 0.9969450102},
+      "actual_in": {"16384": 0.9796334012, "32768": 0.9918533605, "65536": 0.9969450102}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 66,
+      "n_positions": 943,
+      "mass": {"16384": 0.9796401072, "32768": 0.9911883086, "65536": 0.9950050611},
+      "greedy_in": {"16384": 0.9893955461, "32768": 0.9968186638, "65536": 0.9968186638},
+      "actual_in": {"16384": 0.9946977731, "32768": 0.9968186638, "65536": 0.9989395546}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 67,
+      "n_positions": 970,
+      "mass": {"16384": 0.9605678679, "32768": 0.9823062249, "65536": 0.9913778309},
+      "greedy_in": {"16384": 0.9793814433, "32768": 0.9948453608, "65536": 0.9989690722},
+      "actual_in": {"16384": 0.9762886598, "32768": 0.9917525773, "65536": 0.9958762887}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 68,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9757987847, "32768": 0.9890620195, "65536": 0.9946537834},
+      "greedy_in": {"16384": 0.9902248289, "32768": 0.9960899316, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9843597263, "32768": 0.9941348974, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 69,
+      "n_positions": 974,
+      "mass": {"16384": 0.9812611638, "32768": 0.9903558964, "65536": 0.994625666},
+      "greedy_in": {"16384": 0.9938398357, "32768": 0.9979466119, "65536": 0.998973306},
+      "actual_in": {"16384": 0.9917864476, "32768": 0.9958932238, "65536": 0.9969199179}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 70,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9726488049, "32768": 0.9855687229, "65536": 0.9926654011},
+      "greedy_in": {"16384": 0.9892473118, "32768": 0.9941348974, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9902248289, "32768": 0.9931573803, "65536": 0.9960899316}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 71,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9643006631, "32768": 0.9809368696, "65536": 0.9931451656},
+      "greedy_in": {"16384": 0.9755620723, "32768": 0.9872922776, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9853372434, "32768": 0.991202346, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 72,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9598884016, "32768": 0.9785945777, "65536": 0.9908934827},
+      "greedy_in": {"16384": 0.9755620723, "32768": 0.9872922776, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9843597263, "32768": 0.9941348974, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 73,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9693473479, "32768": 0.9861810196, "65536": 0.9940006014},
+      "greedy_in": {"16384": 0.9843597263, "32768": 0.9960899316, "65536": 0.9990224829},
+      "actual_in": {"16384": 0.9882697947, "32768": 0.9941348974, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 74,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9724506959, "32768": 0.9866855174, "65536": 0.9931806749},
+      "greedy_in": {"16384": 0.9921798631, "32768": 0.9970674487, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9902248289, "32768": 0.9970674487, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 75,
+      "n_positions": 1023,
+      "mass": {"16384": 0.965333237, "32768": 0.9812268555, "65536": 0.9900225041},
+      "greedy_in": {"16384": 0.981427175, "32768": 0.9892473118, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9833822092, "32768": 0.9931573803, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 76,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9696262023, "32768": 0.9853618903, "65536": 0.9913020271},
+      "greedy_in": {"16384": 0.9843597263, "32768": 0.9941348974, "65536": 0.9941348974},
+      "actual_in": {"16384": 0.9863147605, "32768": 0.9951124145, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 77,
+      "n_positions": 956,
+      "mass": {"16384": 0.9667728176, "32768": 0.9823750919, "65536": 0.990706852},
+      "greedy_in": {"16384": 0.9843096234, "32768": 0.9926778243, "65536": 0.9968619247},
+      "actual_in": {"16384": 0.980125523, "32768": 0.9884937238, "65536": 0.9947698745}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 78,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9681003988, "32768": 0.9852993305, "65536": 0.9912367816},
+      "greedy_in": {"16384": 0.9833822092, "32768": 0.9941348974, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9872922776, "32768": 0.9951124145, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 79,
+      "n_positions": 960,
+      "mass": {"16384": 0.9666667246, "32768": 0.9851887163, "65536": 0.9911725021},
+      "greedy_in": {"16384": 0.984375, "32768": 0.996875, "65536": 0.996875},
+      "actual_in": {"16384": 0.9885416667, "32768": 0.9927083333, "65536": 0.996875}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 80,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9715833893, "32768": 0.9851005111, "65536": 0.9926095163},
+      "greedy_in": {"16384": 0.9892473118, "32768": 0.9951124145, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.991202346, "32768": 0.9960899316, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 81,
+      "n_positions": 947,
+      "mass": {"16384": 0.9659976451, "32768": 0.9850773554, "65536": 0.9911617802},
+      "greedy_in": {"16384": 0.9862724393, "32768": 0.994720169, "65536": 0.9957761352},
+      "actual_in": {"16384": 0.9831045407, "32768": 0.9936642027, "65536": 0.9968321014}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 82,
+      "n_positions": 1023,
+      "mass": {"16384": 0.964658849, "32768": 0.9788380896, "65536": 0.9912635728},
+      "greedy_in": {"16384": 0.9784946237, "32768": 0.9872922776, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.991202346, "32768": 0.9951124145, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 83,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9493169462, "32768": 0.9738819581, "65536": 0.989048698},
+      "greedy_in": {"16384": 0.9696969697, "32768": 0.9882697947, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9804496579, "32768": 0.9892473118, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 84,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9690104144, "32768": 0.9869262897, "65536": 0.9922800525},
+      "greedy_in": {"16384": 0.9902248289, "32768": 0.9980449658, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9892473118, "32768": 0.9951124145, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 85,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9741500212, "32768": 0.9864977212, "65536": 0.9933315607},
+      "greedy_in": {"16384": 0.9882697947, "32768": 0.9931573803, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.991202346, "32768": 0.9960899316, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 86,
+      "n_positions": 893,
+      "mass": {"16384": 0.9617883181, "32768": 0.9850106653, "65536": 0.9917237457},
+      "greedy_in": {"16384": 0.9776035834, "32768": 0.9955207167, "65536": 0.9977603583},
+      "actual_in": {"16384": 0.9809630459, "32768": 0.993281075, "65536": 0.9966405375}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 87,
+      "n_positions": 962,
+      "mass": {"16384": 0.9655130587, "32768": 0.980443361, "65536": 0.9897461096},
+      "greedy_in": {"16384": 0.9792099792, "32768": 0.9896049896, "65536": 0.9937629938},
+      "actual_in": {"16384": 0.9802494802, "32768": 0.9875259875, "65536": 0.9968814969}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 88,
+      "n_positions": 1009,
+      "mass": {"16384": 0.9708130491, "32768": 0.9833375788, "65536": 0.9906442311},
+      "greedy_in": {"16384": 0.9890981169, "32768": 0.9930624381, "65536": 0.9950445986},
+      "actual_in": {"16384": 0.9831516353, "32768": 0.9920713578, "65536": 0.9980178394}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 89,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9648204924, "32768": 0.9808871971, "65536": 0.9921521586},
+      "greedy_in": {"16384": 0.9775171065, "32768": 0.9872922776, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9863147605, "32768": 0.9931573803, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 90,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9713639222, "32768": 0.9881680715, "65536": 0.9940776347},
+      "greedy_in": {"16384": 0.9863147605, "32768": 0.9980449658, "65536": 0.9990224829},
+      "actual_in": {"16384": 0.9843597263, "32768": 0.9960899316, "65536": 0.9990224829}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 91,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9454766262, "32768": 0.9722780109, "65536": 0.9891659566},
+      "greedy_in": {"16384": 0.9667644184, "32768": 0.9863147605, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9804496579, "32768": 0.991202346, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 92,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9668235898, "32768": 0.9840601819, "65536": 0.9921052597},
+      "greedy_in": {"16384": 0.981427175, "32768": 0.9931573803, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9853372434, "32768": 0.9941348974, "65536": 0.9960899316}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 93,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9689355329, "32768": 0.9829142476, "65536": 0.9938971184},
+      "greedy_in": {"16384": 0.9824046921, "32768": 0.9921798631, "65536": 0.9970674487},
+      "actual_in": {"16384": 0.9843597263, "32768": 0.9902248289, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 94,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9737760117, "32768": 0.986826401, "65536": 0.9929652945},
+      "greedy_in": {"16384": 0.9892473118, "32768": 0.9960899316, "65536": 0.9980449658},
+      "actual_in": {"16384": 0.9892473118, "32768": 0.9931573803, "65536": 0.9960899316}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 95,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9678510347, "32768": 0.9830037874, "65536": 0.9903364808},
+      "greedy_in": {"16384": 0.9843597263, "32768": 0.9921798631, "65536": 0.9951124145},
+      "actual_in": {"16384": 0.9872922776, "32768": 0.9931573803, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 96,
+      "n_positions": 979,
+      "mass": {"16384": 0.9678097213, "32768": 0.9832101846, "65536": 0.9917351664},
+      "greedy_in": {"16384": 0.9856996936, "32768": 0.9928498468, "65536": 0.9969356486},
+      "actual_in": {"16384": 0.9836567926, "32768": 0.9908069459, "65536": 0.9959141982}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 97,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9688818136, "32768": 0.9824527982, "65536": 0.9901662248},
+      "greedy_in": {"16384": 0.9863147605, "32768": 0.991202346, "65536": 0.9931573803},
+      "actual_in": {"16384": 0.9824046921, "32768": 0.9892473118, "65536": 0.9970674487}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 98,
+      "n_positions": 1023,
+      "mass": {"16384": 0.9793201161, "32768": 0.9884362404, "65536": 0.9926440721},
+      "greedy_in": {"16384": 0.991202346, "32768": 0.9951124145, "65536": 0.9960899316},
+      "actual_in": {"16384": 0.9951124145, "32768": 0.9970674487, "65536": 0.9980449658}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+      "row": 99,
+      "n_positions": 922,
+      "mass": {"16384": 0.9713454822, "32768": 0.9861024608, "65536": 0.9931593116},
+      "greedy_in": {"16384": 0.9880694143, "32768": 0.9956616052, "65536": 0.9978308026},
+      "actual_in": {"16384": 0.9913232104, "32768": 0.9945770065, "65536": 0.9978308026}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 0,
+      "n_positions": 382,
+      "mass": {"16384": 0.9758781945, "32768": 0.9884823923, "65536": 0.9975379579},
+      "greedy_in": {"16384": 0.9816753927, "32768": 0.9895287958, "65536": 1},
+      "actual_in": {"16384": 0.9947643979, "32768": 0.9947643979, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 1,
+      "n_positions": 481,
+      "mass": {"16384": 0.9713441156, "32768": 0.987173103, "65536": 0.9914448406},
+      "greedy_in": {"16384": 0.9771309771, "32768": 0.9896049896, "65536": 0.9937629938},
+      "actual_in": {"16384": 0.9875259875, "32768": 0.9937629938, "65536": 0.9937629938}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 2,
+      "n_positions": 446,
+      "mass": {"16384": 0.9676852211, "32768": 0.9907282651, "65536": 0.9962492306},
+      "greedy_in": {"16384": 0.9708520179, "32768": 0.9932735426, "65536": 0.9977578475},
+      "actual_in": {"16384": 0.9887892377, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 3,
+      "n_positions": 470,
+      "mass": {"16384": 0.9675824157, "32768": 0.9867576239, "65536": 0.9979208126},
+      "greedy_in": {"16384": 0.9723404255, "32768": 0.9893617021, "65536": 1},
+      "actual_in": {"16384": 0.9957446809, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 4,
+      "n_positions": 228,
+      "mass": {"16384": 0.9360586742, "32768": 0.9801513168, "65536": 0.9951373514},
+      "greedy_in": {"16384": 0.951754386, "32768": 0.9868421053, "65536": 1},
+      "actual_in": {"16384": 0.9692982456, "32768": 0.9868421053, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 5,
+      "n_positions": 249,
+      "mass": {"16384": 0.9628441391, "32768": 0.9893744261, "65536": 0.9961961734},
+      "greedy_in": {"16384": 0.9678714859, "32768": 0.9919678715, "65536": 1},
+      "actual_in": {"16384": 0.9959839357, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 6,
+      "n_positions": 279,
+      "mass": {"16384": 0.9468890494, "32768": 0.9701186969, "65536": 0.9878998464},
+      "greedy_in": {"16384": 0.9569892473, "32768": 0.9713261649, "65536": 0.9892473118},
+      "actual_in": {"16384": 0.9677419355, "32768": 0.9677419355, "65536": 0.9856630824}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 7,
+      "n_positions": 399,
+      "mass": {"16384": 0.9662901527, "32768": 0.9879686342, "65536": 0.9956522705},
+      "greedy_in": {"16384": 0.9724310777, "32768": 0.9899749373, "65536": 0.9974937343},
+      "actual_in": {"16384": 0.992481203, "32768": 0.9974937343, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 8,
+      "n_positions": 417,
+      "mass": {"16384": 0.9379422543, "32768": 0.9674189268, "65536": 0.9899565091},
+      "greedy_in": {"16384": 0.9400479616, "32768": 0.9664268585, "65536": 0.9928057554},
+      "actual_in": {"16384": 0.9520383693, "32768": 0.9664268585, "65536": 0.9928057554}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 9,
+      "n_positions": 297,
+      "mass": {"16384": 0.9352126315, "32768": 0.9660327508, "65536": 0.9830708381},
+      "greedy_in": {"16384": 0.9393939394, "32768": 0.9696969697, "65536": 0.9865319865},
+      "actual_in": {"16384": 0.962962963, "32768": 0.9696969697, "65536": 0.9831649832}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 10,
+      "n_positions": 699,
+      "mass": {"16384": 0.9823997296, "32768": 0.9962391045, "65536": 0.9986214363},
+      "greedy_in": {"16384": 0.9856938484, "32768": 0.9971387697, "65536": 1},
+      "actual_in": {"16384": 0.9942775393, "32768": 0.9985693848, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 11,
+      "n_positions": 436,
+      "mass": {"16384": 0.9408812466, "32768": 0.9791059213, "65536": 0.9905717668},
+      "greedy_in": {"16384": 0.9426605505, "32768": 0.9793577982, "65536": 0.9931192661},
+      "actual_in": {"16384": 0.9564220183, "32768": 0.9839449541, "65536": 0.9908256881}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 12,
+      "n_positions": 476,
+      "mass": {"16384": 0.9501014211, "32768": 0.9796974291, "65536": 0.9874282492},
+      "greedy_in": {"16384": 0.9537815126, "32768": 0.9831932773, "65536": 0.9894957983},
+      "actual_in": {"16384": 0.9663865546, "32768": 0.9789915966, "65536": 0.987394958}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 13,
+      "n_positions": 347,
+      "mass": {"16384": 0.9743926731, "32768": 0.9919565399, "65536": 0.9972579213},
+      "greedy_in": {"16384": 0.9798270893, "32768": 0.9942363112, "65536": 1},
+      "actual_in": {"16384": 0.9971181556, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 14,
+      "n_positions": 383,
+      "mass": {"16384": 0.9633540103, "32768": 0.9772323346, "65536": 0.992178496},
+      "greedy_in": {"16384": 0.9765013055, "32768": 0.9843342037, "65536": 0.9947780679},
+      "actual_in": {"16384": 0.9869451697, "32768": 0.9869451697, "65536": 0.9947780679}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 15,
+      "n_positions": 673,
+      "mass": {"16384": 0.9659966412, "32768": 0.9873076703, "65536": 0.9945777629},
+      "greedy_in": {"16384": 0.9717682021, "32768": 0.9910846954, "65536": 0.9970282318},
+      "actual_in": {"16384": 0.9747399703, "32768": 0.9910846954, "65536": 0.9955423477}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 16,
+      "n_positions": 387,
+      "mass": {"16384": 0.9628805566, "32768": 0.9862152873, "65536": 0.9969992412},
+      "greedy_in": {"16384": 0.9664082687, "32768": 0.9870801034, "65536": 0.9974160207},
+      "actual_in": {"16384": 0.9870801034, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 17,
+      "n_positions": 391,
+      "mass": {"16384": 0.9337524206, "32768": 0.9609971758, "65536": 0.9870894206},
+      "greedy_in": {"16384": 0.9335038363, "32768": 0.9616368286, "65536": 0.9872122762},
+      "actual_in": {"16384": 0.9539641944, "32768": 0.9641943734, "65536": 0.989769821}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 18,
+      "n_positions": 689,
+      "mass": {"16384": 0.9720457425, "32768": 0.9892933282, "65536": 0.994164728},
+      "greedy_in": {"16384": 0.9753265602, "32768": 0.9912917271, "65536": 0.9956458636},
+      "actual_in": {"16384": 0.9869375907, "32768": 0.9941944848, "65536": 0.9941944848}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 19,
+      "n_positions": 425,
+      "mass": {"16384": 0.966542409, "32768": 0.9807649796, "65536": 0.9851278234},
+      "greedy_in": {"16384": 0.9717647059, "32768": 0.9811764706, "65536": 0.9858823529},
+      "actual_in": {"16384": 0.9882352941, "32768": 0.9882352941, "65536": 0.9882352941}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 20,
+      "n_positions": 462,
+      "mass": {"16384": 0.9519637089, "32768": 0.9828643561, "65536": 0.9977209433},
+      "greedy_in": {"16384": 0.9545454545, "32768": 0.9848484848, "65536": 1},
+      "actual_in": {"16384": 0.9675324675, "32768": 0.9891774892, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 21,
+      "n_positions": 386,
+      "mass": {"16384": 0.9673248645, "32768": 0.9824965414, "65536": 0.9921890543},
+      "greedy_in": {"16384": 0.9740932642, "32768": 0.9844559585, "65536": 0.9948186528},
+      "actual_in": {"16384": 0.9792746114, "32768": 0.9844559585, "65536": 0.9896373057}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 22,
+      "n_positions": 458,
+      "mass": {"16384": 0.9799719139, "32768": 0.9923261368, "65536": 0.9978257971},
+      "greedy_in": {"16384": 0.9825327511, "32768": 0.9912663755, "65536": 1},
+      "actual_in": {"16384": 1, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 23,
+      "n_positions": 505,
+      "mass": {"16384": 0.9132750969, "32768": 0.9688797406, "65536": 0.9958240567},
+      "greedy_in": {"16384": 0.9227722772, "32768": 0.9722772277, "65536": 0.998019802},
+      "actual_in": {"16384": 0.9267326733, "32768": 0.9782178218, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 24,
+      "n_positions": 277,
+      "mass": {"16384": 0.9589142624, "32768": 0.987612709, "65536": 0.9959259126},
+      "greedy_in": {"16384": 0.963898917, "32768": 0.9927797834, "65536": 1},
+      "actual_in": {"16384": 0.9855595668, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 25,
+      "n_positions": 437,
+      "mass": {"16384": 0.9588493943, "32768": 0.9767821382, "65536": 0.9881831691},
+      "greedy_in": {"16384": 0.9679633867, "32768": 0.9794050343, "65536": 0.9908466819},
+      "actual_in": {"16384": 0.9771167048, "32768": 0.9816933638, "65536": 0.9885583524}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 26,
+      "n_positions": 364,
+      "mass": {"16384": 0.959960051, "32768": 0.989034758, "65536": 0.994325994},
+      "greedy_in": {"16384": 0.9587912088, "32768": 0.9862637363, "65536": 0.9917582418},
+      "actual_in": {"16384": 0.9807692308, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 27,
+      "n_positions": 358,
+      "mass": {"16384": 0.9569721692, "32768": 0.9791616654, "65536": 0.9940636923},
+      "greedy_in": {"16384": 0.9636871508, "32768": 0.9832402235, "65536": 0.9972067039},
+      "actual_in": {"16384": 0.9748603352, "32768": 0.9860335196, "65536": 0.9944134078}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 28,
+      "n_positions": 410,
+      "mass": {"16384": 0.9630356796, "32768": 0.9801769299, "65536": 0.9935699878},
+      "greedy_in": {"16384": 0.9682926829, "32768": 0.9829268293, "65536": 0.9975609756},
+      "actual_in": {"16384": 0.9829268293, "32768": 0.987804878, "65536": 0.9975609756}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 29,
+      "n_positions": 411,
+      "mass": {"16384": 0.9641905782, "32768": 0.9867402481, "65536": 0.9974101518},
+      "greedy_in": {"16384": 0.9708029197, "32768": 0.9902676399, "65536": 1},
+      "actual_in": {"16384": 0.9805352798, "32768": 0.9927007299, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 30,
+      "n_positions": 375,
+      "mass": {"16384": 0.9748155923, "32768": 0.9896869336, "65536": 0.9967263158},
+      "greedy_in": {"16384": 0.9813333333, "32768": 0.992, "65536": 0.9973333333},
+      "actual_in": {"16384": 0.9973333333, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 31,
+      "n_positions": 403,
+      "mass": {"16384": 0.9618938803, "32768": 0.9796042887, "65536": 0.9893643434},
+      "greedy_in": {"16384": 0.9702233251, "32768": 0.982630273, "65536": 0.9925558313},
+      "actual_in": {"16384": 0.982630273, "32768": 0.9851116625, "65536": 0.9900744417}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 32,
+      "n_positions": 553,
+      "mass": {"16384": 0.9018084547, "32768": 0.9789422327, "65536": 0.9888014678},
+      "greedy_in": {"16384": 0.9059674503, "32768": 0.9819168174, "65536": 0.9909584087},
+      "actual_in": {"16384": 0.9222423146, "32768": 0.9855334539, "65536": 0.9891500904}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 33,
+      "n_positions": 427,
+      "mass": {"16384": 0.9771567642, "32768": 0.9893279046, "65536": 0.997501467},
+      "greedy_in": {"16384": 0.981264637, "32768": 0.9929742389, "65536": 1},
+      "actual_in": {"16384": 0.9953161593, "32768": 0.9976580796, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 34,
+      "n_positions": 329,
+      "mass": {"16384": 0.9561986608, "32768": 0.9833801758, "65536": 0.9964112624},
+      "greedy_in": {"16384": 0.9635258359, "32768": 0.9878419453, "65536": 1},
+      "actual_in": {"16384": 0.9878419453, "32768": 0.9969604863, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 35,
+      "n_positions": 287,
+      "mass": {"16384": 0.9645326128, "32768": 0.9898682386, "65536": 0.9955482563},
+      "greedy_in": {"16384": 0.9721254355, "32768": 0.9965156794, "65536": 1},
+      "actual_in": {"16384": 0.9860627178, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 36,
+      "n_positions": 397,
+      "mass": {"16384": 0.956972634, "32768": 0.9778559775, "65536": 0.9869078947},
+      "greedy_in": {"16384": 0.9622166247, "32768": 0.9798488665, "65536": 0.9874055416},
+      "actual_in": {"16384": 0.9748110831, "32768": 0.9823677582, "65536": 0.9848866499}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 37,
+      "n_positions": 278,
+      "mass": {"16384": 0.9439255948, "32768": 0.9654001456, "65536": 0.990821209},
+      "greedy_in": {"16384": 0.9532374101, "32768": 0.9712230216, "65536": 0.9964028777},
+      "actual_in": {"16384": 0.9820143885, "32768": 0.9856115108, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 38,
+      "n_positions": 547,
+      "mass": {"16384": 0.9722116359, "32768": 0.985310889, "65536": 0.9937438888},
+      "greedy_in": {"16384": 0.9744058501, "32768": 0.987202925, "65536": 0.9963436929},
+      "actual_in": {"16384": 0.987202925, "32768": 0.9945155393, "65536": 0.9981718464}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 39,
+      "n_positions": 588,
+      "mass": {"16384": 0.9847712255, "32768": 0.9936444194, "65536": 0.9982951537},
+      "greedy_in": {"16384": 0.9880952381, "32768": 0.9948979592, "65536": 1},
+      "actual_in": {"16384": 0.9982993197, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 40,
+      "n_positions": 365,
+      "mass": {"16384": 0.9242903418, "32768": 0.9764723638, "65536": 0.980494001},
+      "greedy_in": {"16384": 0.9315068493, "32768": 0.9835616438, "65536": 0.9863013699},
+      "actual_in": {"16384": 0.9506849315, "32768": 0.9863013699, "65536": 0.9863013699}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 41,
+      "n_positions": 382,
+      "mass": {"16384": 0.9632205662, "32768": 0.9882466129, "65536": 0.9954941099},
+      "greedy_in": {"16384": 0.9712041885, "32768": 0.9895287958, "65536": 0.997382199},
+      "actual_in": {"16384": 0.9869109948, "32768": 0.9947643979, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 42,
+      "n_positions": 363,
+      "mass": {"16384": 0.9701237954, "32768": 0.989100596, "65536": 0.9962088989},
+      "greedy_in": {"16384": 0.9779614325, "32768": 0.9917355372, "65536": 1},
+      "actual_in": {"16384": 1, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 43,
+      "n_positions": 354,
+      "mass": {"16384": 0.9617440835, "32768": 0.98384441, "65536": 0.9965815648},
+      "greedy_in": {"16384": 0.9689265537, "32768": 0.988700565, "65536": 1},
+      "actual_in": {"16384": 0.9858757062, "32768": 0.9915254237, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 44,
+      "n_positions": 371,
+      "mass": {"16384": 0.9280556218, "32768": 0.9474167377, "65536": 0.9976912452},
+      "greedy_in": {"16384": 0.9326145553, "32768": 0.9460916442, "65536": 1},
+      "actual_in": {"16384": 0.9380053908, "32768": 0.948787062, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 45,
+      "n_positions": 289,
+      "mass": {"16384": 0.9639787764, "32768": 0.9832098833, "65536": 0.9965894251},
+      "greedy_in": {"16384": 0.9653979239, "32768": 0.9826989619, "65536": 0.9965397924},
+      "actual_in": {"16384": 0.9930795848, "32768": 0.9930795848, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 46,
+      "n_positions": 434,
+      "mass": {"16384": 0.9710326308, "32768": 0.983500424, "65536": 0.9966746572},
+      "greedy_in": {"16384": 0.9769585253, "32768": 0.9861751152, "65536": 1},
+      "actual_in": {"16384": 0.9907834101, "32768": 0.9930875576, "65536": 0.9976958525}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 47,
+      "n_positions": 359,
+      "mass": {"16384": 0.8964799831, "32768": 0.9341040195, "65536": 0.9825267476},
+      "greedy_in": {"16384": 0.8997214485, "32768": 0.9331476323, "65536": 0.9860724234},
+      "actual_in": {"16384": 0.9080779944, "32768": 0.938718663, "65536": 0.991643454}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 48,
+      "n_positions": 447,
+      "mass": {"16384": 0.9735724715, "32768": 0.9902877191, "65536": 0.9976190222},
+      "greedy_in": {"16384": 0.9776286353, "32768": 0.9910514541, "65536": 1},
+      "actual_in": {"16384": 0.9955257271, "32768": 0.9977628635, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 49,
+      "n_positions": 321,
+      "mass": {"16384": 0.9648856982, "32768": 0.9852626789, "65536": 0.9956811165},
+      "greedy_in": {"16384": 0.9750778816, "32768": 0.9906542056, "65536": 1},
+      "actual_in": {"16384": 1, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 50,
+      "n_positions": 403,
+      "mass": {"16384": 0.9749149762, "32768": 0.99169207, "65536": 0.996839664},
+      "greedy_in": {"16384": 0.9776674938, "32768": 0.9925558313, "65536": 0.9975186104},
+      "actual_in": {"16384": 0.9975186104, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 51,
+      "n_positions": 488,
+      "mass": {"16384": 0.9558154518, "32768": 0.9691732268, "65536": 0.996055605},
+      "greedy_in": {"16384": 0.9610655738, "32768": 0.9713114754, "65536": 0.9979508197},
+      "actual_in": {"16384": 0.9795081967, "32768": 0.9795081967, "65536": 0.9959016393}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 52,
+      "n_positions": 346,
+      "mass": {"16384": 0.9536654043, "32768": 0.9915490137, "65536": 0.9947934507},
+      "greedy_in": {"16384": 0.9566473988, "32768": 0.9942196532, "65536": 0.9971098266},
+      "actual_in": {"16384": 0.9710982659, "32768": 0.9971098266, "65536": 0.9971098266}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 53,
+      "n_positions": 738,
+      "mass": {"16384": 0.9535701348, "32768": 0.9741667023, "65536": 0.9871880901},
+      "greedy_in": {"16384": 0.9539295393, "32768": 0.972899729, "65536": 0.987804878},
+      "actual_in": {"16384": 0.9661246612, "32768": 0.9796747967, "65536": 0.9932249322}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 54,
+      "n_positions": 363,
+      "mass": {"16384": 0.9424216627, "32768": 0.9748872155, "65536": 0.9898680681},
+      "greedy_in": {"16384": 0.9504132231, "32768": 0.9779614325, "65536": 0.9917355372},
+      "actual_in": {"16384": 0.9669421488, "32768": 0.9889807163, "65536": 0.9944903581}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 55,
+      "n_positions": 557,
+      "mass": {"16384": 0.9766051445, "32768": 0.9911112101, "65536": 0.9974872071},
+      "greedy_in": {"16384": 0.9802513465, "32768": 0.9928186715, "65536": 1},
+      "actual_in": {"16384": 0.9946140036, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 56,
+      "n_positions": 339,
+      "mass": {"16384": 0.9605434079, "32768": 0.987500552, "65536": 0.994203107},
+      "greedy_in": {"16384": 0.9675516224, "32768": 0.9911504425, "65536": 0.9970501475},
+      "actual_in": {"16384": 0.9852507375, "32768": 0.994100295, "65536": 0.994100295}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 57,
+      "n_positions": 591,
+      "mass": {"16384": 0.9770748146, "32768": 0.9916561108, "65536": 0.9966194479},
+      "greedy_in": {"16384": 0.9746192893, "32768": 0.9915397631, "65536": 0.9983079526},
+      "actual_in": {"16384": 0.9949238579, "32768": 0.9966159052, "65536": 0.9983079526}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 58,
+      "n_positions": 283,
+      "mass": {"16384": 0.9676805987, "32768": 0.9875682309, "65536": 0.9956925736},
+      "greedy_in": {"16384": 0.9752650177, "32768": 0.9893992933, "65536": 1},
+      "actual_in": {"16384": 0.9964664311, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 59,
+      "n_positions": 359,
+      "mass": {"16384": 0.9335605239, "32768": 0.9654032446, "65536": 0.9811419519},
+      "greedy_in": {"16384": 0.9331476323, "32768": 0.9665738162, "65536": 0.9832869081},
+      "actual_in": {"16384": 0.9470752089, "32768": 0.9665738162, "65536": 0.9777158774}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 60,
+      "n_positions": 447,
+      "mass": {"16384": 0.9650995581, "32768": 0.9923981274, "65536": 0.9977499654},
+      "greedy_in": {"16384": 0.970917226, "32768": 0.9955257271, "65536": 1},
+      "actual_in": {"16384": 0.9821029083, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 61,
+      "n_positions": 558,
+      "mass": {"16384": 0.9013819539, "32768": 0.9586018029, "65536": 0.9849637908},
+      "greedy_in": {"16384": 0.9032258065, "32768": 0.958781362, "65536": 0.9838709677},
+      "actual_in": {"16384": 0.9121863799, "32768": 0.958781362, "65536": 0.9838709677}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 62,
+      "n_positions": 295,
+      "mass": {"16384": 0.8967703066, "32768": 0.961387016, "65536": 0.9944838572},
+      "greedy_in": {"16384": 0.9016949153, "32768": 0.9593220339, "65536": 0.9966101695},
+      "actual_in": {"16384": 0.9118644068, "32768": 0.9661016949, "65536": 0.9966101695}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 63,
+      "n_positions": 397,
+      "mass": {"16384": 0.9669615939, "32768": 0.9883827177, "65536": 0.9924713242},
+      "greedy_in": {"16384": 0.9748110831, "32768": 0.9899244332, "65536": 0.9949622166},
+      "actual_in": {"16384": 0.9899244332, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 64,
+      "n_positions": 311,
+      "mass": {"16384": 0.9563388612, "32768": 0.9820068273, "65536": 0.9938447191},
+      "greedy_in": {"16384": 0.9646302251, "32768": 0.9839228296, "65536": 0.9967845659},
+      "actual_in": {"16384": 0.9807073955, "32768": 0.9935691318, "65536": 0.9935691318}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 65,
+      "n_positions": 318,
+      "mass": {"16384": 0.9627197837, "32768": 0.9885994728, "65536": 0.9969260888},
+      "greedy_in": {"16384": 0.9685534591, "32768": 0.9905660377, "65536": 1},
+      "actual_in": {"16384": 0.9905660377, "32768": 0.9968553459, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 66,
+      "n_positions": 410,
+      "mass": {"16384": 0.9701186218, "32768": 0.9925620075, "65536": 0.9976228171},
+      "greedy_in": {"16384": 0.9756097561, "32768": 0.9951219512, "65536": 1},
+      "actual_in": {"16384": 0.9853658537, "32768": 0.9975609756, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 67,
+      "n_positions": 429,
+      "mass": {"16384": 0.9766134186, "32768": 0.9911174441, "65536": 0.9975933038},
+      "greedy_in": {"16384": 0.979020979, "32768": 0.993006993, "65536": 1},
+      "actual_in": {"16384": 1, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 68,
+      "n_positions": 285,
+      "mass": {"16384": 0.9635096309, "32768": 0.9893330713, "65536": 0.9947392803},
+      "greedy_in": {"16384": 0.9684210526, "32768": 0.9929824561, "65536": 0.9964912281},
+      "actual_in": {"16384": 0.9894736842, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 69,
+      "n_positions": 312,
+      "mass": {"16384": 0.9233935341, "32768": 0.9729181658, "65536": 0.9806995167},
+      "greedy_in": {"16384": 0.9326923077, "32768": 0.9775641026, "65536": 0.983974359},
+      "actual_in": {"16384": 0.9487179487, "32768": 0.9775641026, "65536": 0.9807692308}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 70,
+      "n_positions": 291,
+      "mass": {"16384": 0.9659690014, "32768": 0.9828277374, "65536": 0.9957896628},
+      "greedy_in": {"16384": 0.9759450172, "32768": 0.9862542955, "65536": 1},
+      "actual_in": {"16384": 0.9828178694, "32768": 0.9862542955, "65536": 0.9965635739}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 71,
+      "n_positions": 375,
+      "mass": {"16384": 0.9515783273, "32768": 0.9683901574, "65536": 0.987270399},
+      "greedy_in": {"16384": 0.9573333333, "32768": 0.9706666667, "65536": 0.9893333333},
+      "actual_in": {"16384": 0.976, "32768": 0.9813333333, "65536": 0.9893333333}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 72,
+      "n_positions": 484,
+      "mass": {"16384": 0.9667101792, "32768": 0.9897487792, "65536": 0.996162583},
+      "greedy_in": {"16384": 0.9710743802, "32768": 0.9958677686, "65536": 1},
+      "actual_in": {"16384": 0.9917355372, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 73,
+      "n_positions": 470,
+      "mass": {"16384": 0.9796256406, "32768": 0.9942198986, "65536": 0.9978850167},
+      "greedy_in": {"16384": 0.9872340426, "32768": 0.9978723404, "65536": 1},
+      "actual_in": {"16384": 0.9978723404, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 74,
+      "n_positions": 277,
+      "mass": {"16384": 0.9540550822, "32768": 0.9814240454, "65536": 0.9970178132},
+      "greedy_in": {"16384": 0.9602888087, "32768": 0.9855595668, "65536": 1},
+      "actual_in": {"16384": 0.9747292419, "32768": 0.9891696751, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 75,
+      "n_positions": 367,
+      "mass": {"16384": 0.9361201627, "32768": 0.9580454505, "65536": 0.9794993997},
+      "greedy_in": {"16384": 0.9427792916, "32768": 0.9645776567, "65536": 0.9836512262},
+      "actual_in": {"16384": 0.9591280654, "32768": 0.9645776567, "65536": 0.9782016349}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 76,
+      "n_positions": 424,
+      "mass": {"16384": 0.963861036, "32768": 0.9832292548, "65536": 0.9949906831},
+      "greedy_in": {"16384": 0.9716981132, "32768": 0.9858490566, "65536": 0.9976415094},
+      "actual_in": {"16384": 0.9882075472, "32768": 0.9952830189, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 77,
+      "n_positions": 330,
+      "mass": {"16384": 0.9714532898, "32768": 0.990947151, "65536": 0.9972846503},
+      "greedy_in": {"16384": 0.9787878788, "32768": 0.9939393939, "65536": 1},
+      "actual_in": {"16384": 0.996969697, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 78,
+      "n_positions": 356,
+      "mass": {"16384": 0.9716434775, "32768": 0.9879803111, "65536": 0.9969150376},
+      "greedy_in": {"16384": 0.9831460674, "32768": 0.9915730337, "65536": 1},
+      "actual_in": {"16384": 0.9943820225, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 79,
+      "n_positions": 312,
+      "mass": {"16384": 0.9542007474, "32768": 0.9842143605, "65536": 0.9905542806},
+      "greedy_in": {"16384": 0.9583333333, "32768": 0.9871794872, "65536": 0.9935897436},
+      "actual_in": {"16384": 0.9903846154, "32768": 0.9935897436, "65536": 0.9935897436}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 80,
+      "n_positions": 508,
+      "mass": {"16384": 0.942683111, "32768": 0.9752960904, "65536": 0.9904444803},
+      "greedy_in": {"16384": 0.9488188976, "32768": 0.9783464567, "65536": 0.9921259843},
+      "actual_in": {"16384": 0.9586614173, "32768": 0.9803149606, "65536": 0.9901574803}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 81,
+      "n_positions": 376,
+      "mass": {"16384": 0.9559983545, "32768": 0.9765815212, "65536": 0.9942366578},
+      "greedy_in": {"16384": 0.9680851064, "32768": 0.9813829787, "65536": 0.9973404255},
+      "actual_in": {"16384": 0.9760638298, "32768": 0.9840425532, "65536": 0.9973404255}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 82,
+      "n_positions": 320,
+      "mass": {"16384": 0.9322801532, "32768": 0.9595159444, "65536": 0.9696648024},
+      "greedy_in": {"16384": 0.93125, "32768": 0.959375, "65536": 0.96875},
+      "actual_in": {"16384": 0.953125, "32768": 0.9625, "65536": 0.971875}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 83,
+      "n_positions": 340,
+      "mass": {"16384": 0.9712902188, "32768": 0.990868134, "65536": 0.9970069067},
+      "greedy_in": {"16384": 0.9705882353, "32768": 0.9911764706, "65536": 0.9970588235},
+      "actual_in": {"16384": 0.9911764706, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 84,
+      "n_positions": 365,
+      "mass": {"16384": 0.9292444493, "32768": 0.9553072672, "65536": 0.9814110907},
+      "greedy_in": {"16384": 0.9315068493, "32768": 0.9534246575, "65536": 0.9835616438},
+      "actual_in": {"16384": 0.9589041096, "32768": 0.9671232877, "65536": 0.9835616438}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 85,
+      "n_positions": 373,
+      "mass": {"16384": 0.9251446902, "32768": 0.9712938023, "65536": 0.9939749236},
+      "greedy_in": {"16384": 0.9356568365, "32768": 0.9785522788, "65536": 0.9973190349},
+      "actual_in": {"16384": 0.9544235925, "32768": 0.9839142091, "65536": 0.9973190349}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 86,
+      "n_positions": 470,
+      "mass": {"16384": 0.9717034081, "32768": 0.9921684122, "65536": 0.9973408734},
+      "greedy_in": {"16384": 0.9787234043, "32768": 0.9936170213, "65536": 1},
+      "actual_in": {"16384": 0.9893617021, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 87,
+      "n_positions": 372,
+      "mass": {"16384": 0.9660904569, "32768": 0.9848796116, "65536": 0.9951677116},
+      "greedy_in": {"16384": 0.9704301075, "32768": 0.9892473118, "65536": 0.997311828},
+      "actual_in": {"16384": 0.9892473118, "32768": 0.9946236559, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 88,
+      "n_positions": 363,
+      "mass": {"16384": 0.9350583979, "32768": 0.9678766859, "65536": 0.9787465737},
+      "greedy_in": {"16384": 0.9393939394, "32768": 0.9724517906, "65536": 0.9807162534},
+      "actual_in": {"16384": 0.9614325069, "32768": 0.9807162534, "65536": 0.9862258953}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 89,
+      "n_positions": 572,
+      "mass": {"16384": 0.9746265362, "32768": 0.9889766712, "65536": 0.997772485},
+      "greedy_in": {"16384": 0.9755244755, "32768": 0.9877622378, "65536": 0.9982517483},
+      "actual_in": {"16384": 0.993006993, "32768": 0.9947552448, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 90,
+      "n_positions": 507,
+      "mass": {"16384": 0.9756282073, "32768": 0.9926509425, "65536": 0.9972635858},
+      "greedy_in": {"16384": 0.9822485207, "32768": 0.9960552268, "65536": 1},
+      "actual_in": {"16384": 0.9980276134, "32768": 1, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 91,
+      "n_positions": 528,
+      "mass": {"16384": 0.9767895928, "32768": 0.9898779175, "65536": 0.9934256869},
+      "greedy_in": {"16384": 0.9791666667, "32768": 0.990530303, "65536": 0.9943181818},
+      "actual_in": {"16384": 0.9943181818, "32768": 0.9962121212, "65536": 0.9962121212}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 92,
+      "n_positions": 345,
+      "mass": {"16384": 0.9574045137, "32768": 0.9838880724, "65536": 0.9934487433},
+      "greedy_in": {"16384": 0.968115942, "32768": 0.9884057971, "65536": 0.9971014493},
+      "actual_in": {"16384": 0.9768115942, "32768": 0.9855072464, "65536": 0.9942028986}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 93,
+      "n_positions": 364,
+      "mass": {"16384": 0.9524348984, "32768": 0.9785595693, "65536": 0.9959451463},
+      "greedy_in": {"16384": 0.9532967033, "32768": 0.978021978, "65536": 1},
+      "actual_in": {"16384": 0.9807692308, "32768": 0.9945054945, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 94,
+      "n_positions": 373,
+      "mass": {"16384": 0.9434408299, "32768": 0.9795070997, "65536": 0.9956445851},
+      "greedy_in": {"16384": 0.9490616622, "32768": 0.981233244, "65536": 0.9973190349},
+      "actual_in": {"16384": 0.9705093834, "32768": 0.9865951743, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 95,
+      "n_positions": 293,
+      "mass": {"16384": 0.9347046423, "32768": 0.963999747, "65536": 0.9968386104},
+      "greedy_in": {"16384": 0.9351535836, "32768": 0.9624573379, "65536": 1},
+      "actual_in": {"16384": 0.9692832765, "32768": 0.9795221843, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 96,
+      "n_positions": 405,
+      "mass": {"16384": 0.9691768003, "32768": 0.9884731262, "65536": 0.9972523217},
+      "greedy_in": {"16384": 0.9777777778, "32768": 0.9901234568, "65536": 1},
+      "actual_in": {"16384": 0.9901234568, "32768": 0.9925925926, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 97,
+      "n_positions": 472,
+      "mass": {"16384": 0.9712863628, "32768": 0.9896191686, "65536": 0.9966268175},
+      "greedy_in": {"16384": 0.9745762712, "32768": 0.9894067797, "65536": 0.9978813559},
+      "actual_in": {"16384": 0.9851694915, "32768": 0.9915254237, "65536": 0.9957627119}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 98,
+      "n_positions": 573,
+      "mass": {"16384": 0.9671601749, "32768": 0.9864003821, "65536": 0.997233183},
+      "greedy_in": {"16384": 0.9720767888, "32768": 0.9877835951, "65536": 0.9982547993},
+      "actual_in": {"16384": 0.9808027923, "32768": 0.9912739965, "65536": 1}
+    },
+    {
+      "file": "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl",
+      "row": 99,
+      "n_positions": 347,
+      "mass": {"16384": 0.9280324694, "32768": 0.969183892, "65536": 0.9830875527},
+      "greedy_in": {"16384": 0.9279538905, "32768": 0.9625360231, "65536": 0.9798270893},
+      "actual_in": {"16384": 0.9510086455, "32768": 0.976945245, "65536": 0.9827089337}
+    }
+  ]
+}

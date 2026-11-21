@@ -27,7 +27,7 @@ Gains per 4M tokens were still +0.01 to +0.03 at the end with the learning rate 
 - Pruned init beats scratch on general (+0.03) and json (+0.10); on pt_fin the intervals overlap.
   The CIs above are per arm; paired comparisons on the same prompts would be tighter and were not computed.
 - Against the Stage A cost model: kd-pruned clears the ~0.40 break-even in all three domains and the ~0.55
-  needed for 1.3x only on pt_fin. Qwen3-0.6B reaches 0.63-0.66 in a4; D-S has about a third of its non-embedding compute.
+  needed for 1.3x only on pt_fin. Qwen3-0.6B reaches 0.63-0.66 in a4; D-S has about 53M non-embedding parameters (including the V' head) against about 440M, roughly one eighth.
 - pt_fin training text (Copom 232-261, 136k tokens) repeats about 9 times at weight 0.05; evaluation uses held-out
   minutes 262-282, so the pt_fin score is not memorization of the eval text but may reflect overfitting to its style.
 

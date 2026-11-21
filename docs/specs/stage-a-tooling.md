@@ -178,3 +178,31 @@ For each size, direction (`h2d`, `d2h`) and host memory kind (`pinned` via cudaM
 2. Verification cost: `llama-bench -m MODEL -ngl 99 -p N -n 0 -d D -r REPS -o jsonl` for each N in `--verify-n` and each depth D. Record `t_v_ms` = 1000 × N / avg_ts (time for one batch of N tokens).
 3. Before and after, record `nvidia-smi --query-gpu=memory.used,memory.total,pcie.link.gen.current,pcie.link.width.current --format=csv,noheader,nounits`.
 4. Write `metrics.jsonl` (one line per llama-bench record with `kind` = `decode` or `verify`, `depth`, `n`, timing fields, `error`) and `manifest.json` (model sha256 via `measure.manifest`). A failed llama-bench call records `error` and the driver continues; exit code 0 unless options are invalid (2).
+
+## 10. Reference-draft acceptance driver (experiment a4): `src/measure/a4_reference_draft.py`
+
+`python3 -m measure.a4_reference_draft --out DIR --target GGUF --draft GGUF --prompts F1,F2,... [--llama-server PATH] [--plan PLAN] [--n-predict 64] [--port 18080] [--draft-threads 6] [--seed 1234]`. `--out` must not exist (exit 2). Default `--llama-server` is `third_party/llama.cpp/build/bin/llama-server` relative to the repository root. Prompt files are JSONL with fields `id`, `domain`, `prompt`.
+
+`--plan` is a comma-separated list of `device:gamma:subset` items; default `none:0:all,cpu:4:all,gpu:4:all,cpu:2:30,cpu:6:30,gpu:2:30,gpu:6:30`. `device` is `none` (target alone), `cpu` or `gpu`; `subset` is `all` or the first N prompts of each file.
+
+For each plan item:
+
+1. Start `llama-server -m TARGET -ngl 99 -c 4096 -np 1 --port PORT --no-webui` plus, unless `device` is `none`: `-md DRAFT --spec-draft-n-max G --spec-draft-n-min G --spec-draft-p-min 0`, and for `cpu`: `-ngld 0 -devd none -td DRAFT_THREADS`, for `gpu`: `-ngld 99`. Server stdout/stderr go to `DIR/server-<item>.log`. Poll `GET /health` every 0.2 s until HTTP 200 (timeout 180 s; on timeout record an error row for the item, stop the server and continue).
+2. For each prompt and each mode (`greedy`: temperature 0; `sampled`: temperature 0.7, top_k 20, top_p 0.8, min_p 0), `POST /completion` with JSON `{"prompt", "n_predict", "temperature", "top_k", "top_p", "min_p", "seed": SEED + prompt index, "cache_prompt": false}`. Timeout 300 s per request.
+3. Append one row per request to `metrics.jsonl`: `device`, `gamma`, `mode`, `domain`, `prompt_id`, `predicted_n`, `predicted_ms`, `tokens_per_s` (predicted_n / predicted_ms × 1000), `prompt_n`, `prompt_ms`, `draft_n`, `draft_n_accepted` (from the response's `timings`; null when absent), `acceptance` (draft_n_accepted / draft_n, null when draft_n is 0 or absent), `error`.
+4. Stop the server (SIGTERM, then SIGKILL after 10 s) before the next item, and in cleanup on any exit path (flag-only signal handlers as in section 5; exit 128 + signum after cleanup).
+
+Write `summary.json` grouped by (device, gamma, mode, domain): request count, mean acceptance, mean tokens_per_s, and speedup = mean tokens_per_s / mean tokens_per_s of the `none` item for the same mode and domain (null if missing). Write `manifest.json` with sha256 of target and draft (via `measure.manifest`). Standard library only (`urllib.request`, `http.client`).
+
+## 11. Vocabulary coverage tool (experiment a5): `src/measure/vocab_coverage.cpp`
+
+Build: `make -C src/measure vocab_coverage`, C++17 with `g++`, including `third_party/llama.cpp/include` and `third_party/llama.cpp/ggml/include`, linking `-lllama -lggml -lggml-base` from `third_party/llama.cpp/build/bin` with an rpath to that directory. The Makefile target may assume the llama.cpp build exists.
+
+CLI: `vocab_coverage --model GGUF --freq-text F1[,F2...] --eval PROMPTS1[,PROMPTS2...] --out OUT.json [--sizes 16384,32768,65536] [--ctx 1024] [--ngl 99] [--max-rows N] [--ranking-out RANK.json]`.
+
+1. Frequency ranking: tokenize each frequency text file with `llama_tokenize` (no BOS, special tokens parsed). Count occurrences per token id. Rank by count descending, ties by id ascending; tokens never seen follow in id order. V′_k is the first k ranked ids. `--ranking-out` writes the first max(sizes) ids as a JSON array.
+2. Evaluation: each eval file is JSONL with `prompt` and `heldout` strings (minimal JSON string parsing is enough: these two fields, with standard escapes including `\uXXXX` and surrogate pairs). Text = prompt + heldout (json domain prompts already end with the assistant header; join without a separator when the prompt ends with a newline, else with one space). Tokenize with BOS as the model's vocab requests and special tokens parsed. Truncate to `--ctx` tokens.
+3. Run the model over the tokens in one batch with logits for every position. For each position t < n − 1, with p = softmax(logits_t): `mass_k` = Σ p over V′_k; `greedy_in_k` = 1 if argmax p ∈ V′_k; `actual_in_k` = 1 if token t + 1 ∈ V′_k. Average over the row's positions.
+4. Output `OUT.json`: `{"model", "sizes", "ctx", "freq_files", "rows": [{"file", "row", "n_positions", "mass": {k: x}, "greedy_in": {k: x}, "actual_in": {k: x}}]}` with k as decimal strings. Errors (missing file, model load failure, bad arguments) print to stderr and exit 1 (2 for bad arguments).
+
+A small Python wrapper is not required; Python post-processing computes per-domain means and bootstrap CIs with `measure.stats`.

@@ -29,7 +29,7 @@ Cost model speedup = E(α, γ)·t_t / (γ·t_d + t_v + overhead), with t_t = 12.
 | 0.68 | 3 | 0.35 / 0.58 | 0.37 / 0.53 | 0.41 / 0.55 |
 | 1.1 | 0 | 0.24 / 0.47 | 0.32 / 0.49 | 0.39 / 0.54 |
 | 1.1 | 3 | 0.39 / 0.62 | 0.42 / 0.58 | 0.47 / 0.60 |
-| 1.1 | 6 (as measured in a6) | see note | 0.51 / 0.66 [E] | |
+| 1.1 | 6 (as measured in a6) | 0.51 / 0.75 | 0.50 / 0.65 | 0.53 / 0.66 |
 
 Reference points: the undistilled 0.6B reaches α ≈ 0.63–0.66 on prose; a5 caps α at ≈ 0.96–0.98 for V′ = 32k.
 

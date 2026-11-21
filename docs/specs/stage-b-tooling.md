@@ -32,7 +32,7 @@ teacher_score --model GGUF --input DOCS.jsonl --out DIR
 - `--input`: JSONL documents; only the `text` field is used (string with JSON escapes, including `\uXXXX` and surrogate pairs). A malformed line is an error (exit 1) naming the line number.
 - Tokenize each document with `llama_tokenize(vocab, text, add_special=false, parse_special=<flag>)`. Append the vocabulary EOS token after each document. Concatenate all documents in file order and cut the stream into consecutive sequences of exactly `seq-len` tokens; drop the final partial sequence. Stop after `max-tokens` tokens (rounded down to whole sequences) if given.
 - Score each sequence from an empty KV cache (`llama_memory_clear`), requesting logits at every position. Position `t`'s distribution is the model's prediction for token `t+1`, after consuming tokens `0..t`.
-- For each position compute log-softmax over the **full** vocabulary (numerically stable: subtract the max, accumulate in double), then the top-`k` tokens by logit, sorted by descending log-probability; ties broken by smaller token ID.
+- For each position compute log-softmax over the **full** vocabulary (numerically stable: subtract the max; float exponentials summed in blocks of ≤ 4096 into a double — relative error of the sum ≤ ~2.5e-4, below the fp16 storage step; accepted 2026-11-21), then the top-`k` tokens by logit, sorted by descending log-probability; ties broken by smaller token ID.
 - Parallelize the per-position top-k/log-softmax across `--threads` CPU threads.
 
 ### Output layout in `DIR` (must not exist, or must hold a resumable run)
@@ -70,7 +70,7 @@ Python 3.12 with PyTorch (CUDA) and numpy, run from the local venv `$HDD/venv-tr
 
 ### 3.1 V′ (`src/train/vprime.py`)
 
-`load_vprime(ranking_json, size=32768, forced=(151643, 151645)) -> list[int]`: the first `size` token IDs of the a5 frequency ranking (`experiments/stage-a-feasibility/a5-vocab-coverage/results/a5-20261121T011928Z/ranking.json`, a JSON list of token IDs, most frequent first); every forced ID absent from that prefix replaces the lowest-ranked kept ID, keeping order otherwise. Returns exactly `size` unique IDs. `vprime_map(vprime, n_vocab) -> np.ndarray[int32]` maps target ID → V′ index, −1 if outside.
+`load_vprime(ranking_json, size=32768, forced=(151643, 151645)) -> list[int]`: the first `size` token IDs of the a5 frequency ranking (`experiments/stage-a-feasibility/a5-vocab-coverage/results/a5-20261121T011928Z/ranking.json`, a JSON list of token IDs, most frequent first); for the m forced IDs absent from that prefix, drop the m lowest-ranked kept IDs and append the missing forced IDs in the given order (forced IDs already present stay in place). Returns exactly `size` unique IDs. `vprime_map(vprime, n_vocab) -> np.ndarray[int32]` maps target ID → V′ index, −1 if outside.
 
 ### 3.2 Student (`src/train/student.py`)
 
@@ -82,7 +82,7 @@ Python 3.12 with PyTorch (CUDA) and numpy, run from the local venv `$HDD/venv-tr
 
 CLI `prune_init.py --src $HDD/hf/Qwen3-0.6B --vprime-ranking RANKING --out CKPT.pt`. Reads `model.safetensors` (bf16) and builds a `Student` state dict:
 - **Layers:** source layers `round(i * 27 / 11)` for i = 0..11 (keeps first and last).
-- **Hidden dims (1024 → 512):** keep the 512 dims with the largest importance `mean over layers of |input_layernorm.weight|` × column L2 norm of `embed_tokens`; ties by smaller index; same dim set applied to every hidden-sized axis (embedding columns, all norms over hidden, input dims of q/k/v/gate/up, output dims of o/down).
+- **Hidden dims (1024 → 512):** keep the 512 dims with the largest importance `mean over layers of |input_layernorm.weight|` × column L2 norm of `embed_tokens`; ties by smaller index; kept dims are ordered by ascending source index; the same dim set is applied to every hidden-sized axis (embedding columns, all norms over hidden, input dims of q/k/v/gate/up, output dims of o/down).
 - **Heads:** source has 16 query heads, 8 KV heads (query head h uses KV head h // 2). Per layer pick the KV head with the largest `‖k_proj rows‖_F + ‖v_proj rows‖_F`; keep its two query heads plus the two query heads of the next KV head (cyclic); student K/V weights = mean of those two source KV heads' rows. q_norm/k_norm copied (k_norm from the chosen head is shared, it is per-dim only).
 - **FFN (3072 → 1536):** per layer keep neurons with the largest `‖down_proj[:, j]‖ · ‖up_proj[j, :]‖`.
 - **Head:** `lm_head` = embedding rows of the V′ IDs (source ties embeddings), restricted to the kept hidden dims.
@@ -90,9 +90,11 @@ CLI `prune_init.py --src $HDD/hf/Qwen3-0.6B --vprime-ranking RANKING --out CKPT.
 
 ### 3.4 Data (`src/train/data.py`)
 
-`TeacherShards(dir)` reads a teacher_score output directory via `index.json` and numpy memmaps. `TeacherBatcher(dirs_with_weights, vprime_map, batch_seqs, seed)` yields batches sampled across domains with the given mixture weights: `tokens[B, L] int64`, `topk_vidx[B, L, k] int64` (V′ index, −1 if outside V′), `topk_p[B, L, k] float32` (teacher probabilities `exp(logp)`), and `loss_mask[B, L] bool` (false at the last position of each sequence). Deterministic for a seed; epoch-style without replacement within a domain.
+`TeacherShards(dir)` reads a teacher_score output directory via `index.json` and numpy memmaps. `TeacherBatcher(dirs_with_weights: list[tuple[str, float]], vprime_map: np.ndarray, batch_seqs: int, seed: int)` is an infinite iterable of dicts of torch tensors sampled across domains with the given mixture weights: `tokens[B, L] int64`, `topk_vidx[B, L, k] int64` (V′ index, −1 if outside V′), `topk_p[B, L, k] float32` (teacher probabilities `exp(logp)`), and `loss_mask[B, L] bool` (false at the last position of each sequence). Deterministic for a seed; epoch-style without replacement within a domain.
 
 ### 3.5 Losses (`src/train/losses.py`)
+
+Signatures (tensors of any float dtype; reductions in float32 or higher): `kd_forward_kl(logits[B,T,V′], topk_vidx[B,T,k], topk_p[B,T,k], mask[B,T]) -> scalar`, `hard_ce(logits, tokens[B,T], vprime_map[n_vocab] (tensor, −1 outside), mask) -> scalar`, `tv_overlap(logits, topk_vidx, topk_p) -> (lower[B,T], upper[B,T])`. Entries with `topk_vidx = −1` are ignored.
 
 With student log-probs `s = log_softmax(logits)` over V′ and teacher top-k restricted to V′ (`p_i`, `vidx_i ≥ 0`):
 - `kd_forward_kl`: Σ_i p_i (log p_i − s[vidx_i]) + p_rest (log p_rest − log q_rest), where p_rest = 1 − Σ_i p_i (teacher mass outside top-k∩V′, clamped ≥ 1e-8) and q_rest = 1 − Σ_i exp(s[vidx_i]) (clamped ≥ 1e-8). Mean over masked positions.

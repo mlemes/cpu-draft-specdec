@@ -175,10 +175,13 @@ class TestA0CounterValidation(unittest.TestCase):
             )
 
         summary = json.loads((self.out_dir / "summary.json").read_text(encoding="utf-8"))
-        self.assertTrue(summary["passed"])
-        self.assertEqual(summary["ways"]["4"]["above_count"], 2)
-        self.assertEqual(summary["ways"]["4"]["below_count"], 2)
-        self.assertTrue(summary["ways"]["4"]["pass_w"])
+        # One allocation cannot show monotone behaviour across ways, so the revised criterion fails overall.
+        self.assertFalse(summary["passed"])
+        self.assertTrue(summary["criteria"]["accuracy"]["passed"])
+        self.assertEqual(summary["criteria"]["accuracy"]["runs"], 2)
+        self.assertTrue(summary["criteria"]["separation"]["passed"])
+        self.assertFalse(summary["criteria"]["monotone"]["passed"])
+        self.assertEqual(summary["ways"]["4"]["total_count"], 4)
 
         manifest = json.loads((self.out_dir / "manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["extra"]["W"], 16)

@@ -1,0 +1,72 @@
+{
+  "run_id": "a0-20261121T004958Z",
+  "utc_timestamp": "2026-11-21T00:50:13Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 6,
+    "smt_control": "off",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 6956888
+  },
+  "git_commit": "55588ae2f64c402297e788ba5d6e64bb74d3a5ea",
+  "files": [
+    {
+      "path": "experiments/stage-a-feasibility/a0-counter-validation/results/a0-20261121T004958Z/metrics.jsonl",
+      "bytes": 20938,
+      "sha256": "a304d90854b279d2f94ec4875866c032c5081276c9c0190489396d0e009f83d1"
+    },
+    {
+      "path": "experiments/stage-a-feasibility/a0-counter-validation/results/a0-20261121T004958Z/summary.json",
+      "bytes": 890,
+      "sha256": "9a4c61e6f7debfd52c9f9a2991b42ed258a20fb374162be2beea7b5e516def16"
+    }
+  ],
+  "extra": {
+    "options": {
+      "out": "experiments/stage-a-feasibility/a0-counter-validation/results/a0-20261121T004958Z",
+      "resctrl_root": "/sys/fs/resctrl",
+      "bench": "src/measure/stream_bench",
+      "sizes_mb": [
+        4,
+        8,
+        16,
+        32,
+        48,
+        64,
+        96,
+        128,
+        192,
+        384
+      ],
+      "ways": [
+        1,
+        2,
+        4,
+        8,
+        14
+      ],
+      "reserve_ways": 2,
+      "passes": 5,
+      "cpu": 2,
+      "l3_bytes": 100663296,
+      "perf": "/usr/bin/perf",
+      "perf_events": "ls_dmnd_fills_from_sys.int_cache,ls_dmnd_fills_from_sys.mem_io_local,ls_any_fills_from_sys.int_cache,ls_any_fills_from_sys.mem_io_local"
+    },
+    "info": {
+      "cbm_mask": 65535,
+      "min_cbm_bits": 0,
+      "num_closids": 16,
+      "mon_features": [
+        "llc_occupancy",
+        "mbm_total_bytes",
+        "mbm_local_bytes"
+      ]
+    },
+    "W": 16,
+    "l3_bytes": 100663296
+  }
+}

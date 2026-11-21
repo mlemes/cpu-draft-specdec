@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "criteria": {
+    "accuracy": {
+      "passed": true,
+      "ways": 1,
+      "runs": 8
+    },
+    "monotone": {
+      "passed": true,
+      "violations": []
+    },
+    "separation": {
+      "passed": true,
+      "ways": 14,
+      "smallest_ratio": 0.2180328369140625,
+      "largest_ratio": 0.8713780085245769
+    }
+  },
+  "floor_ratio_median": 0.23343887329101562,
+  "ways": {
+    "1": {
+      "cat_bytes": 6291456.0,
+      "total_count": 10,
+      "error_count": 0
+    },
+    "2": {
+      "cat_bytes": 12582912.0,
+      "total_count": 10,
+      "error_count": 0
+    },
+    "4": {
+      "cat_bytes": 25165824.0,
+      "total_count": 10,
+      "error_count": 0
+    },
+    "8": {
+      "cat_bytes": 50331648.0,
+      "total_count": 10,
+      "error_count": 0
+    },
+    "14": {
+      "cat_bytes": 88080384.0,
+      "total_count": 10,
+      "error_count": 0
+    }
+  }
+}

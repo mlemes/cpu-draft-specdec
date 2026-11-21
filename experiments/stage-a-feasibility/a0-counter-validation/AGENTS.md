@@ -10,6 +10,6 @@
 
 **Outputs.** `results/<run_id>/`: bytes per pass by counter versus S and CAT allocation, and a short note on each counter's agreement and limits.
 
-**Pass.** MBM bytes per pass ≈ S (within 10%) when S clearly exceeds the allocation, and close to 0 when S fits well inside it, with a visible transition near the allocation. Record which other counters agree. `amd_df` byte events may read 0 on this model; report that rather than treating it as a pass.
+**Pass** (revised 2026-11-21 after the first run). (a) MBM accuracy: at the smallest allocation, MBM bytes per pass are within 10% of the buffer size for buffers at least twice the allocation. (b) For each buffer size, MBM traffic does not rise as ways are added. (c) At the largest allocation, a small buffer shows ≤ 0.3 and the largest ≥ 0.7 of its bytes as DRAM traffic. The original criterion assumed an LRU cliff and a zero floor; this L3 shows neither (see `results/a0-20261121T004032Z/notes.md`). Core fill-source events are not usable as DRAM evidence on this part.
 
 **If it fails.** No cache claim is allowed. Consult the operator before continuing Stage A.

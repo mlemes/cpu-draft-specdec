@@ -19,4 +19,6 @@ Implications for the project:
 2. Residency claims must be stated as DRAM bytes per token versus allocation curves. A sharp knee should not be expected; the a2 and b5 analyses need a soft-transition model, not a threshold.
 3. The 0.22 floor must be explained (L3 uncore `l3_misses` and `l3_cache_accesses` in a2) before small residual DRAM traffic is attributed to the model.
 
-Decision on the a0 gate is pending with the operator: either revise the pass criterion to MBM accuracy at full miss plus monotone, allocation-dependent traffic, or investigate further first.
+## Gate decision (operator, 2026-11-21)
+
+Revise and continue. The pass criterion is now (a) MBM accuracy at full miss for the smallest allocation, (b) MBM ratio non-increasing with ways for each size, (c) separation between resident and non-resident buffers at the largest allocation (`docs/specs/stage-a-tooling.md` section 5). Re-evaluated on this run: passed (accuracy over 8 runs, 0 monotonicity violations, separation 0.23 → 0.87). A repeat run, `a0-20261121T004958Z`, also passed (separation 0.22 → 0.87, floor 0.23). The 0.22 floor remains [U] and is carried to a2.

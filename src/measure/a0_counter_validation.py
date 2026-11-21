@@ -577,41 +577,62 @@ def _build_summary(
     l3_bytes: int,
     w_total: int,
 ) -> dict[str, Any]:
-    per_ways: dict[str, Any] = {}
-    all_passed = True
+    """Apply the revised a0 criterion (decided 2026-11-21, see docs/specs section 5).
 
-    for w in ways_list:
+    (a) accuracy: at the smallest allocation, every run with size >= 2x the allocation
+        has 0.9 <= mbm_ratio <= 1.1;
+    (b) monotone: for each size, mbm_ratio does not rise by more than 0.05 as ways increase;
+    (c) separation: at the largest allocation, the smallest size has mbm_ratio <= 0.3 and
+        the largest size has mbm_ratio >= 0.7.
+    The floor (median mbm_ratio of runs with size <= 0.5x allocation) is reported, not judged.
+    """
+    ok = [r for r in rows if r.get("error") is None and r.get("mbm_ratio") is not None]
+    ways_sorted = sorted(set(ways_list))
+    per_ways: dict[str, Any] = {}
+    floor_ratios: list[float] = []
+    for w in ways_sorted:
         cat_bytes = w * l3_bytes / w_total
         w_rows = [r for r in rows if r["ways"] == w]
-        above = [r for r in w_rows if r["size_bytes"] >= 2 * cat_bytes]
-        below = [r for r in w_rows if r["size_bytes"] <= 0.5 * cat_bytes]
-
-        above_ok = bool(above) and all(
-            r["error"] is None
-            and r["mbm_ratio"] is not None
-            and 0.9 <= r["mbm_ratio"] <= 1.1
-            for r in above
-        )
-        below_ok = bool(below) and all(
-            r["error"] is None
-            and r["mbm_ratio"] is not None
-            and r["mbm_ratio"] <= 0.1
-            for r in below
-        )
-        pass_w = above_ok and below_ok
-        if not pass_w:
-            all_passed = False
-
+        below = [r for r in ok if r["ways"] == w and r["size_bytes"] <= 0.5 * cat_bytes]
+        floor_ratios.extend(r["mbm_ratio"] for r in below)
         per_ways[str(w)] = {
             "cat_bytes": cat_bytes,
             "total_count": len(w_rows),
-            "above_count": len(above),
-            "below_count": len(below),
-            "pass_w": pass_w,
+            "error_count": sum(1 for r in w_rows if r.get("error") is not None),
         }
 
+    w_min, w_max = ways_sorted[0], ways_sorted[-1]
+    cat_min = w_min * l3_bytes / w_total
+    acc_rows = [r for r in ok if r["ways"] == w_min and r["size_bytes"] >= 2 * cat_min]
+    accuracy = bool(acc_rows) and all(0.9 <= r["mbm_ratio"] <= 1.1 for r in acc_rows)
+
+    violations: list[dict[str, Any]] = []
+    for size in sorted({r["size_bytes"] for r in ok}):
+        series = sorted((r["ways"], r["mbm_ratio"]) for r in ok if r["size_bytes"] == size)
+        for (w_a, r_a), (w_b, r_b) in zip(series, series[1:]):
+            if r_b > r_a + 0.05:
+                violations.append({"size_bytes": size, "from_ways": w_a, "to_ways": w_b,
+                                   "from_ratio": r_a, "to_ratio": r_b})
+    monotone = len(ways_sorted) >= 2 and not violations
+
+    top = sorted((r for r in ok if r["ways"] == w_max), key=lambda r: r["size_bytes"])
+    separation = len(top) >= 2 and top[0]["mbm_ratio"] <= 0.3 and top[-1]["mbm_ratio"] >= 0.7
+
+    floor = None
+    if floor_ratios:
+        floor_sorted = sorted(floor_ratios)
+        floor = floor_sorted[len(floor_sorted) // 2]
+
     return {
-        "passed": all_passed,
+        "passed": accuracy and monotone and separation,
+        "criteria": {
+            "accuracy": {"passed": accuracy, "ways": w_min, "runs": len(acc_rows)},
+            "monotone": {"passed": monotone, "violations": violations},
+            "separation": {"passed": separation, "ways": w_max,
+                           "smallest_ratio": top[0]["mbm_ratio"] if top else None,
+                           "largest_ratio": top[-1]["mbm_ratio"] if top else None},
+        },
+        "floor_ratio_median": floor,
         "ways": per_ways,
     }
 

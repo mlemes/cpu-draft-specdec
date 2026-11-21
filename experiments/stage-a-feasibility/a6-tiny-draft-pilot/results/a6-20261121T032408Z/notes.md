@@ -18,3 +18,7 @@ Sampled (T 0.7): CPU 1.14 general, 0.95 pt_fin; GPU 1.45, 1.19.
 | Portuguese acceptance is much lower (α 0.41 vs 0.56): llama-68m and Llama-2 are English-centric | [V] |
 
 Implication: the CPU draft's own compute is not the bottleneck; the fixed CPU-path overhead per verification cycle is. Candidates [U]: draft catch-up batch on the CPU, thread-pool wake-up, CPU/GPU synchronization in llama-server's serial loop. Measuring and removing it is the first Stage B task; with zero overhead the cost model predicts ≈ 1.6× for this pair.
+
+## Correction (2026-11-21, a7)
+
+The "fixed ≈ 6 ms CPU-path overhead" above is wrong: it assumed t_v ≈ 12 ms, but t_v at depth is 13.2 ms. a7 decomposes the cycle: the CPU−GPU gap is the draft's per-cycle catch-up batch plus slower CPU draft tokens (0.63 vs 0.26 ms) plus 1.6 ms of thread oversubscription from the default `-tbd`. With `-tbd 4`, CPU-draft speedup rises to 1.40× general / 1.12× pt_fin (see `../a6-tbd-*/notes.md`).

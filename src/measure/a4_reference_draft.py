@@ -167,7 +167,8 @@ def build_server_cmd(
             "0",
         ])
         if item.device == "cpu":
-            cmd.extend(["-ngld", "0", "-devd", "none", "-td", str(draft_threads)])
+            # -tbd too: its default (all cores) oversubscribes the CPU during the draft's per-cycle batch (+1.6 ms/cycle measured)
+            cmd.extend(["-ngld", "0", "-devd", "none", "-td", str(draft_threads), "-tbd", str(draft_threads)])
         else:
             cmd.extend(["-ngld", "99"])
     return cmd

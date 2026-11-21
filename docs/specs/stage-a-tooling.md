@@ -104,3 +104,33 @@ CLI: `stream_bench --bytes N --passes P [--cpu C] [--warmup W] [--wait-signal]`
 - With `--wait-signal`, after allocation, fill and warm-up it prints `{"ready": <pid>}` and blocks until SIGUSR1, then runs the timed passes. This lets a driver assign the process to a resctrl group first.
 - Output: one JSON object per line on stdout. Each timed pass prints `{"pass": i, "bytes": N, "ns": <int>, "gbps": <float>}` with i from 0, `ns` from `CLOCK_MONOTONIC`. The last line is `{"summary": true, "bytes": N, "passes": P, "median_ns": <int>, "checksum": <uint64 sum of all 8-byte little-endian words of the buffer, wrapping, for one pass>}`.
 - N must be a positive multiple of 8 and P ≥ 1; otherwise, or on unknown options, print usage to stderr and exit with code 2.
+
+## 5. Counter-validation driver (experiment a0): `src/measure/a0_counter_validation.py`
+
+Added 2026-11-21. Uses `measure.resctrl`, `measure.manifest` and `stream_bench`. Standard library only. Runs as root on the real machine (`sudo env PYTHONPATH=src python3 -m measure.a0_counter_validation ...`); tests run it against a fake resctrl tree and a fake benchmark.
+
+CLI options (defaults in brackets):
+
+- `--out DIR` (required): run directory.
+- `--resctrl-root PATH` [`/sys/fs/resctrl`]
+- `--bench CMD` [`src/measure/stream_bench`]: benchmark executable; it must follow the section 4 protocol (`--bytes`, `--passes`, `--cpu`, `--wait-signal`).
+- `--sizes-mb LIST` [`4,8,16,32,48,64,96,128,192,384`]: buffer sizes in MiB.
+- `--ways LIST` [`1,2,4,8,14`]
+- `--reserve-ways N` [2]: the highest N ways are given to the root (default) group for the whole run, so other processes never share the benchmark's ways.
+- `--passes N` [5], `--cpu N` [2]
+- `--l3-bytes N` [read from `/sys/devices/system/cpu/cpu0/cache/index3/size`, for example `98304K`; 100663296 if unreadable]
+- `--perf PATH` [none] and `--perf-events LIST` [none]: when both are given, `PATH stat -x, -e LIST -p PID` is attached after the benchmark reports ready and is stopped with SIGINT after the benchmark exits; counts are parsed from its CSV stderr.
+
+Behavior:
+
+1. Read `Resctrl.info()`. W = number of set bits in `cbm_mask`. Every value in `--ways` must be ≥ 1 and ≤ W − reserve; otherwise exit 2 before changing anything.
+2. Save the root group's `L3:` schemata line, then write `L3:0=<mask of the top reserve bits>` to the root group's schemata.
+3. Create group `a0bench`. For each ways value w (outer loop) and size s (inner loop):
+   a. Set the group's mask to `ways_mask(w, 0)`.
+   b. Start the benchmark with `--bytes s --passes P --cpu C --wait-signal`, read its `{"ready": pid}` line, and assign that pid to `a0bench`.
+   c. Read the group's `mbm_total_bytes` (before), attach perf if configured, send SIGUSR1, wait for exit (60 s timeout per run, then kill and record an error), read `mbm_total_bytes` (after) and `llc_occupancy`.
+   d. Append to `metrics.jsonl`: `ways`, `cat_bytes` (= w × l3_bytes / W), `size_bytes`, `passes`, `median_ns`, `gbps` (size_bytes / median_ns), `mbm_bytes_per_pass` ((after − before) / P), `mbm_ratio` (mbm_bytes_per_pass / size_bytes), `occupancy_bytes`, `perf` (dict event → count, empty without perf), `error` (null or a message).
+4. Always (normal exit, exception, SIGINT or SIGTERM): restore the saved root `L3:` line, remove `a0bench`, and kill a still-running benchmark.
+5. Write `manifest.json` with `measure.manifest.write_manifest` (`extra` holds the parsed options, `info()`, W and l3_bytes), and `summary.json`: for each w, `above` = runs with size_bytes ≥ 2 × cat_bytes and `below` = runs with size_bytes ≤ 0.5 × cat_bytes; `pass_w` is true when every `above` run has 0.9 ≤ mbm_ratio ≤ 1.1 and every `below` run has mbm_ratio ≤ 0.1 and both lists are non-empty. Top-level `passed` is true when every w passes. `summary.json` also lists per-w the run counts used.
+6. When run under sudo (`SUDO_UID` and `SUDO_GID` set), chown the run directory and its files to that user at the end.
+7. Exit 0 when the run completes (even if `passed` is false), 2 for invalid options, 1 with the message `needs root: run with sudo` on a PermissionError from resctrl.

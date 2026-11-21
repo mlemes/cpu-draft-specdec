@@ -1,0 +1,57 @@
+{
+  "run_id": "a6-tbd-20261121T132857Z",
+  "utc_timestamp": "2026-11-21T13:40:29Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 6,
+    "smt_control": "off",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 8349124
+  },
+  "git_commit": "7a6d9b47eb58245f01e3829918cb6e116bb81a15",
+  "files": [
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/llama-2-7b.Q4_K_M.gguf",
+      "bytes": 4081004224,
+      "sha256": "4567208c2221da5a9f2ded6cc26ce58dd47d0410902c3f57a4a3ed104ce51b0b"
+    },
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/llama-68m-Q8_0.gguf",
+      "bytes": 73018848,
+      "sha256": "12a1c71f1efbd56701809e391d5fffd6ea66213f589636614909886400140d9d"
+    }
+  ],
+  "extra": {
+    "options": {
+      "out": "experiments/stage-a-feasibility/a6-tiny-draft-pilot/results/a6-tbd-20261121T132857Z",
+      "target": "/mnt/hdd1/cpu-draft-specdec/gguf/llama-2-7b.Q4_K_M.gguf",
+      "draft": "/mnt/hdd1/cpu-draft-specdec/gguf/llama-68m-Q8_0.gguf",
+      "prompts": [
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl"
+      ],
+      "llama_server": "/home/mlemes/Projects/research/cpu-draft-specdec/third_party/llama.cpp/build/bin/llama-server",
+      "plan": "none:0:all,cpu:4:all",
+      "n_predict": 64,
+      "port": 18080,
+      "draft_threads": 4,
+      "seed": 1234
+    },
+    "plan": [
+      {
+        "device": "none",
+        "gamma": 0,
+        "subset": "all"
+      },
+      {
+        "device": "cpu",
+        "gamma": 4,
+        "subset": "all"
+      }
+    ]
+  }
+}

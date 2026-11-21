@@ -1,0 +1,27 @@
+{
+  "run_id": "a3-20261121T010610Z",
+  "utc_timestamp": "2026-11-21T01:06:11Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 6,
+    "smt_control": "off",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 6956096
+  },
+  "git_commit": "6b24a49510e16aaf555630b1ef653c94d6920a39",
+  "files": [
+    {
+      "path": "src/measure/pcie_bench.cu",
+      "bytes": 8298,
+      "sha256": "7e79d538ab6a919d6034b1daf76aafe90949828be94d476ac814e0eaaff1e14d"
+    }
+  ],
+  "extra": {
+    "binary": "src/measure/pcie_bench",
+    "defaults": true
+  }
+}

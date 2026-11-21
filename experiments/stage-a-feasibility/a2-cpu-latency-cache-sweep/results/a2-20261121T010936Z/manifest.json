@@ -1,0 +1,88 @@
+{
+  "run_id": "a2-20261121T010936Z",
+  "utc_timestamp": "2026-11-21T01:18:17Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 6,
+    "smt_control": "off",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 8388172
+  },
+  "git_commit": "c06e5bd811a49f2dcf7d0ffe1ae32deb8bdad963",
+  "files": [
+    {
+      "path": "experiments/stage-a-feasibility/a2-cpu-latency-cache-sweep/results/a2-20261121T010936Z/metrics.jsonl",
+      "bytes": 45901,
+      "sha256": "9352a3cecab799b1435380d48f76f90a889cdbd3849ce7a607339d4c09770759"
+    }
+  ],
+  "extra": {
+    "options": {
+      "out": "experiments/stage-a-feasibility/a2-cpu-latency-cache-sweep/results/a2-20261121T010936Z",
+      "resctrl_root": "/sys/fs/resctrl",
+      "llama_bench": "third_party/llama.cpp/build/bin/llama-bench",
+      "models_dir": "/mnt/hdd1/cpu-draft-specdec/gguf/random",
+      "sizes_mb": [
+        16,
+        32,
+        48,
+        64,
+        96,
+        128,
+        256,
+        512
+      ],
+      "quants": [
+        "q8_0",
+        "q4_0"
+      ],
+      "threads": [
+        1,
+        3,
+        6
+      ],
+      "cat_sizes_mb": [
+        48,
+        96,
+        192
+      ],
+      "cat_ways": [
+        1,
+        2,
+        4,
+        8,
+        14
+      ],
+      "cat_threads": 6,
+      "reserve_ways": 2,
+      "reps": 5,
+      "n_timing": 128,
+      "n_short": 64,
+      "n_long": 320,
+      "seed": 1,
+      "l3_bytes": 100663296,
+      "phases": [
+        "grid",
+        "cat"
+      ]
+    },
+    "info": {
+      "cbm_mask": 65535,
+      "min_cbm_bits": 0,
+      "num_closids": 16,
+      "mon_features": [
+        "llc_occupancy",
+        "mbm_total_bytes",
+        "mbm_local_bytes"
+      ]
+    },
+    "W": 16,
+    "l3_bytes": 100663296,
+    "llama_bench": "third_party/llama.cpp/build/bin/llama-bench",
+    "llama_bench_version": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 7839 MiB):"
+  }
+}

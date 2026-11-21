@@ -134,3 +134,75 @@ Behavior:
 5. Write `manifest.json` with `measure.manifest.write_manifest` (`extra` holds the parsed options, `info()`, W and l3_bytes), and `summary.json`. Revised criterion (2026-11-21, after the first run showed no LRU cliff and a residual floor): (a) accuracy: at the smallest allocation, every run with size_bytes ≥ 2 × cat_bytes has 0.9 ≤ mbm_ratio ≤ 1.1; (b) monotone: for each size, mbm_ratio does not rise by more than 0.05 as ways increase (needs ≥ 2 ways); (c) separation: at the largest allocation, the smallest size has mbm_ratio ≤ 0.3 and the largest size ≥ 0.7. `passed` = a and b and c. Runs with an error are excluded. `floor_ratio_median` (median mbm_ratio of runs with size_bytes ≤ 0.5 × cat_bytes) is reported but not judged.
 6. When run under sudo (`SUDO_UID` and `SUDO_GID` set), chown the run directory and its files to that user at the end.
 7. Exit 0 when the run completes (even if `passed` is false), 2 for invalid options, 1 with the message `needs root: run with sudo` on a PermissionError from resctrl.
+
+## 6. Touched-byte accounting and group launcher
+
+### `src/measure/touched.py`
+
+- `touched_bytes(path) -> dict` for a GGUF written by `models.random_gguf` or a llama.cpp model, using `models.gguf_io.read_gguf`. Returns `stored_bytes` (sum of all tensor nbytes), `embedding_row_bytes` (nbytes of one row of `token_embd.weight`, i.e. `tensor_nbytes((ne0,), type)`), `expert_bytes` (sum over tensors whose name contains `_exps.`), `expert_count` and `expert_used` (from `<arch>.expert_count` / `<arch>.expert_used_count`, 0 when absent), and `touched_bytes_per_token` = stored − token_embd nbytes + embedding_row_bytes − expert_bytes + expert_bytes × expert_used / expert_count (dense models: no expert term).
+- `config_for_touched_bytes(target_bytes, quant, vocab=32768, layers=12) -> dict`: a `qwen3` config for `models.random_gguf` with hidden size d a multiple of 128 (minimum 256), ffn = 3d, head_dim 64, heads = d / 64, kv_heads = the largest divisor of heads that is ≤ heads / 4 (at least 1), chosen so the predicted touched bytes per token are closest to `target_bytes`. Prediction: (12 layers × (2.5 d² + 9 d²) + vocab × d) elements × bytes per element (Q8_0 34/32, Q4_0 18/32), plus norms. Ties go to the smaller d.
+
+### `src/measure/exec_in_group.py`
+
+`python3 -m measure.exec_in_group TASKS_FILE -- CMD [ARGS...]`: writes its own pid followed by a newline to TASKS_FILE, then replaces itself with CMD via `os.execvp`. Every thread the command later creates inherits the resctrl group. Exit code 2 for bad usage and 1 if the tasks write fails (with the error on stderr).
+
+## 7. CPU latency and cache sweep (experiment a2): `src/measure/a2_cpu_sweep.py`
+
+Uses resctrl group `a2bench` (same reuse rule as `a0bench`: an existing group with a non-empty tasks file is in use, exit 1). Reuses the safety pattern of section 5 (validate before changing anything; `--out` must not exist; flag-only SIGINT/SIGTERM handlers; root `L3:` line saved, top `--reserve-ways` given to the root group, restored in cleanup; exit codes 0 / 1 / 2 / 3 / 128+signum with the same precedence; MBM warm-up and `Unavailable` retries; chown to SUDO_UID/SUDO_GID).
+
+Options (defaults): `--out DIR` (required); `--resctrl-root` [/sys/fs/resctrl]; `--llama-bench` [third_party/llama.cpp/build/bin/llama-bench]; `--models-dir` [/mnt/hdd1/cpu-draft-specdec/gguf/random]; `--sizes-mb` [16,32,48,64,96,128,256,512]; `--quants` [q8_0,q4_0]; `--threads` [1,3,6]; `--cat-sizes-mb` [48,96,192]; `--cat-ways` [1,2,4,8,14]; `--cat-threads` [6]; `--reserve-ways` [2]; `--reps` [5]; `--n-timing` [128]; `--n-short` [64]; `--n-long` [320]; `--seed` [1]; `--l3-bytes` [from sysfs as in section 5]; `--phases` [grid,cat].
+
+For each configuration:
+
+1. Build the model config with `config_for_touched_bytes`, generate it with `models.random_gguf` into `--models-dir` if a file with the same config, quant and seed does not exist (file name includes a short hash of those), and compute `touched_bytes`.
+2. Set the benchmark group's L3 mask: phase `grid` uses all non-reserved ways; phase `cat` uses `ways_mask(w, 0)`.
+3. Timing: run `llama-bench -m MODEL -ngl 0 -dev none -t T -p 0 -n N_TIMING -r REPS -o jsonl` (`-dev none` keeps every operation on the CPU; the CUDA build otherwise may offload operations even with `-ngl 0`) through `measure.exec_in_group` with CPU affinity limited to CPUs 0..T−1 (`taskset -c`). Parse `avg_ts` and `stddev_ts` from the tg record.
+4. DRAM traffic per token: two more runs with the same flags and `-r 1`, `-n N_SHORT` and `-n N_LONG`, each recording the group's MBM delta over the whole process. `mbm_bytes_per_token` = (Δlong − Δshort) / (N_LONG − N_SHORT), which cancels model loading and warm-up. Read `llc_occupancy` after the long run.
+5. Append to `metrics.jsonl`: `phase`, `target_mb`, `quant`, `threads`, `ways`, `cat_bytes`, `model`, `config`, `stored_bytes`, `touched_bytes`, `tg_tps`, `tg_tps_sd`, `ms_per_token` (1000 / tg_tps), `mbm_bytes_per_token`, `mbm_ratio` (mbm_bytes_per_token / touched_bytes), `occupancy_bytes`, `error`.
+
+Phase `grid` covers sizes × quants × threads at the full allocation. Phase `cat` covers cat sizes × quants × cat ways at `--cat-threads`. A failed configuration records `error` and the sweep continues. Write `manifest.json` (options, `info()`, llama-bench path and version line from `llama-bench --version` if available) at the end.
+
+## 8. PCIe microbenchmark (experiment a3): `src/measure/pcie_bench.cu`
+
+Build: `make -C src/measure pcie_bench` with `nvcc -ccbin /usr/bin/g++-13 -O2 -arch=sm_86`.
+
+CLI: `pcie_bench [--sizes B1,B2,...] [--iters N] [--warmup W] [--device D]`, defaults sizes 1024,4096,65536,262144,1048576,3145728, iters 200, warmup 20, device 0.
+
+For each size, direction (`h2d`, `d2h`) and host memory kind (`pinned` via cudaMallocHost, `pageable` via malloc), time each synchronous `cudaMemcpy` with `std::chrono::steady_clock` and print one JSON line: `{"kind": "...", "dir": "...", "bytes": N, "iters": N, "median_us": x, "p95_us": x, "gbps": bytes / median}`. Then time an empty kernel launch followed by `cudaDeviceSynchronize` and print `{"kind": "launch_sync", "iters": N, "median_us": x, "p95_us": x}`. CUDA errors print a message to stderr and exit 1; bad arguments exit 2. No CUDA device: exit 1 with a message.
+
+## 9. GPU target benchmark driver (experiment a1): `src/measure/a1_gpu_bench.py`
+
+`python3 -m measure.a1_gpu_bench --out DIR --model GGUF [--llama-bench PATH] [--depths 0,512,2048] [--verify-n 1,2,3,4,5,6,7,8] [--reps 5]`. `--out` must not exist.
+
+1. Decode: `llama-bench -m MODEL -ngl 99 -p 0 -n 128 -d D -r REPS -o jsonl` for each depth D. Record `avg_ts`, `stddev_ts` and `t_t_ms` = 1000 / avg_ts.
+2. Verification cost: `llama-bench -m MODEL -ngl 99 -p N -n 0 -d D -r REPS -o jsonl` for each N in `--verify-n` and each depth D. Record `t_v_ms` = 1000 × N / avg_ts (time for one batch of N tokens).
+3. Before and after, record `nvidia-smi --query-gpu=memory.used,memory.total,pcie.link.gen.current,pcie.link.width.current --format=csv,noheader,nounits`.
+4. Write `metrics.jsonl` (one line per llama-bench record with `kind` = `decode` or `verify`, `depth`, `n`, timing fields, `error`) and `manifest.json` (model sha256 via `measure.manifest`). A failed llama-bench call records `error` and the driver continues; exit code 0 unless options are invalid (2).
+
+## 10. Reference-draft acceptance driver (experiment a4): `src/measure/a4_reference_draft.py`
+
+`python3 -m measure.a4_reference_draft --out DIR --target GGUF --draft GGUF --prompts F1,F2,... [--llama-server PATH] [--plan PLAN] [--n-predict 64] [--port 18080] [--draft-threads 6] [--seed 1234]`. `--out` must not exist (exit 2). Default `--llama-server` is `third_party/llama.cpp/build/bin/llama-server` relative to the repository root. Prompt files are JSONL with fields `id`, `domain`, `prompt`.
+
+`--plan` is a comma-separated list of `device:gamma:subset` items; default `none:0:all,cpu:4:all,gpu:4:all,cpu:2:30,cpu:6:30,gpu:2:30,gpu:6:30`. `device` is `none` (target alone), `cpu` or `gpu`; `subset` is `all` or the first N prompts of each file.
+
+For each plan item (revised 2026-11-21 after the first run: this llama.cpp build defaults to `--spec-type none`, which loads the draft but never uses it; `-c 4096` left no VRAM for a GPU draft):
+
+1. Start `llama-server -m TARGET -ngl 99 -c 2048 -np 1 --port PORT --no-webui` plus, unless `device` is `none`: `-md DRAFT --spec-type draft-simple --spec-draft-n-max G --spec-draft-n-min G --spec-draft-p-min 0`, and for `cpu`: `-ngld 0 -devd none -td DRAFT_THREADS`, for `gpu`: `-ngld 99`. Server stdout/stderr go to `DIR/server-<item>.log`. Poll `GET /health` every 0.2 s until HTTP 200 (timeout 180 s; on timeout record an error row for the item, stop the server and continue).
+2. For each prompt and each mode (`greedy`: temperature 0; `sampled`: temperature 0.7, top_k 20, top_p 0.8, min_p 0), `POST /completion` with JSON `{"prompt", "n_predict", "temperature", "top_k", "top_p", "min_p", "seed": SEED + index of the prompt within its file, "cache_prompt": false}`. Timeout 300 s per request.
+3. Append one row per request to `metrics.jsonl`: `device`, `gamma`, `mode`, `domain`, `prompt_id`, `predicted_n`, `predicted_ms`, `tokens_per_s` (predicted_n / predicted_ms × 1000), `prompt_n`, `prompt_ms`, `draft_n`, `draft_n_accepted` (from the response's `timings`; null when absent), `acceptance` (draft_n_accepted / draft_n, null when draft_n is 0 or absent), `error`.
+4. Stop the server (SIGTERM, then SIGKILL after 10 s) before the next item, and in cleanup on any exit path (flag-only signal handlers as in section 5; exit 128 + signum after cleanup).
+
+Write `summary.json` grouped by (device, gamma, mode, domain): request count, mean acceptance, mean tokens_per_s, and speedup = mean tokens_per_s / mean tokens_per_s of the `none` item for the same mode and domain (null if missing). Write `manifest.json` with sha256 of target and draft (via `measure.manifest`). Standard library only (`urllib.request`, `http.client`).
+
+## 11. Vocabulary coverage tool (experiment a5): `src/measure/vocab_coverage.cpp`
+
+Build: `make -C src/measure vocab_coverage`, C++17 with `g++`, including `third_party/llama.cpp/include` and `third_party/llama.cpp/ggml/include`, linking `-lllama -lggml -lggml-base` from `third_party/llama.cpp/build/bin` with an rpath to that directory. The Makefile target may assume the llama.cpp build exists.
+
+CLI: `vocab_coverage --model GGUF --freq-text F1[,F2...] --eval PROMPTS1[,PROMPTS2...] --out OUT.json [--sizes 16384,32768,65536] [--ctx 1024] [--ngl 99] [--max-rows N] [--ranking-out RANK.json]`.
+
+1. Frequency ranking: tokenize each frequency text file with `llama_tokenize` (no BOS, special tokens parsed). Count occurrences per token id. Rank by count descending, ties by id ascending; tokens never seen follow in id order. V′_k is the first k ranked ids. `--ranking-out` writes the first max(sizes) ids as a JSON array.
+2. Evaluation: each eval file is JSONL with `prompt` and `heldout` strings (minimal JSON string parsing is enough: these two fields, with standard escapes including `\uXXXX` and surrogate pairs). Text = prompt + heldout (json domain prompts already end with the assistant header; join without a separator when the prompt ends with a newline, else with one space). Tokenize with BOS as the model's vocab requests and special tokens parsed. Truncate to `--ctx` tokens.
+3. Run the model over the tokens in one batch with logits for every position. For each position t < n − 1, with p = softmax(logits_t): `mass_k` = Σ p over V′_k; `greedy_in_k` = 1 if argmax p ∈ V′_k; `actual_in_k` = 1 if token t + 1 ∈ V′_k. Average over the row's positions.
+4. Output `OUT.json`: `{"model", "sizes", "ctx", "freq_files", "rows": [{"file", "row", "n_positions", "mass": {k: x}, "greedy_in": {k: x}, "actual_in": {k: x}}]}` with k as decimal strings. Errors (missing file, model load failure, bad arguments) print to stderr and exit 1 (2 for bad arguments).
+
+A small Python wrapper is not required; Python post-processing computes per-domain means and bootstrap CIs with `measure.stats`.

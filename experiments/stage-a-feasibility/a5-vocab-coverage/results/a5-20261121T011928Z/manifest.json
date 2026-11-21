@@ -1,0 +1,49 @@
+{
+  "run_id": "a5-20261121T011928Z",
+  "utc_timestamp": "2026-11-21T01:26:36Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 6,
+    "smt_control": "off",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 8388576
+  },
+  "git_commit": "c06e5bd811a49f2dcf7d0ffe1ae32deb8bdad963",
+  "files": [
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "bytes": 5027783488,
+      "sha256": "d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785"
+    },
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/corpora/derived/general.txt",
+      "bytes": 1087181,
+      "sha256": "f3aee85a554c0a4df742524a430cdd7876120839ac4ddf83b00f492f4b8ef124"
+    },
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/corpora/derived/pt_fin.txt",
+      "bytes": 505791,
+      "sha256": "7aee908b30bd3e08e720d879246cfe864b36daf8a5cb9dc2f2c26da3fcc68866"
+    },
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/corpora/derived/json.txt",
+      "bytes": 1735548,
+      "sha256": "0b1171ae0d52f351434209425bf84994ae1529c4269f38c0d60dc1b63d8e1640"
+    }
+  ],
+  "extra": {
+    "tool": "src/measure/vocab_coverage",
+    "ctx": 1024,
+    "ngl": 99,
+    "sizes": [
+      16384,
+      32768,
+      65536
+    ],
+    "note": "per-row means; CI = percentile bootstrap over rows (rows from the same source document are correlated)"
+  }
+}

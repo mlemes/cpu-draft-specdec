@@ -1,0 +1,25 @@
+{"kind": "pinned", "dir": "h2d", "bytes": 1024, "iters": 200, "median_us": 4.849, "p95_us": 5.039, "gbps": 0.211178}
+{"kind": "pageable", "dir": "h2d", "bytes": 1024, "iters": 200, "median_us": 4.208, "p95_us": 4.438, "gbps": 0.243346}
+{"kind": "pinned", "dir": "d2h", "bytes": 1024, "iters": 200, "median_us": 4.764, "p95_us": 5.119, "gbps": 0.214945}
+{"kind": "pageable", "dir": "d2h", "bytes": 1024, "iters": 200, "median_us": 5.511, "p95_us": 5.851, "gbps": 0.185827}
+{"kind": "pinned", "dir": "h2d", "bytes": 4096, "iters": 200, "median_us": 5.250, "p95_us": 5.560, "gbps": 0.780190}
+{"kind": "pageable", "dir": "h2d", "bytes": 4096, "iters": 200, "median_us": 4.608, "p95_us": 4.899, "gbps": 0.888889}
+{"kind": "pinned", "dir": "d2h", "bytes": 4096, "iters": 200, "median_us": 4.840, "p95_us": 5.049, "gbps": 0.846281}
+{"kind": "pageable", "dir": "d2h", "bytes": 4096, "iters": 200, "median_us": 5.811, "p95_us": 6.081, "gbps": 0.704870}
+{"kind": "pinned", "dir": "h2d", "bytes": 65536, "iters": 200, "median_us": 10.104, "p95_us": 10.350, "gbps": 6.485823}
+{"kind": "pageable", "dir": "h2d", "bytes": 65536, "iters": 200, "median_us": 11.562, "p95_us": 12.333, "gbps": 5.668223}
+{"kind": "pinned", "dir": "d2h", "bytes": 65536, "iters": 200, "median_us": 9.498, "p95_us": 9.799, "gbps": 6.899979}
+{"kind": "pageable", "dir": "d2h", "bytes": 65536, "iters": 200, "median_us": 13.471, "p95_us": 14.097, "gbps": 4.864969}
+{"kind": "pinned", "dir": "h2d", "bytes": 262144, "iters": 200, "median_us": 25.157, "p95_us": 25.438, "gbps": 10.420113}
+{"kind": "pageable", "dir": "h2d", "bytes": 262144, "iters": 200, "median_us": 35.117, "p95_us": 35.398, "gbps": 7.464875}
+{"kind": "pinned", "dir": "d2h", "bytes": 262144, "iters": 200, "median_us": 24.396, "p95_us": 24.487, "gbps": 10.745368}
+{"kind": "pageable", "dir": "d2h", "bytes": 262144, "iters": 200, "median_us": 43.989, "p95_us": 47.020, "gbps": 5.959376}
+{"kind": "pinned", "dir": "h2d", "bytes": 1048576, "iters": 200, "median_us": 85.737, "p95_us": 86.074, "gbps": 12.230074}
+{"kind": "pageable", "dir": "h2d", "bytes": 1048576, "iters": 200, "median_us": 126.405, "p95_us": 127.161, "gbps": 8.295368}
+{"kind": "pinned", "dir": "d2h", "bytes": 1048576, "iters": 200, "median_us": 84.400, "p95_us": 84.681, "gbps": 12.423886}
+{"kind": "pageable", "dir": "d2h", "bytes": 1048576, "iters": 200, "median_us": 146.273, "p95_us": 149.073, "gbps": 7.168623}
+{"kind": "pinned", "dir": "h2d", "bytes": 3145728, "iters": 200, "median_us": 246.217, "p95_us": 246.558, "gbps": 12.776242}
+{"kind": "pageable", "dir": "h2d", "bytes": 3145728, "iters": 200, "median_us": 289.605, "p95_us": 294.478, "gbps": 10.862152}
+{"kind": "pinned", "dir": "d2h", "bytes": 3145728, "iters": 200, "median_us": 243.492, "p95_us": 243.743, "gbps": 12.919225}
+{"kind": "pageable", "dir": "d2h", "bytes": 3145728, "iters": 200, "median_us": 319.671, "p95_us": 325.959, "gbps": 9.840517}
+{"kind": "launch_sync", "iters": 200, "median_us": 4.729, "p95_us": 4.999}

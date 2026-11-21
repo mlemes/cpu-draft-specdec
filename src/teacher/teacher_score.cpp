@@ -8,6 +8,7 @@
 #include <chrono>
 #include <climits>
 #include <cmath>
+#include <condition_variable>
 #include <csignal>
 #include <cstdint>
 #include <cstdio>
@@ -17,6 +18,7 @@
 #include <fstream>
 #include <iomanip>
 #include <limits>
+#include <mutex>
 #include <numeric>
 #include <sstream>
 #include <string>
@@ -954,59 +956,212 @@ bool write_binary_and_hash(const fs::path & path,
 }
 
 // ---------------------------------------------------------------------------
-// Per-position log-softmax + top-k worker
+// Per-position log-softmax + top-k worker & persistent thread pool
 // ---------------------------------------------------------------------------
 
-void process_positions_range(const std::vector<const float *> & logit_ptrs,
+struct TopKEntry {
+    float logit;
+    int32_t id;
+};
+
+void process_positions_range(const float * logits_buf,
                              int32_t t_start,
                              int32_t t_end,
                              int32_t n_vocab,
                              int32_t k,
                              uint32_t * out_ids,
-                             uint16_t * out_logp) {
-    std::vector<int32_t> idx(static_cast<size_t>(n_vocab));
+                             uint16_t * out_logp,
+                             std::vector<TopKEntry> & topk) {
+    topk.resize(static_cast<size_t>(k));
+    constexpr int32_t kLseBlockSize = 4096;
+
     for (int32_t t = t_start; t < t_end; ++t) {
-        const float * logits = logit_ptrs[static_cast<size_t>(t)];
+        const float * __restrict__ logits =
+            logits_buf + static_cast<size_t>(t) * static_cast<size_t>(n_vocab);
 
-        double max_logit = static_cast<double>(logits[0]);
+        // Max pass (vectorizable).
+        float max_logit = logits[0];
         for (int32_t v = 1; v < n_vocab; ++v) {
-            double val = static_cast<double>(logits[v]);
-            if (val > max_logit) {
-                max_logit = val;
-            }
+            float x = logits[v];
+            max_logit = (x > max_logit) ? x : max_logit;
         }
 
+        // Log-sum-exp in float blocks of <= 4096 elements, summed into double.
         double sum_exp = 0.0;
-        for (int32_t v = 0; v < n_vocab; ++v) {
-            sum_exp += std::exp(static_cast<double>(logits[v]) - max_logit);
-        }
-        double lse = max_logit + std::log(sum_exp);
-
-        std::iota(idx.begin(), idx.end(), 0);
-        auto cmp = [logits](int32_t a, int32_t b) {
-            if (logits[a] != logits[b]) {
-                return logits[a] > logits[b];
+        for (int32_t block_start = 0; block_start < n_vocab; block_start += kLseBlockSize) {
+            int32_t block_end = std::min(block_start + kLseBlockSize, n_vocab);
+            float block_sum = 0.0f;
+            for (int32_t v = block_start; v < block_end; ++v) {
+                block_sum += std::exp(logits[v] - max_logit);
             }
-            return a < b;
-        };
-        if (k < n_vocab) {
-            std::nth_element(idx.begin(), idx.begin() + k, idx.end(), cmp);
+            sum_exp += static_cast<double>(block_sum);
         }
-        std::sort(idx.begin(), idx.begin() + k, cmp);
+        double lse = static_cast<double>(max_logit) + std::log(sum_exp);
+
+        // Single-pass top-k: initialize with first k entries, then scan ascending.
+        for (int32_t v = 0; v < k; ++v) {
+            topk[static_cast<size_t>(v)] = {logits[v], v};
+        }
+        std::sort(topk.begin(), topk.end(), [](const TopKEntry & a, const TopKEntry & b) {
+            if (a.logit != b.logit) {
+                return a.logit > b.logit;
+            }
+            return a.id < b.id;
+        });
+
+        float thresh = topk[static_cast<size_t>(k - 1)].logit;
+        for (int32_t v = k; v < n_vocab; ++v) {
+            float val = logits[v];
+            if (val > thresh) {
+                int32_t j = k - 1;
+                while (j > 0 && topk[static_cast<size_t>(j - 1)].logit < val) {
+                    topk[static_cast<size_t>(j)] = topk[static_cast<size_t>(j - 1)];
+                    --j;
+                }
+                topk[static_cast<size_t>(j)] = {val, v};
+                thresh = topk[static_cast<size_t>(k - 1)].logit;
+            }
+        }
 
         size_t base = static_cast<size_t>(t) * static_cast<size_t>(k);
         for (int32_t j = 0; j < k; ++j) {
-            int32_t tok_id = idx[static_cast<size_t>(j)];
-            float logp_f32 = static_cast<float>(static_cast<double>(logits[tok_id]) - lse);
+            const TopKEntry & entry = topk[static_cast<size_t>(j)];
+            float logp_f32 = static_cast<float>(static_cast<double>(entry.logit) - lse);
             ggml_fp16_t logp_f16 = ggml_fp32_to_fp16(logp_f32);
-            out_ids[base + static_cast<size_t>(j)] = static_cast<uint32_t>(tok_id);
+            out_ids[base + static_cast<size_t>(j)] = static_cast<uint32_t>(entry.id);
             out_logp[base + static_cast<size_t>(j)] = static_cast<uint16_t>(logp_f16);
         }
     }
 }
 
+class ThreadPool {
+public:
+    explicit ThreadPool(int32_t n_threads)
+        : n_threads_(std::max<int32_t>(1, n_threads)) {
+        workers_.reserve(static_cast<size_t>(n_threads_));
+        for (int32_t w = 0; w < n_threads_; ++w) {
+            workers_.emplace_back([this, w]() { worker_loop(w); });
+        }
+    }
+
+    ~ThreadPool() {
+        shutdown();
+    }
+
+    ThreadPool(const ThreadPool &) = delete;
+    ThreadPool & operator=(const ThreadPool &) = delete;
+
+    void submit(const float * logits_buf,
+                int32_t seq_len,
+                int32_t n_vocab,
+                int32_t k,
+                uint32_t * out_ids,
+                uint16_t * out_logp) {
+        {
+            std::lock_guard<std::mutex> lk(mu_);
+            job_.logits_buf = logits_buf;
+            job_.seq_len = seq_len;
+            job_.n_vocab = n_vocab;
+            job_.k = k;
+            job_.out_ids = out_ids;
+            job_.out_logp = out_logp;
+            ++generation_;
+            remaining_ = n_threads_;
+            busy_ = true;
+        }
+        cv_work_.notify_all();
+    }
+
+    void wait() {
+        std::unique_lock<std::mutex> lk(mu_);
+        cv_done_.wait(lk, [this]() { return !busy_; });
+    }
+
+    void shutdown() {
+        {
+            std::lock_guard<std::mutex> lk(mu_);
+            if (stop_) {
+                return;
+            }
+            stop_ = true;
+        }
+        cv_work_.notify_all();
+        for (auto & th : workers_) {
+            if (th.joinable()) {
+                th.join();
+            }
+        }
+        workers_.clear();
+    }
+
+private:
+    struct Job {
+        const float * logits_buf = nullptr;
+        int32_t seq_len = 0;
+        int32_t n_vocab = 0;
+        int32_t k = 0;
+        uint32_t * out_ids = nullptr;
+        uint16_t * out_logp = nullptr;
+    };
+
+    void worker_loop(int32_t worker_id) {
+        uint64_t seen_gen = 0;
+        std::vector<TopKEntry> topk;
+        for (;;) {
+            Job job;
+            {
+                std::unique_lock<std::mutex> lk(mu_);
+                cv_work_.wait(lk, [this, seen_gen]() {
+                    return stop_ || generation_ != seen_gen;
+                });
+                if (stop_ && generation_ == seen_gen) {
+                    return;
+                }
+                seen_gen = generation_;
+                job = job_;
+            }
+
+            int32_t base_chunk = job.seq_len / n_threads_;
+            int32_t rem = job.seq_len % n_threads_;
+            int32_t t_start = worker_id * base_chunk + std::min(worker_id, rem);
+            int32_t len = base_chunk + (worker_id < rem ? 1 : 0);
+            int32_t t_end = t_start + len;
+
+            if (len > 0) {
+                process_positions_range(job.logits_buf,
+                                        t_start,
+                                        t_end,
+                                        job.n_vocab,
+                                        job.k,
+                                        job.out_ids,
+                                        job.out_logp,
+                                        topk);
+            }
+
+            {
+                std::lock_guard<std::mutex> lk(mu_);
+                if (--remaining_ == 0) {
+                    busy_ = false;
+                    cv_done_.notify_one();
+                }
+            }
+        }
+    }
+
+    int32_t n_threads_;
+    std::vector<std::thread> workers_;
+    std::mutex mu_;
+    std::condition_variable cv_work_;
+    std::condition_variable cv_done_;
+    Job job_;
+    uint64_t generation_ = 0;
+    int32_t remaining_ = 0;
+    bool busy_ = false;
+    bool stop_ = false;
+};
+
 bool write_dump_full(const fs::path & out_dir,
-                     const std::vector<const float *> & logit_ptrs,
+                     const float * logits_buf,
                      int32_t n_positions,
                      int32_t n_vocab) {
     fs::path dump_path = out_dir / "full.logp.f32";
@@ -1016,7 +1171,7 @@ bool write_dump_full(const fs::path & out_dir,
     }
     std::vector<float> row(static_cast<size_t>(n_vocab));
     for (int32_t t = 0; t < n_positions; ++t) {
-        const float * logits = logit_ptrs[static_cast<size_t>(t)];
+        const float * logits = logits_buf + static_cast<size_t>(t) * static_cast<size_t>(n_vocab);
         double max_logit = static_cast<double>(logits[0]);
         for (int32_t v = 1; v < n_vocab; ++v) {
             double val = static_cast<double>(logits[v]);
@@ -1106,6 +1261,29 @@ int main(int argc, char ** argv) {
         }
         next_shard_idx = static_cast<int32_t>(index_data.shards.size());
         for (const auto & s : index_data.shards) {
+            const std::array<std::pair<fs::path, std::string>, 3> files = {{
+                {out_dir / (s.name + ".tokens.u32"), s.sha_tokens},
+                {out_dir / (s.name + ".ids.u32"), s.sha_ids},
+                {out_dir / (s.name + ".logp.f16"), s.sha_logp},
+            }};
+            for (const auto & item : files) {
+                const fs::path & fpath = item.first;
+                const std::string & expected_sha = item.second;
+                std::error_code f_ec;
+                if (!fs::exists(fpath, f_ec) || f_ec || !fs::is_regular_file(fpath, f_ec)) {
+                    std::fprintf(stderr, "Error: missing shard file '%s' on resume\n", fpath.c_str());
+                    return 1;
+                }
+                std::string actual_sha;
+                if (!sha256_file(fpath.string(), actual_sha)) {
+                    std::fprintf(stderr, "Error: failed to read shard file '%s' on resume\n", fpath.c_str());
+                    return 1;
+                }
+                if (actual_sha != expected_sha) {
+                    std::fprintf(stderr, "Error: SHA-256 mismatch for shard file '%s' on resume\n", fpath.c_str());
+                    return 1;
+                }
+            }
             skip_seqs += s.n_seq;
         }
     } else {
@@ -1208,9 +1386,26 @@ int main(int argc, char ** argv) {
 
     std::vector<uint32_t> pending_tokens;
     std::vector<llama_token> doc_tokens;
-    std::vector<const float *> logit_ptrs(seq_len_sz);
-    std::vector<uint32_t> seq_ids(seq_len_sz * k_sz);
-    std::vector<uint16_t> seq_logp(seq_len_sz * k_sz);
+
+    struct SeqSlot {
+        std::vector<float> logits;
+        std::vector<uint32_t> tokens;
+        std::vector<uint32_t> ids;
+        std::vector<uint16_t> logp;
+    };
+    const size_t n_vocab_sz = static_cast<size_t>(n_vocab);
+    SeqSlot slots[2];
+    for (int s = 0; s < 2; ++s) {
+        slots[s].logits.resize(seq_len_sz * n_vocab_sz);
+        slots[s].tokens.resize(seq_len_sz);
+        slots[s].ids.resize(seq_len_sz * k_sz);
+        slots[s].logp.resize(seq_len_sz * k_sz);
+    }
+
+    ThreadPool pool(std::min(opts.threads, opts.seq_len));
+    bool has_in_flight = false;
+    int in_flight_slot = 0;
+    int cur_slot = 0;
 
     auto start_time = std::chrono::steady_clock::now();
     int64_t total_seqs_seen = 0;
@@ -1221,6 +1416,9 @@ int main(int argc, char ** argv) {
         if (shard_n_seq <= 0) {
             return true;
         }
+        if (g_signal_received != 0) {
+            return false;
+        }
         char name_buf[32];
         std::snprintf(name_buf, sizeof(name_buf), "shard-%05d", next_shard_idx);
         std::string shard_name(name_buf);
@@ -1229,7 +1427,13 @@ int main(int argc, char ** argv) {
         if (!write_binary_and_hash(out_dir / (shard_name + ".tokens.u32"), shard_tokens, sha_tokens) ||
             !write_binary_and_hash(out_dir / (shard_name + ".ids.u32"), shard_ids, sha_ids) ||
             !write_binary_and_hash(out_dir / (shard_name + ".logp.f16"), shard_logp, sha_logp)) {
-            std::fprintf(stderr, "Error: failed to write shard '%s'\n", shard_name.c_str());
+            if (g_signal_received == 0) {
+                std::fprintf(stderr, "Error: failed to write shard '%s'\n", shard_name.c_str());
+            }
+            return false;
+        }
+
+        if (g_signal_received != 0) {
             return false;
         }
 
@@ -1267,6 +1471,28 @@ int main(int argc, char ** argv) {
         shard_logp.clear();
         shard_n_seq = 0;
         ++next_shard_idx;
+        return true;
+    };
+
+    auto consume_in_flight = [&](bool allow_flush) -> bool {
+        if (!has_in_flight) {
+            return true;
+        }
+        pool.wait();
+        has_in_flight = false;
+
+        const SeqSlot & done = slots[in_flight_slot];
+        shard_tokens.insert(shard_tokens.end(), done.tokens.begin(), done.tokens.end());
+        shard_ids.insert(shard_ids.end(), done.ids.begin(), done.ids.end());
+        shard_logp.insert(shard_logp.end(), done.logp.begin(), done.logp.end());
+        ++shard_n_seq;
+        ++new_seqs_scored;
+
+        if (allow_flush && shard_n_seq == opts.shard_seqs) {
+            if (!flush_shard()) {
+                return false;
+            }
+        }
         return true;
     };
 
@@ -1350,6 +1576,8 @@ int main(int argc, char ** argv) {
                 break;
             }
 
+            SeqSlot & slot = slots[cur_slot];
+            std::memcpy(slot.tokens.data(), seq_ptr, seq_len_sz * sizeof(uint32_t));
             for (int32_t t = 0; t < opts.seq_len; ++t) {
                 const float * ptr = llama_get_logits_ith(lctx, t);
                 if (!ptr) {
@@ -1358,45 +1586,18 @@ int main(int argc, char ** argv) {
                     stop_all = true;
                     break;
                 }
-                logit_ptrs[static_cast<size_t>(t)] = ptr;
+                std::memcpy(slot.logits.data() + static_cast<size_t>(t) * n_vocab_sz,
+                            ptr,
+                            n_vocab_sz * sizeof(float));
             }
             if (stop_all) {
                 break;
             }
 
-            int32_t n_threads = std::min(opts.threads, opts.seq_len);
-            if (n_threads <= 1) {
-                process_positions_range(logit_ptrs, 0, opts.seq_len, n_vocab, opts.k,
-                                        seq_ids.data(), seq_logp.data());
-            } else {
-                std::vector<std::thread> workers;
-                workers.reserve(static_cast<size_t>(n_threads - 1));
-                int32_t base_chunk = opts.seq_len / n_threads;
-                int32_t rem = opts.seq_len % n_threads;
-                int32_t cur = 0;
-                for (int32_t w = 0; w < n_threads - 1; ++w) {
-                    int32_t len = base_chunk + (w < rem ? 1 : 0);
-                    workers.emplace_back(process_positions_range,
-                                         std::cref(logit_ptrs),
-                                         cur,
-                                         cur + len,
-                                         n_vocab,
-                                         opts.k,
-                                         seq_ids.data(),
-                                         seq_logp.data());
-                    cur += len;
-                }
-                process_positions_range(logit_ptrs, cur, opts.seq_len, n_vocab, opts.k,
-                                        seq_ids.data(), seq_logp.data());
-                for (auto & th : workers) {
-                    th.join();
-                }
-            }
-
             if (total_seqs_seen == 0 && opts.dump_full > 0) {
                 int32_t n_dump = static_cast<int32_t>(
                     std::min<int64_t>(opts.dump_full, opts.seq_len));
-                if (!write_dump_full(out_dir, logit_ptrs, n_dump, n_vocab)) {
+                if (!write_dump_full(out_dir, slot.logits.data(), n_dump, n_vocab)) {
                     std::fprintf(stderr, "Error: failed to write full.logp.f32\n");
                     exit_code = 1;
                     stop_all = true;
@@ -1404,20 +1605,24 @@ int main(int argc, char ** argv) {
                 }
             }
 
-            shard_tokens.insert(shard_tokens.end(), seq_ptr, seq_ptr + seq_len_sz);
-            shard_ids.insert(shard_ids.end(), seq_ids.begin(), seq_ids.end());
-            shard_logp.insert(shard_logp.end(), seq_logp.begin(), seq_logp.end());
-            ++shard_n_seq;
-            ++total_seqs_seen;
-            ++new_seqs_scored;
-
-            if (shard_n_seq == opts.shard_seqs) {
-                if (!flush_shard()) {
+            if (!consume_in_flight(true)) {
+                if (g_signal_received == 0) {
                     exit_code = 1;
-                    stop_all = true;
-                    break;
                 }
+                stop_all = true;
+                break;
             }
+
+            pool.submit(slot.logits.data(),
+                        opts.seq_len,
+                        n_vocab,
+                        opts.k,
+                        slot.ids.data(),
+                        slot.logp.data());
+            in_flight_slot = cur_slot;
+            has_in_flight = true;
+            cur_slot = 1 - cur_slot;
+            ++total_seqs_seen;
 
             if (g_signal_received != 0) {
                 stop_all = true;
@@ -1437,6 +1642,21 @@ int main(int argc, char ** argv) {
         exit_code = 1;
     }
 
+    if (has_in_flight) {
+        if (exit_code != 0 || g_signal_received != 0) {
+            pool.wait();
+            has_in_flight = false;
+        } else {
+            if (!consume_in_flight(true)) {
+                if (g_signal_received == 0) {
+                    exit_code = 1;
+                }
+            }
+        }
+    }
+
+    pool.shutdown();
+
     if (exit_code == 0) {
         if (g_signal_received != 0) {
             // Do not write a partial shard; leave complete: false.
@@ -1444,21 +1664,29 @@ int main(int argc, char ** argv) {
         } else {
             if (shard_n_seq > 0) {
                 if (!flush_shard()) {
-                    exit_code = 1;
+                    if (g_signal_received != 0) {
+                        exit_code = 128 + static_cast<int>(g_signal_received);
+                    } else {
+                        exit_code = 1;
+                    }
                 }
             }
             if (exit_code == 0) {
-                auto now = std::chrono::steady_clock::now();
-                double elapsed = std::chrono::duration<double>(now - start_time).count();
-                double tok_per_s = (elapsed > 0.0)
-                                       ? (static_cast<double>(new_seqs_scored * opts.seq_len) / elapsed)
-                                       : 0.0;
-                index_data.complete = true;
-                index_data.elapsed_s = elapsed;
-                index_data.tokens_per_s = tok_per_s;
-                if (!write_index_atomic(out_dir, index_data)) {
-                    std::fprintf(stderr, "Error: failed to write final '%s'\n", index_path.c_str());
-                    exit_code = 1;
+                if (g_signal_received != 0) {
+                    exit_code = 128 + static_cast<int>(g_signal_received);
+                } else {
+                    auto now = std::chrono::steady_clock::now();
+                    double elapsed = std::chrono::duration<double>(now - start_time).count();
+                    double tok_per_s = (elapsed > 0.0)
+                                           ? (static_cast<double>(new_seqs_scored * opts.seq_len) / elapsed)
+                                           : 0.0;
+                    index_data.complete = true;
+                    index_data.elapsed_s = elapsed;
+                    index_data.tokens_per_s = tok_per_s;
+                    if (!write_index_atomic(out_dir, index_data)) {
+                        std::fprintf(stderr, "Error: failed to write final '%s'\n", index_path.c_str());
+                        exit_code = 1;
+                    }
                 }
             }
         }

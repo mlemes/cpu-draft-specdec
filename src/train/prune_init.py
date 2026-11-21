@@ -2,6 +2,15 @@
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+
+if __name__ == "__main__":
+    # Run as a script: drop src/train from sys.path so `train` resolves to the package, not this file.
+    _here = str(_Path(__file__).resolve().parent)
+    _sys.path[:] = [p for p in _sys.path if str(_Path(p or ".").resolve()) != _here]
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
+
 import argparse
 from dataclasses import asdict
 import hashlib

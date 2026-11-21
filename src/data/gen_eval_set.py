@@ -82,8 +82,17 @@ def main() -> int:
                                                           "ignore_eos": False})
                     probs = res["completion_probabilities"]
                     gen = res["tokens"]
-                    if len(probs) != len(gen):
-                        raise RuntimeError(f"{r['id']}: {len(probs)} prob rows for {len(gen)} tokens")
+                    # The server can merge rows for tokens that end mid UTF-8 character, so rows and tokens may
+                    # disagree in count. Keep the longest prefix where each row's token id matches the generated one.
+                    n = 0
+                    while n < min(len(probs), len(gen)) and probs[n].get("id") == gen[n]:
+                        n += 1
+                    if n < len(gen):
+                        print(f"warning: {r['id']}: {len(probs)} prob rows for {len(gen)} tokens; keeping {n}",
+                              file=sys.stderr)
+                        probs, gen = probs[:n], gen[:n]
+                    if n == 0:
+                        continue
                     top_ids = [[t["id"] for t in p["top_logprobs"]] for p in probs]
                     top_logp = [[t["logprob"] for t in p["top_logprobs"]] for p in probs]
                     for g, ids in zip(gen, top_ids):

@@ -148,7 +148,7 @@ Behavior:
 
 ## 7. CPU latency and cache sweep (experiment a2): `src/measure/a2_cpu_sweep.py`
 
-Reuses the safety pattern of section 5 (validate before changing anything; `--out` must not exist; flag-only SIGINT/SIGTERM handlers; root `L3:` line saved, top `--reserve-ways` given to the root group, restored in cleanup; exit codes 0 / 1 / 2 / 3 / 128+signum with the same precedence; MBM warm-up and `Unavailable` retries; chown to SUDO_UID/SUDO_GID).
+Uses resctrl group `a2bench` (same reuse rule as `a0bench`: an existing group with a non-empty tasks file is in use, exit 1). Reuses the safety pattern of section 5 (validate before changing anything; `--out` must not exist; flag-only SIGINT/SIGTERM handlers; root `L3:` line saved, top `--reserve-ways` given to the root group, restored in cleanup; exit codes 0 / 1 / 2 / 3 / 128+signum with the same precedence; MBM warm-up and `Unavailable` retries; chown to SUDO_UID/SUDO_GID).
 
 Options (defaults): `--out DIR` (required); `--resctrl-root` [/sys/fs/resctrl]; `--llama-bench` [third_party/llama.cpp/build/bin/llama-bench]; `--models-dir` [/mnt/hdd1/cpu-draft-specdec/gguf/random]; `--sizes-mb` [16,32,48,64,96,128,256,512]; `--quants` [q8_0,q4_0]; `--threads` [1,3,6]; `--cat-sizes-mb` [48,96,192]; `--cat-ways` [1,2,4,8,14]; `--cat-threads` [6]; `--reserve-ways` [2]; `--reps` [5]; `--n-timing` [128]; `--n-short` [64]; `--n-long` [320]; `--seed` [1]; `--l3-bytes` [from sysfs as in section 5]; `--phases` [grid,cat].
 

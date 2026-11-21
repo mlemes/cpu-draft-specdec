@@ -1,0 +1,40 @@
+{
+  "passed": false,
+  "ways": {
+    "1": {
+      "cat_bytes": 6291456.0,
+      "total_count": 10,
+      "above_count": 8,
+      "below_count": 0,
+      "pass_w": false
+    },
+    "2": {
+      "cat_bytes": 12582912.0,
+      "total_count": 10,
+      "above_count": 7,
+      "below_count": 1,
+      "pass_w": false
+    },
+    "4": {
+      "cat_bytes": 25165824.0,
+      "total_count": 10,
+      "above_count": 6,
+      "below_count": 2,
+      "pass_w": false
+    },
+    "8": {
+      "cat_bytes": 50331648.0,
+      "total_count": 10,
+      "above_count": 4,
+      "below_count": 3,
+      "pass_w": false
+    },
+    "14": {
+      "cat_bytes": 88080384.0,
+      "total_count": 10,
+      "above_count": 2,
+      "below_count": 4,
+      "pass_w": false
+    }
+  }
+}

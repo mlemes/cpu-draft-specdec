@@ -173,6 +173,46 @@ def _error_row(
     }
 
 
+
+def _read_counter(read: Callable[[], int], timeout_s: float = 3.0) -> int:
+    """Read a resctrl counter, retrying while the kernel reports it as Unavailable.
+
+    On this Zen 3 machine a freshly created group reads `Unavailable` for roughly
+    its first 0.5 s of activity (observed 2026-11-21), then counts normally.
+    """
+    deadline = time.monotonic() + timeout_s
+    while True:
+        try:
+            return read()
+        except ValueError:
+            if time.monotonic() >= deadline:
+                raise ValueError("resctrl counter stayed Unavailable") from None
+            time.sleep(0.05)
+
+
+def _warm_up_group(rc: Resctrl, bench: str, cpu: int, should_stop: Callable[[], bool],
+                   timeout_s: float = 10.0) -> bool:
+    """Run streaming traffic in the group until its MBM counter becomes readable."""
+    proc = subprocess.Popen(
+        [str(bench), "--bytes", str(256 * 1024 * 1024), "--passes", "100000", "--cpu", str(cpu)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        rc.assign(GROUP_NAME, proc.pid)
+        deadline = time.monotonic() + timeout_s
+        while time.monotonic() < deadline and not should_stop() and proc.poll() is None:
+            try:
+                rc.read_mbm_total(GROUP_NAME)
+                return True
+            except ValueError:
+                time.sleep(0.1)
+        return False
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+        proc.wait()
+
 def _run_single(
     rc: Resctrl,
     *,
@@ -276,7 +316,17 @@ def _run_single(
             )
 
         rc.assign(GROUP_NAME, bench_pid)
-        mbm_before = rc.read_mbm_total(GROUP_NAME)
+        try:
+            mbm_before = _read_counter(lambda: rc.read_mbm_total(GROUP_NAME))
+        except ValueError as exc:
+            _kill_and_reap(bench_proc)
+            return _error_row(
+                ways=ways,
+                cat_bytes=cat_bytes,
+                size_bytes=size_bytes,
+                passes=passes,
+                message=f"mbm before: {exc}",
+            )
 
         if perf_path and perf_events:
             perf_cmd = [
@@ -432,8 +482,18 @@ def _run_single(
             elif not any(v is not None for v in perf_counts.values()):
                 perf_error = "perf produced no parsed counts"
 
-        mbm_after = rc.read_mbm_total(GROUP_NAME)
-        occupancy_bytes = rc.read_occupancy(GROUP_NAME)
+        try:
+            mbm_after = _read_counter(lambda: rc.read_mbm_total(GROUP_NAME))
+            occupancy_bytes = _read_counter(lambda: rc.read_occupancy(GROUP_NAME))
+        except ValueError as exc:
+            _kill_and_reap(bench_proc)
+            return _error_row(
+                ways=ways,
+                cat_bytes=cat_bytes,
+                size_bytes=size_bytes,
+                passes=passes,
+                message=f"mbm after: {exc}",
+            )
 
         reader_thread.join(timeout=5)
         stdout_lines: list[str] = []
@@ -736,6 +796,10 @@ def main(argv: list[str] | None = None) -> int:
         rc.set_l3_mask("", reserve_mask, cache_id=0)
         root_modified = True
         rc.create_group(GROUP_NAME)
+        if not _should_stop():
+            rc.set_l3_mask(GROUP_NAME, rc.ways_mask(ways_list[0], 0), cache_id=0)
+            if not _warm_up_group(rc, args.bench, args.cpu, _should_stop):
+                print("warning: MBM counter for a0bench still Unavailable after warm-up", file=sys.stderr)
 
         for w in ways_list:
             if _should_stop():

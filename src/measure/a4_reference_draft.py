@@ -171,11 +171,18 @@ def build_server_cmd(
     return cmd
 
 
+def _port_free(port: int) -> bool:
+    """True if nothing is listening on 127.0.0.1:port."""
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(0.5)
+        return sock.connect_ex(("127.0.0.1", port)) != 0
+
+
 def _stop_server(proc: subprocess.Popen[bytes] | None) -> None:
     if proc is None:
         return
-    if proc.poll() is not None:
-        return
+    # Signal the whole process group even if the leader already exited: children may survive it.
     try:
         os.killpg(proc.pid, signal.SIGTERM)
     except ProcessLookupError:
@@ -226,6 +233,9 @@ def _wait_for_health(
             resp = conn.getresponse()
             resp.read()
             if resp.status == 200:
+                # Make sure the server we launched is the one answering (not another process on the port).
+                if proc.poll() is not None:
+                    return f"llama-server exited with code {proc.returncode} while another process answered on port {port}"
                 return None
             last_err = f"health returned HTTP {resp.status}"
         except OSError as exc:
@@ -354,7 +364,8 @@ def compute_summary(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     for entry in summary_rows:
         if entry["device"] == "none":
-            entry["speedup"] = 1.0
+            mean_tps = entry["mean_tokens_per_s"]
+            entry["speedup"] = 1.0 if mean_tps is not None and mean_tps > 0 else None
         else:
             base = none_tps.get((entry["mode"], entry["domain"]))
             mean_tps = entry["mean_tokens_per_s"]
@@ -490,6 +501,14 @@ def main(argv: list[str] | None = None) -> int:
                     item=item,
                 )
                 log_path = out_dir / f"server-{item.label}.log"
+                if not _port_free(args.port):
+                    # Another process holds the port: its answers would be measured instead of ours.
+                    row = _make_row(item=item, mode=None, domain=None, prompt_id=None,
+                                    error=f"port {args.port} already in use")
+                    rows.append(row)
+                    mf.write(json.dumps(row) + "\n")
+                    mf.flush()
+                    continue
                 try:
                     with log_path.open("wb") as log_f:
                         active_proc = subprocess.Popen(

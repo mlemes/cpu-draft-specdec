@@ -188,7 +188,7 @@ For each size, direction (`h2d`, `d2h`) and host memory kind (`pinned` via cudaM
 For each plan item:
 
 1. Start `llama-server -m TARGET -ngl 99 -c 4096 -np 1 --port PORT --no-webui` plus, unless `device` is `none`: `-md DRAFT --spec-draft-n-max G --spec-draft-n-min G --spec-draft-p-min 0`, and for `cpu`: `-ngld 0 -devd none -td DRAFT_THREADS`, for `gpu`: `-ngld 99`. Server stdout/stderr go to `DIR/server-<item>.log`. Poll `GET /health` every 0.2 s until HTTP 200 (timeout 180 s; on timeout record an error row for the item, stop the server and continue).
-2. For each prompt and each mode (`greedy`: temperature 0; `sampled`: temperature 0.7, top_k 20, top_p 0.8, min_p 0), `POST /completion` with JSON `{"prompt", "n_predict", "temperature", "top_k", "top_p", "min_p", "seed": SEED + prompt index, "cache_prompt": false}`. Timeout 300 s per request.
+2. For each prompt and each mode (`greedy`: temperature 0; `sampled`: temperature 0.7, top_k 20, top_p 0.8, min_p 0), `POST /completion` with JSON `{"prompt", "n_predict", "temperature", "top_k", "top_p", "min_p", "seed": SEED + index of the prompt within its file, "cache_prompt": false}`. Timeout 300 s per request.
 3. Append one row per request to `metrics.jsonl`: `device`, `gamma`, `mode`, `domain`, `prompt_id`, `predicted_n`, `predicted_ms`, `tokens_per_s` (predicted_n / predicted_ms × 1000), `prompt_n`, `prompt_ms`, `draft_n`, `draft_n_accepted` (from the response's `timings`; null when absent), `acceptance` (draft_n_accepted / draft_n, null when draft_n is 0 or absent), `error`.
 4. Stop the server (SIGTERM, then SIGKILL after 10 s) before the next item, and in cleanup on any exit path (flag-only signal handlers as in section 5; exit 128 + signum after cleanup).
 

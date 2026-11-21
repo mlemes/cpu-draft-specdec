@@ -1,0 +1,38 @@
+{
+  "seed": 0,
+  "domains": {
+    "general": {
+      "file": "general.jsonl",
+      "documents": 3491,
+      "chars": 60005868,
+      "sha256": "c0490d818cc191541465da487b48416edeab0062426dfcaff75ac96c4ff0f3b5"
+    },
+    "pt_general": {
+      "file": "pt_general.jsonl",
+      "documents": 21294,
+      "chars": 60006169,
+      "sha256": "2015869d6f0d1a617399c11f822f82f439a7551adad9e7503983c0dd233050b6"
+    },
+    "pt_fin": {
+      "file": "pt_fin.jsonl",
+      "documents": 30,
+      "chars": 486774,
+      "sha256": "1357c7c70c36592587684e3a09414dddf8a9663fdbf2e5169b487233ea38e798"
+    },
+    "json": {
+      "file": "json.jsonl",
+      "documents": 1141,
+      "chars": 1746283,
+      "sha256": "c1f544963cdcbb11ac1af1663c7fa9e3f245efdc9ed4cfc0424bd2568ea1d74e"
+    }
+  },
+  "sources": {
+    "general": "Salesforce/wikitext wikitext-103-raw-v1 train (CC-BY-SA-3.0)",
+    "pt_general": "wikimedia/wikipedia 20231101.pt shards 0-1 (CC-BY-SA-4.0)",
+    "pt_fin": "Banco Central do Brasil, atas do Copom 232-261 (dados abertos); 262-282 held out",
+    "json": "NousResearch/hermes-function-calling-v1 json-mode-singleturn (Apache-2.0), rows after the 100 evaluation prompts"
+  },
+  "parse_special": {
+    "json": true
+  }
+}

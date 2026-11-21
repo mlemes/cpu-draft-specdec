@@ -1,6 +1,6 @@
 # Architecture
 
-Status: planned. Nothing here is built yet. Update this file whenever a component's behavior changes.
+Status (2026-11-21): Stage A measurement tooling and Stage B teacher/training tooling are built; draft-head patch, speculative loop and export are planned. Update this file whenever a component's behavior changes.
 
 ## Components
 
@@ -11,8 +11,9 @@ Status: planned. Nothing here is built yet. Update this file whenever a componen
 | Draft-head patch | `src/patches/` | Restricts the draft's output projection to the vocabulary subset V′ and maps indices back to target token IDs |
 | Speculative loop | `src/specdec/` | One process holding both models: drafts γ tokens on the CPU, verifies on the GPU (greedy or stochastic), rolls back both KV caches, logs per-round timings |
 | Measurement | `src/measure/` | resctrl (CAT masks, MBM, occupancy), `perf` core and uncore events, IBS sampling, manifest writer, touched-byte calculator from tensor layouts and routing traces |
-| Training | `src/train/` | PyTorch distillation: hard-label, forward-KL on top-k teacher logits, TV objective, MoE upcycling, sticky-routing penalty |
-| Model building | `src/models/` | Student configurations, structured pruning of Qwen3-0.6B, Hugging Face to GGUF conversion, quantization, random-weight GGUFs for latency sweeps |
+| Teacher scorer | `src/teacher/teacher_score` (C++, libllama) | Built. Packs corpus text into fixed-length sequences, runs the deployed target and stores per-position top-32 log-probabilities (spec: `docs/specs/stage-b-tooling.md` §2) |
+| Training | `src/train/` | Built: V′ selection, Qwen3-layout student, pruned initialization from Qwen3-0.6B, teacher batcher, KD/CE/TV losses, trainer and offline-acceptance evaluator (§3). Planned: MoE upcycling, sticky-routing penalty |
+| Model building | `src/models/` | Built: GGUF I/O and random-weight GGUFs for latency sweeps. Planned: student GGUF export with the V′ head, quantization (pruning lives in `src/train/prune_init.py`) |
 
 ## Pinned runtime
 

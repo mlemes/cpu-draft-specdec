@@ -18,7 +18,7 @@ export PYTHONPATH=$R/src
 mkdir -p "$HDD/runs/b2/init"
 [ -f "$INIT" ] || "$PY" "$R/src/train/prune_init.py" --src "$HDD/hf/Qwen3-0.6B" \
   --vprime-ranking "$R/experiments/stage-a-feasibility/a5-vocab-coverage/results/a5-20261121T011928Z/ranking.json" --out "$INIT"
-common=(--data "$DATA" --tokens "$TOKENS" --batch-seqs 16 --seq-len 1024 --lr 6e-4 --warmup 100
+common=(--data "$DATA" --tokens "$TOKENS" --batch-seqs 8 --grad-accum 2 --seq-len 1024 --lr 6e-4 --warmup 100
         --eval-dir "$EVAL" --eval-every-tokens 4000000 --ckpt-every-tokens 8000000 --seed 0 --device cuda)
 for arm in "${@:-kd-pruned hard-pruned kd-scratch}"; do
   for a in $arm; do

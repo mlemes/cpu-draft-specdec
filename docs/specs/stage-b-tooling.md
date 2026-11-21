@@ -103,13 +103,24 @@ With student log-probs `s = log_softmax(logits)` over V′ and teacher top-k res
 
 ### 3.6 Trainer (`src/train/train.py`)
 
-CLI: `--init CKPT.pt|scratch --data DIR:WEIGHT[,DIR:WEIGHT...] --eval-data DIR[,DIR] --out RUN_DIR --loss kd|hard|tv --tokens N --batch-seqs B --seq-len L --lr 6e-4 --warmup 500 --seed 0 --eval-every STEPS`. AdamW (β 0.9/0.95, weight decay 0.1 except norms and embeddings), cosine decay to 10 % of peak, gradient clip 1.0, bf16 autocast, fused/torch.compile optional. Writes `RUN_DIR/metrics.jsonl` (step, tokens, loss, lr, tokens/s, eval metrics), checkpoints `ckpt-<tokens>.pt` and `final.pt`, and `manifest.json` (args, data index SHA-256s, git commit). Never shares the GPU with teacher scoring.
+CLI:
+```
+train.py --init CKPT.pt|scratch [--config JSON] --data DIR:WEIGHT[,DIR:WEIGHT...] --out RUN_DIR
+         --loss kd|hard|tv [--tokens N] [--batch-seqs 16] [--grad-accum 1] [--seq-len L]
+         [--lr 6e-4] [--min-lr-frac 0.1] [--warmup 200] [--weight-decay 0.1] [--seed 0]
+         [--eval-dir DIR] [--eval-every-tokens N] [--ckpt-every-tokens N] [--device cuda] [--compile]
+```
+- `--init scratch` builds `Student(StudentConfig(**config))` with fresh init and V′ from `--vprime-ranking` (default: the a5 ranking path of 3.1); `--config` is a JSON object of `StudentConfig` overrides (also allowed with a checkpoint only if it matches the checkpoint's config, else exit 2). A checkpoint init loads config, weights and V′ from the file.
+- `--seq-len` defaults to the teacher data's `seq_len`; if smaller, each teacher sequence is cut into its first `seq_len` positions (the teacher distribution at position t depends only on tokens ≤ t, so truncation is exact).
+- Tokens processed per optimizer step = batch_seqs × grad_accum × seq_len; the run stops after `--tokens` (rounded up to whole steps). LR: linear warmup over `--warmup` steps, cosine to `min-lr-frac` × peak at the last step. AdamW (β 0.9/0.95, eps 1e-8), weight decay on 2-D weights except `embed_tokens` and norms; gradient clip 1.0; bf16 autocast on CUDA (fp32 on CPU); losses per 3.5 (`kd` = kd_forward_kl, `hard` = hard_ce, `tv` = 1 − mean tv lower bound over masked positions).
+- Outputs in `RUN_DIR` (must not exist): `metrics.jsonl`, one line per step `{"step", "tokens", "loss", "lr", "grad_norm", "tokens_per_s"}` plus eval lines `{"step", "tokens", "eval": <eval_alpha summary>}` every `--eval-every-tokens` (and at the end) when `--eval-dir` is given; checkpoints `ckpt-<tokens>.pt` every `--ckpt-every-tokens` and `final.pt`, in the 3.3 checkpoint format (`config`, `state_dict` float32, `vprime`, plus `train_args`, `step`, `tokens`); `manifest.json` (args, git commit, teacher `index.json` SHA-256 per data dir, start/end time).
+- Exit codes: 0 success, 2 usage error (bad `--data` spec, unknown loss, existing `RUN_DIR`, config mismatch), 1 runtime error. Deterministic given seed on CPU.
 
 ### 3.7 Offline acceptance (`src/train/eval_alpha.py`)
 
 Evaluation set (`src/data/gen_eval_set.py`, run once on the GPU): for each of the 300 a4 prompts the deployed target (llama-server, greedy, 128 tokens) generates a continuation, returning for every generated position the target's top-32 log-probabilities from a plain softmax of the logits. Files `$HDD/eval/<target_tag>/eval_<domain>.jsonl`, one line per prompt: `{"id", "domain", "prompt_tokens": [int], "gen_tokens": [int], "top_ids": [[int]*32]*n, "top_logp": [[float]*32]*n}`; `top_ids[j]` is the target's distribution for `gen_tokens[j]` given `prompt_tokens + gen_tokens[:j]`.
 
-CLI `eval_alpha.py --ckpt CKPT.pt --eval-dir DIR [--domains general,pt_fin,json] [--out JSON] [--device cuda]`. For each row, run the student on `prompt_tokens + gen_tokens[:-1]` (truncate from the left to the student's `max_seq`) and read its distribution at the positions that predict each generated token. Per domain, over generated positions:
+CLI `eval_alpha.py --ckpt CKPT.pt --eval-dir DIR [--domains general,pt_fin,json] [--out JSON] [--device cuda] [--batch 16]`; also importable as `evaluate(model, vprime, eval_dir, domains, device) -> dict` (same summary) for the trainer. Domains whose file is absent are skipped. For each row, run the student on `prompt_tokens + gen_tokens[:-1]` (truncate from the left to the student's `max_seq`) and read its distribution at the positions that predict each generated token. Per domain, over generated positions:
 - `greedy_agree`: fraction where the student argmax over V′, mapped to a target ID, equals `top_ids[j][0]` — per-position α for greedy speculative decoding;
 - `tv_lower` / `tv_upper`: Σ min(p, q) over the target top-32 ∩ V′ (lower), plus min(p_32, q_rest) (upper), with p = exp(top_logp) — α estimates for sampling at temperature 1;
 - 95 % CI by percentile bootstrap over prompts (per-prompt means, 2000 resamples, seed 0).

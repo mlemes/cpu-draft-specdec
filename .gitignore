@@ -14,3 +14,4 @@ __pycache__/
 src/measure/stream_bench
 src/measure/pcie_bench
 src/measure/vocab_coverage
+src/teacher/teacher_score

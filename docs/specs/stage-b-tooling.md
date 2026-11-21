@@ -107,4 +107,10 @@ CLI: `--init CKPT.pt|scratch --data DIR:WEIGHT[,DIR:WEIGHT...] --eval-data DIR[,
 
 ### 3.7 Offline acceptance (`src/train/eval_alpha.py`)
 
-Evaluation set: target-generated greedy continuations (Qwen3-8B Q4_K_M, temperature 0, 128 tokens) of the 300 a4 prompts, scored by `teacher_score` (`$HDD/teacher/eval-<domain>/`, one document per prompt+continuation; positions inside the generated part are marked by a sidecar `positions.json`). Per domain report, over generated positions only: greedy agreement (student argmax over V′ mapped to target ID == teacher argmax) — this is per-position α for greedy speculative decoding — and the TV lower/upper bounds of 3.5 as α estimates for sampling at temperature 1. Bootstrap 95 % CIs over prompts.
+Evaluation set (`src/data/gen_eval_set.py`, run once on the GPU): for each of the 300 a4 prompts the deployed target (llama-server, greedy, 128 tokens) generates a continuation, returning for every generated position the target's top-32 log-probabilities from a plain softmax of the logits. Files `$HDD/eval/<target_tag>/eval_<domain>.jsonl`, one line per prompt: `{"id", "domain", "prompt_tokens": [int], "gen_tokens": [int], "top_ids": [[int]*32]*n, "top_logp": [[float]*32]*n}`; `top_ids[j]` is the target's distribution for `gen_tokens[j]` given `prompt_tokens + gen_tokens[:j]`.
+
+CLI `eval_alpha.py --ckpt CKPT.pt --eval-dir DIR [--domains general,pt_fin,json] [--out JSON] [--device cuda]`. For each row, run the student on `prompt_tokens + gen_tokens[:-1]` (truncate from the left to the student's `max_seq`) and read its distribution at the positions that predict each generated token. Per domain, over generated positions:
+- `greedy_agree`: fraction where the student argmax over V′, mapped to a target ID, equals `top_ids[j][0]` — per-position α for greedy speculative decoding;
+- `tv_lower` / `tv_upper`: Σ min(p, q) over the target top-32 ∩ V′ (lower), plus min(p_32, q_rest) (upper), with p = exp(top_logp) — α estimates for sampling at temperature 1;
+- 95 % CI by percentile bootstrap over prompts (per-prompt means, 2000 resamples, seed 0).
+Writes a JSON summary `{domain: {"positions", "prompts", "greedy_agree": [mean, lo, hi], "tv_lower": [...], "tv_upper": [...]}}` to `--out` (default stdout).

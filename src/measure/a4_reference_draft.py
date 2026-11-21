@@ -297,6 +297,9 @@ def _make_row(
     prompt_ms = _num_or_none(timings.get("prompt_ms")) if timings else None
     draft_n = _num_or_none(timings.get("draft_n")) if timings else None
     draft_n_accepted = _num_or_none(timings.get("draft_n_accepted")) if timings else None
+    if error is None and timings is not None and item.device != "none" and draft_n is None:
+        # A server that rejected the draft (e.g. incompatible vocab) still answers, without drafting.
+        error = "no draft statistics: speculative decoding inactive"
 
     tokens_per_s: float | None = None
     if predicted_n is not None and predicted_ms is not None and predicted_ms > 0:

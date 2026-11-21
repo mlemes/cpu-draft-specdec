@@ -1,0 +1,36 @@
+{
+  "seed": 0,
+  "prompts_per_domain": 100,
+  "sets": {
+    "general": {
+      "file": "prompts_general.jsonl",
+      "rows": 100,
+      "sha256": "e4c03091cafeae750ae37d5e47bb08baae868090725cb3ceca435c2213c90112",
+      "frequency_text": {
+        "path": "/mnt/hdd1/cpu-draft-specdec/corpora/derived/general.txt",
+        "bytes": 1087181,
+        "sha256": "f3aee85a554c0a4df742524a430cdd7876120839ac4ddf83b00f492f4b8ef124"
+      }
+    },
+    "pt_fin": {
+      "file": "prompts_pt_fin.jsonl",
+      "rows": 100,
+      "sha256": "b0a1b72260451625970550935b38495052bb7eb47e46b28051b961abe5f5e4ae",
+      "frequency_text": {
+        "path": "/mnt/hdd1/cpu-draft-specdec/corpora/derived/pt_fin.txt",
+        "bytes": 505791,
+        "sha256": "7aee908b30bd3e08e720d879246cfe864b36daf8a5cb9dc2f2c26da3fcc68866"
+      }
+    },
+    "json": {
+      "file": "prompts_json.jsonl",
+      "rows": 100,
+      "sha256": "43d0ff01cea21b9ec55d967f7ec43778fd3d3c743a64ad521ef8a552d1edca5a",
+      "frequency_text": {
+        "path": "/mnt/hdd1/cpu-draft-specdec/corpora/derived/json.txt",
+        "bytes": 1735548,
+        "sha256": "0b1171ae0d52f351434209425bf84994ae1529c4269f38c0d60dc1b63d8e1640"
+      }
+    }
+  }
+}

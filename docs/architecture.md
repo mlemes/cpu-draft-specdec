@@ -14,6 +14,12 @@ Status: planned. Nothing here is built yet. Update this file whenever a componen
 | Training | `src/train/` | PyTorch distillation: hard-label, forward-KL on top-k teacher logits, TV objective, MoE upcycling, sticky-routing penalty |
 | Model building | `src/models/` | Student configurations, structured pruning of Qwen3-0.6B, Hugging Face to GGUF conversion, quantization, random-weight GGUFs for latency sweeps |
 
+## Pinned runtime
+
+- llama.cpp commit `29b52d398b294509746ec0a3f28948a3107c0213`, cloned into `third_party/llama.cpp` on 2026-11-20.
+- Build: `cmake -S . -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=86 -DGGML_NATIVE=ON -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-13 -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=OFF`, then `cmake --build build -j 10 --target llama-bench llama-cli llama-server llama-speculative llama-speculative-simple llama-lookup llama-perplexity llama-quantize`. CUDA 12.4 does not support gcc 15, so gcc 13 is the CUDA host compiler.
+- Changing the commit or flags is a recorded design change.
+
 ## Placement
 
 - GPU: target weights (about 5 GB), target KV cache (147 KB per token), verification and, optionally, the stochastic acceptance kernel.

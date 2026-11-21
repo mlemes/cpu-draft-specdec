@@ -146,7 +146,7 @@ def build_server_cmd(
         "-ngl",
         "99",
         "-c",
-        "4096",
+        "2048",  # longest prompt is 573 tokens; 4096 left no VRAM for a GPU draft's KV cache
         "-np",
         "1",
         "--port",
@@ -157,6 +157,8 @@ def build_server_cmd(
         cmd.extend([
             "-md",
             str(draft),
+            "--spec-type",
+            "draft-simple",  # default spec type is none: without this the draft loads but is never used
             "--spec-draft-n-max",
             str(item.gamma),
             "--spec-draft-n-min",

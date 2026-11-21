@@ -64,6 +64,45 @@ Per shard `i` (zero-padded to 5 digits), with `n` sequences (≤ `shard-seqs`):
 - Progress to stderr every shard: sequences, tokens, tokens/s.
 - Exit codes: 0 success; 2 usage error (unknown option, missing required option, bad number, `k` < 1 or > n_vocab, `seq-len` < 2); 1 runtime error (model load, input parse, decode failure, I/O, resume mismatch). On SIGINT/SIGTERM finish the current sequence, do not write a partial shard, leave `complete: false`, exit 130/143.
 
-## 3. Student and trainer (b2) — to be specified after b1 lands
+## 3. Student, initialization, trainer and offline acceptance (b2)
 
-Pilot shape of D-S (deviation from the proposal recorded here): hidden 512, 12 layers, SwiGLU FFN 1536, **4 query heads and 1 KV head of dimension 128** (same KV bytes per token as 2 × 64; keeps Qwen3-0.6B's head dimension so pruned initialization copies whole heads), full 151,936-token input embedding, untied output head over V′ = 32,768 frequency-ranked tokens (a5 ranking). Offline acceptance metrics on target-generated continuations: greedy agreement with the teacher argmax, and Σ min(p, q) over V′ with the tail bound.
+Python 3.12 with PyTorch (CUDA) and numpy, run from the local venv `$HDD/venv-train` (`$HDD/venv-train/bin/python`). Package `src/train/`. No `transformers` dependency.
+
+### 3.1 V′ (`src/train/vprime.py`)
+
+`load_vprime(ranking_json, size=32768, forced=(151643, 151645)) -> list[int]`: the first `size` token IDs of the a5 frequency ranking (`experiments/stage-a-feasibility/a5-vocab-coverage/results/a5-20261121T011928Z/ranking.json`, a JSON list of token IDs, most frequent first); every forced ID absent from that prefix replaces the lowest-ranked kept ID, keeping order otherwise. Returns exactly `size` unique IDs. `vprime_map(vprime, n_vocab) -> np.ndarray[int32]` maps target ID → V′ index, −1 if outside.
+
+### 3.2 Student (`src/train/student.py`)
+
+`StudentConfig` dataclass: `n_vocab_in=151936, n_vprime=32768, hidden=512, n_layers=12, n_heads=4, n_kv_heads=1, head_dim=128, ffn=1536, rope_theta=1e6, rms_eps=1e-6, max_seq=2048`.
+
+`Student(cfg)` (torch.nn.Module), Qwen3 layout: token embedding [n_vocab_in, hidden]; per layer: RMSNorm → attention (q/k/v/o projections without bias, per-head RMSNorm on q and k over head_dim (Qwen3 QK-norm), RoPE (rotate-half convention as in HF Qwen3) on q and k, causal GQA via `torch.nn.functional.scaled_dot_product_attention(is_causal=True)`) → residual; RMSNorm → SwiGLU FFN (`down(silu(gate(x)) * up(x))`) → residual; final RMSNorm; untied head [n_vprime, hidden] without bias. `forward(tokens[B, T]) -> logits[B, T, n_vprime]` (float32 or the autocast dtype). Parameter names follow HF Qwen3 (`embed_tokens`, `layers.{i}.self_attn.{q,k,v,o}_proj`, `self_attn.{q,k}_norm`, `input_layernorm`, `post_attention_layernorm`, `mlp.{gate,up,down}_proj`, `norm`, `lm_head`) so export maps 1:1.
+
+### 3.3 Pruned initialization (`src/train/prune_init.py`)
+
+CLI `prune_init.py --src $HDD/hf/Qwen3-0.6B --vprime-ranking RANKING --out CKPT.pt`. Reads `model.safetensors` (bf16) and builds a `Student` state dict:
+- **Layers:** source layers `round(i * 27 / 11)` for i = 0..11 (keeps first and last).
+- **Hidden dims (1024 → 512):** keep the 512 dims with the largest importance `mean over layers of |input_layernorm.weight|` × column L2 norm of `embed_tokens`; ties by smaller index; same dim set applied to every hidden-sized axis (embedding columns, all norms over hidden, input dims of q/k/v/gate/up, output dims of o/down).
+- **Heads:** source has 16 query heads, 8 KV heads (query head h uses KV head h // 2). Per layer pick the KV head with the largest `‖k_proj rows‖_F + ‖v_proj rows‖_F`; keep its two query heads plus the two query heads of the next KV head (cyclic); student K/V weights = mean of those two source KV heads' rows. q_norm/k_norm copied (k_norm from the chosen head is shared, it is per-dim only).
+- **FFN (3072 → 1536):** per layer keep neurons with the largest `‖down_proj[:, j]‖ · ‖up_proj[j, :]‖`.
+- **Head:** `lm_head` = embedding rows of the V′ IDs (source ties embeddings), restricted to the kept hidden dims.
+- Saves `{"config": asdict(cfg), "state_dict": ..., "vprime": [...], "source_sha256": ...}`.
+
+### 3.4 Data (`src/train/data.py`)
+
+`TeacherShards(dir)` reads a teacher_score output directory via `index.json` and numpy memmaps. `TeacherBatcher(dirs_with_weights, vprime_map, batch_seqs, seed)` yields batches sampled across domains with the given mixture weights: `tokens[B, L] int64`, `topk_vidx[B, L, k] int64` (V′ index, −1 if outside V′), `topk_p[B, L, k] float32` (teacher probabilities `exp(logp)`), and `loss_mask[B, L] bool` (false at the last position of each sequence). Deterministic for a seed; epoch-style without replacement within a domain.
+
+### 3.5 Losses (`src/train/losses.py`)
+
+With student log-probs `s = log_softmax(logits)` over V′ and teacher top-k restricted to V′ (`p_i`, `vidx_i ≥ 0`):
+- `kd_forward_kl`: Σ_i p_i (log p_i − s[vidx_i]) + p_rest (log p_rest − log q_rest), where p_rest = 1 − Σ_i p_i (teacher mass outside top-k∩V′, clamped ≥ 1e-8) and q_rest = 1 − Σ_i exp(s[vidx_i]) (clamped ≥ 1e-8). Mean over masked positions.
+- `hard_ce`: cross-entropy against the next token (`tokens[:, t+1]` mapped to V′); positions whose next token is outside V′ are excluded.
+- `tv_overlap`: Σ_i min(p_i, exp(s[vidx_i])) — the exact top-k part of expected acceptance (lower bound); upper bound adds min(p_k, q_rest) where p_k is the smallest top-k teacher probability. Used for evaluation and for the TV arm (loss = 1 − lower bound).
+
+### 3.6 Trainer (`src/train/train.py`)
+
+CLI: `--init CKPT.pt|scratch --data DIR:WEIGHT[,DIR:WEIGHT...] --eval-data DIR[,DIR] --out RUN_DIR --loss kd|hard|tv --tokens N --batch-seqs B --seq-len L --lr 6e-4 --warmup 500 --seed 0 --eval-every STEPS`. AdamW (β 0.9/0.95, weight decay 0.1 except norms and embeddings), cosine decay to 10 % of peak, gradient clip 1.0, bf16 autocast, fused/torch.compile optional. Writes `RUN_DIR/metrics.jsonl` (step, tokens, loss, lr, tokens/s, eval metrics), checkpoints `ckpt-<tokens>.pt` and `final.pt`, and `manifest.json` (args, data index SHA-256s, git commit). Never shares the GPU with teacher scoring.
+
+### 3.7 Offline acceptance (`src/train/eval_alpha.py`)
+
+Evaluation set: target-generated greedy continuations (Qwen3-8B Q4_K_M, temperature 0, 128 tokens) of the 300 a4 prompts, scored by `teacher_score` (`$HDD/teacher/eval-<domain>/`, one document per prompt+continuation; positions inside the generated part are marked by a sidecar `positions.json`). Per domain report, over generated positions only: greedy agreement (student argmax over V′ mapped to target ID == teacher argmax) — this is per-position α for greedy speculative decoding — and the TV lower/upper bounds of 3.5 as α estimates for sampling at temperature 1. Bootstrap 95 % CIs over prompts.

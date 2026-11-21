@@ -180,7 +180,12 @@ def read_gguf(path: str | os.PathLike[str]) -> GGUFFile:
             metadata[key] = _read_value(f, vtype)
 
         raw_align = metadata.get("general.alignment", DEFAULT_ALIGNMENT)
-        if not isinstance(raw_align, int) or isinstance(raw_align, bool) or raw_align <= 0:
+        if (
+            not isinstance(raw_align, int)
+            or isinstance(raw_align, bool)
+            or raw_align <= 0
+            or (raw_align & (raw_align - 1)) != 0
+        ):
             raise ValueError(f"Invalid general.alignment: {raw_align!r}")
         alignment = raw_align
 
@@ -191,6 +196,11 @@ def read_gguf(path: str | os.PathLike[str]) -> GGUFFile:
             dims = tuple(_U64.unpack(_read_exact(f, 8))[0] for _ in range(n_dims))
             (type_id,) = _U32.unpack(_read_exact(f, 4))
             (rel_offset,) = _U64.unpack(_read_exact(f, 8))
+            if rel_offset % alignment != 0:
+                raise ValueError(
+                    f"Tensor {name!r} relative offset {rel_offset} is not a multiple "
+                    f"of alignment {alignment}"
+                )
             type_name = GGML_TYPE_NAMES.get(type_id, f"UNKNOWN_{type_id}")
             if type_name.startswith("UNKNOWN_"):
                 nbytes = 0
@@ -199,6 +209,14 @@ def read_gguf(path: str | os.PathLike[str]) -> GGUFFile:
             raw_tensors.append((name, dims, type_name, rel_offset, nbytes))
 
         data_offset = _align_up(f.tell(), alignment)
+        f.seek(0, os.SEEK_END)
+        file_size = f.tell()
+        for name, _, _, rel_offset, nbytes in raw_tensors:
+            end = data_offset + rel_offset + nbytes
+            if end > file_size:
+                raise ValueError(
+                    f"Tensor {name!r} data (end={end}) extends past end of file ({file_size})"
+                )
 
     tensors = [
         TensorInfo(
@@ -312,6 +330,9 @@ def write_gguf(
                 raise ValueError(
                     f"Tensor producer wrote {written} bytes, expected {nbytes}"
                 )
+            pad_after = _align_up(written, alignment) - written
+            if pad_after:
+                f.write(b"\x00" * pad_after)
 
 
 def _format_inspect(gguf: GGUFFile) -> dict[str, object]:

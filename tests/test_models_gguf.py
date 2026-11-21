@@ -12,7 +12,7 @@ import sys
 import tempfile
 import unittest
 
-from models.gguf_io import read_gguf, tensor_nbytes
+from models.gguf_io import GGUF_TYPE_UINT32, read_gguf, tensor_nbytes, write_gguf
 from models.random_gguf import generate_random_gguf
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -143,6 +143,76 @@ class TestGGUFRoundTrip(unittest.TestCase):
             with self.assertRaises(ValueError):
                 read_gguf(bad)
 
+    def test_write_pads_final_tensor_to_alignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "padded.gguf"
+            payload = struct.pack("<3f", 1.0, 2.0, 3.0)
+            write_gguf(
+                out,
+                [("general.alignment", GGUF_TYPE_UINT32, 32)],
+                [("t.weight", (3,), "F32", payload)],
+                alignment=32,
+            )
+            raw = out.read_bytes()
+            gguf = read_gguf(out)
+            self.assertEqual(len(gguf.tensors), 1)
+            self.assertEqual(gguf.tensors[0].offset, gguf.data_offset)
+            self.assertEqual(gguf.tensors[0].nbytes, 12)
+            self.assertEqual(len(raw) - gguf.data_offset, 32)
+            self.assertEqual((len(raw) - gguf.data_offset) % 32, 0)
+            self.assertEqual(raw[gguf.data_offset + 12 :], b"\x00" * 20)
+
+    def test_read_rejects_invalid_alignment_unaligned_offset_and_truncated(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            # Non-power-of-two alignment
+            bad_align = Path(tmp) / "bad_align.gguf"
+            write_gguf(
+                bad_align,
+                [("general.alignment", GGUF_TYPE_UINT32, 24)],
+                [("t.weight", (4,), "F32", b"\x00" * 16)],
+                alignment=24,
+            )
+            with self.assertRaises(ValueError):
+                read_gguf(bad_align)
+            res = _run_module("models.gguf_io", "inspect", str(bad_align))
+            self.assertEqual(res.returncode, 2)
+            self.assertTrue(res.stderr.strip())
+
+            # Truncated tensor data
+            valid = Path(tmp) / "valid.gguf"
+            write_gguf(
+                valid,
+                [("general.alignment", GGUF_TYPE_UINT32, 32)],
+                [("t.weight", (4,), "F32", b"\x00" * 16)],
+                alignment=32,
+            )
+            valid_bytes = valid.read_bytes()
+            truncated = Path(tmp) / "truncated.gguf"
+            truncated.write_bytes(valid_bytes[:-17])
+            with self.assertRaises(ValueError):
+                read_gguf(truncated)
+            res = _run_module("models.gguf_io", "inspect", str(truncated))
+            self.assertEqual(res.returncode, 2)
+            self.assertTrue(res.stderr.strip())
+
+            # Unaligned tensor relative offset (craft header with rel_offset=4)
+            unaligned = Path(tmp) / "unaligned.gguf"
+            buf = bytearray()
+            buf += b"GGUF" + struct.pack("<IQQ", 3, 1, 0)
+            name = b"t.weight"
+            buf += struct.pack("<Q", len(name)) + name
+            buf += struct.pack("<IQ", 1, 4)  # 1 dim, ne0=4
+            buf += struct.pack("<IQ", 0, 4)  # F32, rel_offset=4 (not multiple of 32)
+            pad = (-len(buf)) % 32
+            buf += b"\x00" * pad
+            buf += b"\x00" * 32
+            unaligned.write_bytes(bytes(buf))
+            with self.assertRaises(ValueError):
+                read_gguf(unaligned)
+            res = _run_module("models.gguf_io", "inspect", str(unaligned))
+            self.assertEqual(res.returncode, 2)
+            self.assertTrue(res.stderr.strip())
+
 
 class TestCLIs(unittest.TestCase):
     def test_inspect_cli(self) -> None:
@@ -198,6 +268,41 @@ class TestCLIs(unittest.TestCase):
                     str(out_path),
                 )
                 self.assertEqual(res.returncode, 2, f"config {idx} should fail")
+                self.assertTrue(res.stderr.strip())
+                self.assertFalse(out_path.exists())
+
+    def test_random_gguf_uint32_overflow_exit_2_no_file(self) -> None:
+        base_dense = {
+            "arch": "qwen3",
+            "hidden": 32,
+            "layers": 1,
+            "ffn": 64,
+            "heads": 1,
+            "kv_heads": 1,
+            "head_dim": 32,
+            "vocab": 259,
+        }
+        overflow_configs = [
+            {**base_dense, "context": 4294967296},
+            {**base_dense, "layers": 4294967296},
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            for idx, cfg in enumerate(overflow_configs):
+                cfg_path = Path(tmp) / f"overflow_{idx}.json"
+                out_path = Path(tmp) / f"overflow_{idx}.gguf"
+                cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+                res = _run_module(
+                    "models.random_gguf",
+                    "--config",
+                    str(cfg_path),
+                    "--quant",
+                    "q8_0",
+                    "--seed",
+                    "1",
+                    "--out",
+                    str(out_path),
+                )
+                self.assertEqual(res.returncode, 2, f"overflow config {idx} should fail")
                 self.assertTrue(res.stderr.strip())
                 self.assertFalse(out_path.exists())
 

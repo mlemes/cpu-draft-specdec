@@ -32,9 +32,16 @@ _QUANT_LAYOUT: dict[str, tuple[int, int]] = {
 _FP16_SCALE_B0, _FP16_SCALE_B1 = struct.pack("<e", 0.015625)
 _F32_ONE = struct.pack("<f", 1.0)
 _CHUNK_BLOCKS = 1_048_576
+_UINT32_MAX = 0xFFFFFFFF
 
 
-def _require_pos_int(cfg: dict[str, object], key: str, *, minimum: int = 1) -> int:
+def _require_pos_int(
+    cfg: dict[str, object],
+    key: str,
+    *,
+    minimum: int = 1,
+    maximum: int | None = _UINT32_MAX,
+) -> int:
     if key not in cfg:
         raise ValueError(f"Missing required config key: {key!r}")
     val = cfg[key]
@@ -42,6 +49,8 @@ def _require_pos_int(cfg: dict[str, object], key: str, *, minimum: int = 1) -> i
         raise ValueError(f"Config key {key!r} must be an integer, got {val!r}")
     if val < minimum:
         raise ValueError(f"Config key {key!r} must be >= {minimum}, got {val}")
+    if maximum is not None and val > maximum:
+        raise ValueError(f"Config key {key!r} must be <= {maximum}, got {val}")
     return val
 
 
@@ -63,7 +72,7 @@ def validate_config(cfg: object, quant: str) -> dict[str, object]:
     heads = _require_pos_int(cfg, "heads")
     kv_heads = _require_pos_int(cfg, "kv_heads")
     head_dim = _require_pos_int(cfg, "head_dim")
-    vocab = _require_pos_int(cfg, "vocab", minimum=259)
+    vocab = _require_pos_int(cfg, "vocab", minimum=259, maximum=None)
 
     if "context" in cfg:
         context = _require_pos_int(cfg, "context")

@@ -335,6 +335,10 @@ def main(argv: list[str] | None = None) -> int:
 
         tokens_per_step = args.batch_seqs * args.grad_accum * seq_len
         total_steps = max(1, math.ceil(args.tokens / tokens_per_step))
+        # Warmup must leave decay steps: clamp to 10 % of the run when the requested warmup is too long (review 2026-11-21).
+        warmup_steps = args.warmup if args.warmup < total_steps else max(1, total_steps // 10)
+        if warmup_steps != args.warmup:
+            print(f"warning: --warmup {args.warmup} >= {total_steps} steps; using {warmup_steps}", file=sys.stderr)
 
         out_dir = Path(args.out)
         out_dir.mkdir(parents=True, exist_ok=False)
@@ -404,7 +408,7 @@ def main(argv: list[str] | None = None) -> int:
                 grad_norm = float(
                     torch.nn.utils.clip_grad_norm_(raw_model.parameters(), 1.0).item()
                 )
-                lr_mult = _lr_multiplier(step, total_steps, args.warmup, args.min_lr_frac)
+                lr_mult = _lr_multiplier(step, total_steps, warmup_steps, args.min_lr_frac)
                 current_lr = args.lr * lr_mult
                 for group in optimizer.param_groups:
                     group["lr"] = current_lr

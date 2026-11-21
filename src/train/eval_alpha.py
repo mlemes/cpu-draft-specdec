@@ -40,9 +40,12 @@ def _normalize_domains(domains: str | Iterable[str]) -> list[str]:
 def _bootstrap_ci(
     prompt_means: list[float],
     boot_idx: np.ndarray,
+    weights: list[int] | None = None,
 ) -> tuple[float, float]:
+    """Percentile CI of the position-weighted mean: resample prompts, weight each by its position count."""
     arr = np.asarray(prompt_means, dtype=np.float64)
-    boot_means = arr[boot_idx].mean(axis=1)
+    w = np.ones_like(arr) if weights is None else np.asarray(weights, dtype=np.float64)
+    boot_means = (arr * w)[boot_idx].sum(axis=1) / w[boot_idx].sum(axis=1)
     lo, hi = np.percentile(boot_means, [2.5, 97.5])
     return float(lo), float(hi)
 
@@ -85,6 +88,7 @@ def evaluate(
                     continue
 
                 prompt_agree_means: list[float] = []
+                prompt_counts: list[int] = []
                 prompt_lower_means: list[float] = []
                 prompt_upper_means: list[float] = []
                 total_agree = 0.0
@@ -142,6 +146,7 @@ def evaluate(
                         agree_t = (pred_ids_t == target_top0_t).float()
 
                         prompt_agree_means.append(float(agree_t.mean().item()))
+                        prompt_counts.append(int(agree_t.numel()))
                         prompt_lower_means.append(float(lower_t.mean().item()))
                         prompt_upper_means.append(float(upper_t.mean().item()))
 
@@ -168,9 +173,9 @@ def evaluate(
                 lower_mean = total_lower / total_positions
                 upper_mean = total_upper / total_positions
 
-                agree_lo, agree_hi = _bootstrap_ci(prompt_agree_means, boot_idx)
-                lower_lo, lower_hi = _bootstrap_ci(prompt_lower_means, boot_idx)
-                upper_lo, upper_hi = _bootstrap_ci(prompt_upper_means, boot_idx)
+                agree_lo, agree_hi = _bootstrap_ci(prompt_agree_means, boot_idx, prompt_counts)
+                lower_lo, lower_hi = _bootstrap_ci(prompt_lower_means, boot_idx, prompt_counts)
+                upper_lo, upper_hi = _bootstrap_ci(prompt_upper_means, boot_idx, prompt_counts)
 
                 results[domain] = {
                     "positions": int(total_positions),

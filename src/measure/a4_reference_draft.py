@@ -138,6 +138,7 @@ def build_server_cmd(
     port: int,
     draft_threads: int,
     item: PlanItem,
+    draft_sampling: str | None = None,
 ) -> list[str]:
     cmd = [
         llama_server,
@@ -166,6 +167,9 @@ def build_server_cmd(
             "--spec-draft-p-min",
             "0",
         ])
+        if draft_sampling:
+            # probabilistic: the draft samples and the target verifies by rejection (min(1, p/q)) at temperature > 0
+            cmd.extend(["--spec-draft-sampling", draft_sampling])
         if item.device == "cpu":
             # -tbd too: its default (all cores) oversubscribes the CPU during the draft's per-cycle batch (+1.6 ms/cycle measured)
             cmd.extend(["-ngld", "0", "-devd", "none", "-td", str(draft_threads), "-tbd", str(draft_threads)])
@@ -420,6 +424,12 @@ def _build_parser() -> argparse.ArgumentParser:
         help=f"CPU threads for CPU draft (default: {DEFAULT_DRAFT_THREADS}).",
     )
     parser.add_argument(
+        "--spec-draft-sampling",
+        choices=("greedy", "probabilistic"),
+        default=None,
+        help="Pass --spec-draft-sampling to llama-server (default: not passed, server default greedy).",
+    )
+    parser.add_argument(
         "--seed",
         type=int,
         default=DEFAULT_SEED,
@@ -505,6 +515,7 @@ def main(argv: list[str] | None = None) -> int:
                     port=args.port,
                     draft_threads=args.draft_threads,
                     item=item,
+                    draft_sampling=args.spec_draft_sampling,
                 )
                 log_path = out_dir / f"server-{item.label}.log"
                 if not _port_free(args.port):
@@ -625,6 +636,7 @@ def main(argv: list[str] | None = None) -> int:
                     "n_predict": args.n_predict,
                     "port": args.port,
                     "draft_threads": args.draft_threads,
+                    "spec_draft_sampling": args.spec_draft_sampling,
                     "seed": args.seed,
                 },
                 "plan": [

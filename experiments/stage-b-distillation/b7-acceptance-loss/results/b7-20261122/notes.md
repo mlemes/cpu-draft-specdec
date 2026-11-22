@@ -26,5 +26,22 @@ Overlap lower bound `tv_lower` = sum over the teacher's top-32 of min(p, q) (sam
 - Greedy acceptance: no difference (the top token is already what both losses get right).
 - Sampled acceptance: the TV loss adds 0.056 on general, 0.020 on pt_fin and 0.017 on json, intervals disjoint on
   general and pt_fin. Forward KL spreads probability over the teacher's tail, which costs overlap; TV optimizes overlap.
-- Recommendation: KD pretraining then a short TV phase for drafts used with sampling. Speed benchmark (greedy and
-  sampled at T 0.7, both arms) queued: `../../b3-student-specdec/results/b3-b7{kd,tv}-*`.
+- The offline gain matters only if verification uses the draft's distribution (rejection sampling, min(1, p/q)).
+
+## Speed, llama.cpp default draft sampling (greedy draft, target samples and matches)
+
+`../../b3-student-specdec/results/b3-b7{kd,tv}-*`, CPU draft, 100 prompts per cell. Sampled = T 0.7, top-k 20,
+top-p 0.8.
+
+| γ | mode | general kd / tv | pt_fin kd / tv | json kd / tv |
+|---|---|---|---|---|
+| 2 | greedy | 1.17 / 1.17 | 1.27 / 1.29 | 1.65 / 1.65 |
+| 2 | sampled | 1.11 / 1.12 | 1.21 / 1.22 | 1.66 / 1.66 |
+| 4 | greedy | 1.05 / 1.04 | 1.21 / 1.24 | 1.90 / 1.95 |
+| 4 | sampled | 0.97 / 0.97 | 1.10 / 1.12 | 1.92 / 1.97 |
+
+No difference: with `--spec-draft-sampling greedy` (the server default) the draft proposes its argmax and the target
+accepts when its own sample equals it (`common_sampler_sample_and_accept_n`, `common/sampling.cpp:698`), so acceptance
+is p(argmax q) and does not depend on the rest of q. The rejection rule is behind `--spec-draft-sampling
+probabilistic` (`common_sampler_sample_and_accept_n_rejection`, `common/sampling.cpp:744`); that benchmark is queued
+(`b3-b7{kd,tv}-prob-*`).

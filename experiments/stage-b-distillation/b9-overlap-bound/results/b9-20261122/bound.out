@@ -1,0 +1,10 @@
+t_base 13.49 ms  t_draft 1.72 ms/token  t_verify {3: 14.54727879184811, 5: 15.276665717140416, 7: 15.265580028078286}
+2 general  step  21.1 ms  draft  3.4 ms (16%)  measured 1.14  draft-ahead 1.17 (hit 0.14)  oracle 1.36
+2 json     step  21.6 ms  draft  3.4 ms (16%)  measured 1.68  draft-ahead 1.89 (hit 0.70)  oracle 2.00
+2 pt_fin   step  21.2 ms  draft  3.4 ms (16%)  measured 1.28  draft-ahead 1.33 (hit 0.25)  oracle 1.53
+4 general  step  25.8 ms  draft  6.9 ms (27%)  measured 1.03  draft-ahead 1.04 (hit 0.03)  oracle 1.41
+4 json     step  28.5 ms  draft  6.9 ms (24%)  measured 1.89  draft-ahead 2.18 (hit 0.56)  oracle 2.49
+4 pt_fin   step  26.8 ms  draft  6.9 ms (26%)  measured 1.24  draft-ahead 1.28 (hit 0.11)  oracle 1.67
+6 general  step  30.3 ms  draft 10.3 ms (34%)  measured 0.90  draft-ahead 0.90 (hit 0.01)  oracle 1.37
+6 json     step  33.7 ms  draft 10.3 ms (31%)  measured 2.04  draft-ahead 2.36 (hit 0.44)  oracle 2.94
+6 pt_fin   step  31.8 ms  draft 10.3 ms (33%)  measured 1.11  draft-ahead 1.12 (hit 0.04)  oracle 1.65

@@ -270,17 +270,18 @@ The student trained with 23% structured output (section 6.1) was measured next. 
 | 6 | GPU | 0.99 (0.94–1.05) | 1.26 (1.19–1.32) | **2.28 (2.17–2.41)** |
 | 4 | *GPU, Qwen3-0.6B as draft* | *1.03* | *1.09* | *1.90* |
 
-$\gamma = 6$ used 30 prompts per domain, the others 100. Other processes were running on the CPU during this measurement, so the CPU rows are probably somewhat low; the GPU rows and the acceptance rates are unaffected, and a clean repeat of the CPU rows is planned.
+$\gamma = 6$ used 30 prompts per domain, the others 100. A repeat with 100 prompts at every block length reproduced all rows within 0.08 and gave 2.04× (1.98–2.10) with the draft on the CPU at $\gamma = 6$.
 
 **JSON more than doubles the target's speed.** The acceptance rate implied by the engine's counts is 0.89, exactly the offline prediction. At that rate long blocks pay off, and the best setting is 6 tokens or more. With the draft on the GPU the 8B model runs 2.17× faster at $\gamma = 4$ and 2.28× at $\gamma = 6$, against 1.90× for Qwen3-0.6B. The 50-million-parameter student now beats the off-the-shelf model eight times its size in all three domains.
 
+**On JSON the CPU's slower drafting shows.** With the draft on the CPU the best JSON speedup is 2.04×, about 0.2 below the GPU draft. At an acceptance rate of 0.89 each cycle drafts and keeps many tokens, so drafting time is a larger share of the cycle than on prose. A loop that drafts on the CPU while the GPU verifies would hide most of this cost.
+
 ## 8. What remains
 
-1. **Repeat the CPU measurements of section 7.4 on an idle machine.**
-2. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.
-3. **Quantify the GPU memory saved.** The CPU draft matches the GPU draft's speed at short blocks, so the memory it leaves free on the card is its main benefit and should be measured as such.
-4. **Overlap drafting and verification.** A modified loop that drafts on the CPU while the GPU verifies could add up to about 7% over a GPU draft.
-5. **Conditional computation.** The original plan also compares the dense student with a mixture-of-experts student, which stores more parameters but activates only a cache-sized subset per token.
+1. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.
+2. **Quantify the GPU memory saved.** The CPU draft matches the GPU draft's speed at short blocks, so the memory it leaves free on the card is its main benefit and should be measured as such.
+3. **Overlap drafting and verification.** A modified loop that drafts on the CPU while the GPU verifies could add up to about 7% over a GPU draft.
+4. **Conditional computation.** The original plan also compares the dense student with a mixture-of-experts student, which stores more parameters but activates only a cache-sized subset per token.
 
 ## 9. Summary
 

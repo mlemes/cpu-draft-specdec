@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # b5: does more distinct prose (instead of repeated passes) keep raising acceptance?
-# One change against the 96M-token kd-pruned run: general and pt_general each get 20M new teacher-scored tokens
-# (general2, pt_general2: documents disjoint from the b1 corpus, same sources and seed order). Prose share stays 0.87,
-# split by token count; pt_fin 0.05 and json 0.08 unchanged. Same tokens, seed, init, schedule.
+# One change against b4 (96M tokens, JSON share 0.23): general and pt_general each get 20M new teacher-scored tokens
+# (general2, pt_general2: documents disjoint from the b1 corpus, same sources and seed order). Prose share stays 0.72,
+# split by token count; pt_fin 0.05, json 0.08 and json_extra 0.15 unchanged. Same tokens, seed, init, schedule.
 set -euo pipefail
 R=$(cd "$(dirname "$0")/../../../.." && pwd)
 HDD=/mnt/hdd1/cpu-draft-specdec
@@ -14,5 +14,5 @@ for d in general2 pt_general2; do
     "$R/src/teacher/teacher_score" --model "$M" --input "$HDD/corpora/train/$d.jsonl" \
       --out "$T/$d/$TAG" --seq-len 1024 --k 32 --max-tokens 20000000 --shard-seqs 1024 --threads 5
 done
-DATA="$T/general/$TAG:0.163,$T/general2/$TAG:0.272,$T/pt_general/$TAG:0.163,$T/pt_general2/$TAG:0.272,$T/pt_fin/$TAG:0.05,$T/json/$TAG:0.08" \
-RUN_TAG=prose44 TOKENS=96000000 "$R/experiments/stage-b-distillation/b2-dense-student/configs/run_b2_pilot.sh" kd-pruned
+DATA="$T/general/$TAG:0.135,$T/general2/$TAG:0.225,$T/pt_general/$TAG:0.135,$T/pt_general2/$TAG:0.225,$T/pt_fin/$TAG:0.05,$T/json/$TAG:0.08,$T/json_extra/$TAG:0.15" \
+RUN_TAG=prose45json23 TOKENS=96000000 "$R/experiments/stage-b-distillation/b2-dense-student/configs/run_b2_pilot.sh" kd-pruned

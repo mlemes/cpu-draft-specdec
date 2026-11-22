@@ -13,7 +13,7 @@ Large artifacts live under `/mnt/hdd1/cpu-draft-specdec/` (abbreviated `$HDD` be
 4b. **Offline-acceptance evaluation set** (`src/data/gen_eval_set.py`): target greedy continuations of the a4 prompts with per-position top-32 log-probabilities, `$HDD/eval/<target_sha12>/eval_<domain>.jsonl`.
 5. **On-policy data.** The student generates continuations, then the teacher scores them as in step 4.
 6. **Training** (experiments b2–b4, `src/train/train.py`). Run directories `$HDD/runs/b2/<run_id>/` with `metrics.jsonl`, checkpoints (`config`, float32 `state_dict`, `vprime`) and `manifest.json`; small summaries are copied to `experiments/stage-b-distillation/<exp>/results/<run_id>/`.
-7. **Export.** Hugging Face to GGUF, then quantization and the pruned head. Output: `$HDD/gguf/<student>/<run_id>-<quant>.gguf` with its SHA-256 recorded in the run manifest.
+7. **Export** (`src/models/export_student_gguf.py`). Student `.pt` checkpoint to Qwen3 GGUF with `output_vmap.weight` and copied tokenizer keys, then quantization. Output: `$HDD/gguf/<student>/<run_id>-<quant>.gguf` with its SHA-256 recorded in the run manifest.
 8. **Benchmarks and end-to-end runs** (Stages A–D). Per run: `experiments/<stage>/<exp>/results/<run_id>/manifest.json` and `metrics.jsonl` in the repository; raw logs, counter dumps and routing traces in `$HDD/runs/<run_id>/`.
 9. **Online adaptation** (Stage D). Target distributions captured during verification go to `$HDD/teacher/online/<stream>/` in the format of step 4 and feed step 6.
 

@@ -164,6 +164,83 @@ def _write_manifest(
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+def _count_loss_positions(
+    batch: dict[str, torch.Tensor],
+    loss: str,
+    vmap_t: torch.Tensor | None,
+) -> int:
+    """Count positions contributing to `loss` in a single microbatch."""
+    loss_mask = batch["loss_mask"]
+    if loss in ("kd", "tv"):
+        return int(loss_mask.sum().item())
+    if loss == "hard":
+        if vmap_t is None:
+            raise ValueError("vmap_t is required when loss == 'hard'")
+        tokens = batch["tokens"]
+        if tokens.shape[1] < 2:
+            return 0
+        targets = vmap_t[tokens[:, 1:]]
+        pos_mask = loss_mask[:, :-1] & (targets >= 0)
+        return int(pos_mask.sum().item())
+    raise ValueError(f"Unknown loss: {loss!r}")
+
+
+def step_backward(
+    model: torch.nn.Module,
+    microbatches: list[dict[str, torch.Tensor]],
+    loss: str,
+    vmap_t: torch.Tensor | None = None,
+) -> float:
+    """Run forward/backward over microbatches, pooling gradients by counted positions."""
+    if loss not in ("kd", "hard", "tv"):
+        raise ValueError(f"Unknown loss: {loss!r}")
+    if loss == "hard" and vmap_t is None:
+        raise ValueError("vmap_t is required when loss == 'hard'")
+    if not microbatches:
+        return 0.0
+
+    counts = [_count_loss_positions(mb, loss, vmap_t) for mb in microbatches]
+    total_positions = sum(counts)
+    if total_positions == 0:
+        return 0.0
+
+    device = microbatches[0]["tokens"].device
+    autocast_ctx = (
+        torch.autocast("cuda", dtype=torch.bfloat16)
+        if device.type == "cuda"
+        else nullcontext()
+    )
+
+    loss_accum = 0.0
+    for mb, n_i in zip(microbatches, counts):
+        if n_i == 0:
+            continue
+        weight = n_i / float(total_positions)
+        tokens = mb["tokens"]
+        topk_vidx = mb["topk_vidx"]
+        topk_p = mb["topk_p"]
+        loss_mask = mb["loss_mask"]
+
+        with autocast_ctx:
+            logits = model(tokens)
+            if loss == "kd":
+                mb_loss = kd_forward_kl(logits, topk_vidx, topk_p, loss_mask)
+            elif loss == "hard":
+                assert vmap_t is not None
+                mb_loss = hard_ce(logits, tokens, vmap_t, loss_mask)
+            else:
+                lower, _ = tv_overlap(logits, topk_vidx, topk_p)
+                mask_f = loss_mask.float()
+                mean_lower = (lower * mask_f).sum() / mask_f.sum().clamp(min=1.0)
+                mb_loss = 1.0 - mean_lower
+            scaled_loss = mb_loss * weight
+
+        scaled_loss.backward()
+        loss_accum += float(mb_loss.detach().item()) * weight
+
+    return loss_accum
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Distillation trainer for Student.")
     parser.add_argument(
@@ -354,11 +431,6 @@ def main(argv: list[str] | None = None) -> int:
             manifest_path, train_args, git_commit, data_sha256, start_time, None
         )
 
-        autocast_ctx = (
-            torch.autocast("cuda", dtype=torch.bfloat16)
-            if device.type == "cuda"
-            else nullcontext()
-        )
         metrics_path = out_dir / "metrics.jsonl"
         prev_tokens = 0
         last_eval_step = 0
@@ -367,8 +439,8 @@ def main(argv: list[str] | None = None) -> int:
             for step in range(1, total_steps + 1):
                 step_t0 = time.perf_counter()
                 optimizer.zero_grad(set_to_none=True)
-                loss_accum = 0.0
 
+                microbatches: list[dict[str, torch.Tensor]] = []
                 for _ in range(args.grad_accum):
                     batch = next(batcher)
                     tokens = batch["tokens"]
@@ -383,27 +455,16 @@ def main(argv: list[str] | None = None) -> int:
                         loss_mask = loss_mask[:, :seq_len].clone()
                         loss_mask[:, -1] = False
 
-                    tokens = tokens.to(device=device, dtype=torch.long)
-                    topk_vidx = topk_vidx.to(device=device, dtype=torch.long)
-                    topk_p = topk_p.to(device=device, dtype=torch.float32)
-                    loss_mask = loss_mask.to(device=device, dtype=torch.bool)
+                    microbatches.append(
+                        {
+                            "tokens": tokens.to(device=device, dtype=torch.long),
+                            "topk_vidx": topk_vidx.to(device=device, dtype=torch.long),
+                            "topk_p": topk_p.to(device=device, dtype=torch.float32),
+                            "loss_mask": loss_mask.to(device=device, dtype=torch.bool),
+                        }
+                    )
 
-                    with autocast_ctx:
-                        logits = model(tokens)
-                        if args.loss == "kd":
-                            loss = kd_forward_kl(logits, topk_vidx, topk_p, loss_mask)
-                        elif args.loss == "hard":
-                            assert vmap_t is not None
-                            loss = hard_ce(logits, tokens, vmap_t, loss_mask)
-                        else:
-                            lower, _ = tv_overlap(logits, topk_vidx, topk_p)
-                            mask_f = loss_mask.float()
-                            mean_lower = (lower * mask_f).sum() / mask_f.sum().clamp(min=1.0)
-                            loss = 1.0 - mean_lower
-                        scaled_loss = loss / float(args.grad_accum)
-
-                    scaled_loss.backward()
-                    loss_accum += float(loss.detach().item()) / float(args.grad_accum)
+                loss_accum = step_backward(model, microbatches, args.loss, vmap_t)
 
                 grad_norm = float(
                     torch.nn.utils.clip_grad_norm_(raw_model.parameters(), 1.0).item()

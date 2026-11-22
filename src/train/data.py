@@ -101,6 +101,12 @@ class TeacherBatcher:
             if len(dom) == 0:
                 raise ValueError(f"Domain {dom.dir} contains 0 sequences")
 
+        seq_lens = {dom.seq_len for dom in self.domains}
+        if len(seq_lens) != 1:
+            raise ValueError(
+                f"Teacher directories must share one seq_len, got {[dom.seq_len for dom in self.domains]}"
+            )
+
         self.vprime_map = np.asarray(vprime_map, dtype=np.int32)
         self.batch_seqs = batch_seqs
         self.rng = np.random.default_rng(seed)

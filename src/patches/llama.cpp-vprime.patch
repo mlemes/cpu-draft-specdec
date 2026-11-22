@@ -1,0 +1,102 @@
+diff --git a/src/llama-arch.cpp b/src/llama-arch.cpp
+index 3cda4f7fb..d3a24299b 100644
+--- a/src/llama-arch.cpp
++++ b/src/llama-arch.cpp
+@@ -541,6 +541,7 @@ static const std::map<llm_tensor, const char *> LLM_TENSOR_NAMES = {
+     { LLM_TENSOR_OUTPUT_NORM,                            "output_norm" },
+     { LLM_TENSOR_OUTPUT_NORM_LFM2,                       "token_embd_norm" }, // fix for wrong tensor name
+     { LLM_TENSOR_OUTPUT,                                 "output" },
++    { LLM_TENSOR_OUTPUT_VMAP,                            "output_vmap" },
+     { LLM_TENSOR_OUTPUT_RES_QUERY,                       "output_res_query" },
+     { LLM_TENSOR_ROPE_FREQS,                             "rope_freqs" },
+     { LLM_TENSOR_HRM_Z_L_INIT,                           "hrm.z_l_init" },
+@@ -966,6 +967,7 @@ static const std::map<llm_tensor, llm_tensor_info> LLM_TENSOR_INFOS = {
+     {LLM_TENSOR_TOKEN_EMBD_NORM,            {LLM_TENSOR_LAYER_REPEATING, GGML_OP_MUL}},  // do the norms on the first layer (not the input layer)
+     {LLM_TENSOR_TOKEN_EMBD_PROJ,            {LLM_TENSOR_LAYER_REPEATING, GGML_OP_MUL_MAT}},
+     {LLM_TENSOR_OUTPUT,                     {LLM_TENSOR_LAYER_OUTPUT,    GGML_OP_MUL_MAT}},
++    {LLM_TENSOR_OUTPUT_VMAP,                {LLM_TENSOR_LAYER_OUTPUT,    GGML_OP_GET_ROWS}},
+     {LLM_TENSOR_CLS,                        {LLM_TENSOR_LAYER_OUTPUT,    GGML_OP_MUL_MAT}},
+     {LLM_TENSOR_CLS_OUT,                    {LLM_TENSOR_LAYER_OUTPUT,    GGML_OP_MUL_MAT}},
+     {LLM_TENSOR_CLS_NORM,                   {LLM_TENSOR_LAYER_OUTPUT,    GGML_OP_MUL}},
+diff --git a/src/llama-arch.h b/src/llama-arch.h
+index 1ac22ecee..5bf934e3b 100644
+--- a/src/llama-arch.h
++++ b/src/llama-arch.h
+@@ -548,6 +548,7 @@ enum llm_tensor {
+     LLM_TENSOR_DENSE_2_OUT,
+     LLM_TENSOR_DENSE_3_OUT,
+     LLM_TENSOR_OUTPUT,
++    LLM_TENSOR_OUTPUT_VMAP,
+     LLM_TENSOR_OUTPUT_NORM,
+     LLM_TENSOR_OUTPUT_NORM_LFM2, // fix for wrong tensor name
+     LLM_TENSOR_OUTPUT_RES_QUERY,
+diff --git a/src/llama-model.h b/src/llama-model.h
+index e86e5e54f..3d077fc06 100644
+--- a/src/llama-model.h
++++ b/src/llama-model.h
+@@ -839,6 +839,7 @@ struct llama_model {
+     struct ggml_tensor * output_res_query = nullptr; // inkling2: query of the final attention-residual mix
+     struct ggml_tensor * output_norm_b   = nullptr;
+     struct ggml_tensor * output          = nullptr;
++    struct ggml_tensor * output_vmap     = nullptr;
+     struct ggml_tensor * output_b        = nullptr;
+     struct ggml_tensor * output_norm_enc = nullptr;
+ 
+diff --git a/src/models/qwen3.cpp b/src/models/qwen3.cpp
+index 7a6052970..3c1ab3275 100644
+--- a/src/models/qwen3.cpp
++++ b/src/models/qwen3.cpp
+@@ -12,17 +12,33 @@ void llama_model_qwen3::load_arch_hparams(llama_model_loader & ml) {
+     }
+ }
+ 
+-void llama_model_qwen3::load_arch_tensors(llama_model_loader &) {
++void llama_model_qwen3::load_arch_tensors(llama_model_loader & ml) {
+     LLAMA_LOAD_LOCALS;
+ 
+     tok_embd = create_tensor(tn(LLM_TENSOR_TOKEN_EMBD, "weight"), {n_embd, n_vocab}, 0);
+ 
+     // output
+     output_norm = create_tensor(tn(LLM_TENSOR_OUTPUT_NORM, "weight"), {n_embd}, 0);
+-    output      = create_tensor(tn(LLM_TENSOR_OUTPUT,      "weight"), {n_embd, n_vocab}, TENSOR_NOT_REQUIRED);
+-    // if output is NULL, init from the input tok embed
+-    if (output == NULL) {
+-        output = create_tensor(tn(LLM_TENSOR_TOKEN_EMBD, "weight"), {n_embd, n_vocab}, TENSOR_DUPLICATED);
++    output_vmap = create_tensor(tn(LLM_TENSOR_OUTPUT_VMAP, "weight"), {n_vocab}, TENSOR_NOT_REQUIRED);
++    if (output_vmap != nullptr) {
++        if (output_vmap->type != GGML_TYPE_I32) {
++            throw std::runtime_error(format("tensor 'output_vmap.weight' has invalid type %s (expected i32)", ggml_type_name(output_vmap->type)));
++        }
++        const ggml_tensor * meta = ml.get_tensor_meta("output.weight");
++        if (meta == nullptr) {
++            throw std::runtime_error("tensor 'output.weight' is required when 'output_vmap.weight' is present");
++        }
++        const int64_t n_vprime = meta->ne[1];
++        if (n_vprime <= 0 || n_vprime >= n_vocab) {
++            throw std::runtime_error(format("tensor 'output.weight' has invalid V-prime head size %lld (vocab size %lld)", (long long) n_vprime, (long long) n_vocab));
++        }
++        output = create_tensor(tn(LLM_TENSOR_OUTPUT, "weight"), {n_embd, n_vprime}, 0);
++    } else {
++        output = create_tensor(tn(LLM_TENSOR_OUTPUT, "weight"), {n_embd, n_vocab}, TENSOR_NOT_REQUIRED);
++        // if output is NULL, init from the input tok embed
++        if (output == NULL) {
++            output = create_tensor(tn(LLM_TENSOR_TOKEN_EMBD, "weight"), {n_embd, n_vocab}, TENSOR_DUPLICATED);
++        }
+     }
+ 
+     // output rerank head
+@@ -60,6 +76,14 @@ llama_model_qwen3::graph::graph(const llm_graph_params & params) : llm_graph_con
+     // lm_head
+     cur = build_lora_mm(model.output, cur, model.output_s);
+ 
++    if (model.output_vmap) {
++        ggml_tensor * pad = ggml_fill(ctx0, ggml_new_tensor_2d(ctx0, cur->type, 1, cur->ne[1]), -INFINITY);
++        cur = ggml_concat(ctx0, cur, pad, 0);
++        cur = ggml_cont(ctx0, ggml_transpose(ctx0, cur));
++        cur = ggml_get_rows(ctx0, cur, model.output_vmap);
++        cur = ggml_cont(ctx0, ggml_transpose(ctx0, cur));
++    }
++
+     cb(cur, "result_output", -1);
+     res->t_logits = cur;
+ }

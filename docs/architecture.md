@@ -13,7 +13,7 @@ Status (2026-11-21): Stage A measurement tooling and Stage B teacher/training to
 | Measurement | `src/measure/` | resctrl (CAT masks, MBM, occupancy), `perf` core and uncore events, IBS sampling, manifest writer, touched-byte calculator from tensor layouts and routing traces |
 | Teacher scorer | `src/teacher/teacher_score` (C++, libllama) | Built. Packs corpus text into fixed-length sequences, runs the deployed target and stores per-position top-32 log-probabilities (spec: `docs/specs/stage-b-tooling.md` §2) |
 | Training | `src/train/` | Built: V′ selection, Qwen3-layout student, pruned initialization from Qwen3-0.6B, teacher batcher, KD/CE/TV losses, trainer and offline-acceptance evaluator (§3). Planned: MoE upcycling, sticky-routing penalty |
-| Model building | `src/models/` | Built: GGUF I/O and random-weight GGUFs for latency sweeps. Planned: student GGUF export with the V′ head, quantization (pruning lives in `src/train/prune_init.py`) |
+| Model building | `src/models/` | Built: GGUF I/O, random-weight GGUFs for latency sweeps, and student GGUF exporter with V′ head (`export_student_gguf.py`). Planned: quantization (pruning lives in `src/train/prune_init.py`) |
 
 ## Pinned runtime
 

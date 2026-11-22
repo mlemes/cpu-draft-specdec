@@ -1,14 +1,15 @@
 """Greedy speedup per (gamma, device, domain) with 95% bootstrap CI over prompts, and the per-position alpha implied
 by server accepted/drafted (E = 1 + gamma*acc = (1 - a^(gamma+1))/(1 - a)).
 
-    python3 src/measure/b3_summarize.py RESULTS/metrics.jsonl
+    python3 src/measure/b3_summarize.py RESULTS/metrics.jsonl [greedy|sampled]
 """
 import json,sys,random
 rows=[json.loads(l) for l in open(sys.argv[1])]
+mode=sys.argv[2] if len(sys.argv)>2 else 'greedy'
 base={(r['mode'],r['prompt_id']):r['tokens_per_s'] for r in rows if r['device']=='none'}
 g={}
 for r in rows:
-  if r['device']=='none' or r['error'] or r['mode']!='greedy': continue
+  if r['device']=='none' or r['error'] or r['mode']!=mode: continue
   g.setdefault((r['gamma'],r['device'],r['domain']),[]).append((r['tokens_per_s']/base[(r['mode'],r['prompt_id'])], r['draft_n'], r['draft_n_accepted']))
 random.seed(0)
 for k in sorted(g):

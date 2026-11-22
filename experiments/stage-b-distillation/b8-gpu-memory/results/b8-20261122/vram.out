@@ -1,0 +1,10 @@
+{'ctx': 'default', 'draft': 'none', 'server_vram_mib': 5034, 'alive': True}
+{'ctx': 'default', 'draft': 'gpu', 'server_vram_mib': 5120, 'alive': True}
+{'ctx': 'default', 'draft': 'cpu', 'server_vram_mib': 5034, 'alive': True}
+{'ctx': 8192, 'draft': 'none', 'server_vram_mib': 0, 'alive': False}
+{'ctx': 8192, 'draft': 'gpu', 'server_vram_mib': 0, 'alive': False}
+{'ctx': 8192, 'draft': 'cpu', 'server_vram_mib': 0, 'alive': False}
+{'ctx': 12288, 'draft': 'none', 'server_vram_mib': 0, 'alive': False}
+{'ctx': 12288, 'draft': 'gpu', 'server_vram_mib': 0, 'alive': False}
+{'ctx': 12288, 'draft': 'cpu', 'server_vram_mib': 0, 'alive': False}
+[{"ctx": "default", "draft": "none", "server_vram_mib": 5034, "alive": true}, {"ctx": "default", "draft": "gpu", "server_vram_mib": 5120, "alive": true}, {"ctx": "default", "draft": "cpu", "server_vram_mib": 5034, "alive": true}, {"ctx": 8192, "draft": "none", "server_vram_mib": 0, "alive": false}, {"ctx": 8192, "draft": "gpu", "server_vram_mib": 0, "alive": false}, {"ctx": 8192, "draft": "cpu", "server_vram_mib": 0, "alive": false}, {"ctx": 12288, "draft": "none", "server_vram_mib": 0, "alive": false}, {"ctx": 12288, "draft": "gpu", "server_vram_mib": 0, "alive": false}, {"ctx": 12288, "draft": "cpu", "server_vram_mib": 0, "alive": false}]

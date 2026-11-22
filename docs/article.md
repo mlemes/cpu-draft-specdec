@@ -111,7 +111,7 @@ The last row reshaped the project. llama.cpp's speculative loop is strictly sequ
 A CPU draft can still pay off in two ways:
 
 1. **Overlap.** The CPU drafts the next block while the GPU verifies the current one. The estimated ceiling for this on the measured timings is a cycle of about 13.2 ms instead of 16.3 ms, roughly 7% faster than a GPU draft. That is real but modest, and requires changing the engine.
-2. **Freeing the GPU.** A draft on the CPU uses no GPU memory and no GPU time. On an 8 GB card that matters: the memory can hold a longer context, a larger target, or other work.
+2. **Freeing the GPU.** A draft on the CPU uses no GPU memory and no GPU time. Section 7.6 shows that for a draft this small the memory saved is negligible, so the benefit is GPU time.
 
 The project therefore continued with distillation first and treats the CPU placement mainly as a way to keep the GPU free.
 
@@ -295,16 +295,20 @@ Speedups with the draft on the CPU and sampling at temperature 0.7 (top-k 20, to
 
 **The proper acceptance rule matters more than the loss.** Switching the draft to sampled proposals raised sampled speedups by 0.05–0.12 on prose, bringing them close to the greedy speedups. The overlap loss adds a further 0.04–0.05 on prose at $\gamma = 4$. Both gains are smaller than the offline estimate suggests, because at temperature 0.7 with top-k and top-p truncation the target's distribution is sharper and has less of the tail where the two losses differ.
 
+### 7.6 GPU memory
+
+The server's own GPU memory was measured with the benchmark settings (2,048-token context): 5,034 MiB for the target alone, 5,120 MiB with the draft on the GPU, and 5,034 MiB with the draft on the CPU. The GPU draft costs only 86 MiB, because its largest part, the input embedding table, stays in main memory even when the rest of the draft is on the GPU. That is about 600 tokens of the target's attention cache. For a draft this small, the memory saved by moving it to the CPU is negligible; its resource benefit is the GPU time it no longer uses.
+
 ## 8. What remains
 
 1. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.
-2. **Quantify the GPU memory saved.** The CPU draft matches the GPU draft's speed at short blocks, so the memory it leaves free on the card is its main benefit and should be measured as such.
+2. **Measure the value of freed GPU time.** The memory saving is negligible (section 7.6); the CPU draft's remaining resource benefit is GPU time, which matters when the card is shared, for example with a second model or several requests at once.
 3. **Overlap drafting and verification.** A modified loop that drafts on the CPU while the GPU verifies could add up to about 7% over a GPU draft.
 4. **Conditional computation.** The original plan also compares the dense student with a mixture-of-experts student, which stores more parameters but activates only a cache-sized subset per token.
 
 ## 9. Summary
 
-Speculative decoding turns a large model's spare compute into speed by letting a small model guess ahead. The guesses must agree with the large model often enough to pay for the drafting. On a desktop with an RTX 3070 and a 96 MB-cache CPU, a draft of about 50 million parameters fits in the CPU cache and runs at about 1 ms per token. In llama.cpp's sequential loop, however, the GPU runs such a draft even faster, so the CPU's advantage lies in freeing the GPU rather than in raw speed. Knowledge distillation from the 8B target clearly outperforms ordinary training for this purpose, and starting from a pruned copy of a related small model helps further. After a short pilot the best student agrees with the target 44–59% of the time depending on the domain. Training four times longer raises agreement to 0.56 on English and 0.65 on the financial text, matching the 0.6B model on the latter, and a larger share of structured data in the training mix lifts JSON agreement to 0.89 without hurting prose. Run as a real draft from the CPU, the longer-trained student speeds up the 8B model by 1.18× on English, 1.32× on Portuguese financial text and 1.50× on JSON, beating Qwen3-0.6B on prose and costing only a few percent of speed against running the same draft on the GPU. Trained with more structured data, the draft makes the 8B model more than twice as fast on JSON.
+Speculative decoding turns a large model's spare compute into speed by letting a small model guess ahead. The guesses must agree with the large model often enough to pay for the drafting. On a desktop with an RTX 3070 and a 96 MB-cache CPU, a draft of about 50 million parameters fits in the CPU cache and runs at about 1 ms per token. In llama.cpp's sequential loop, however, the GPU runs such a draft even faster, so the CPU's advantage lies in freeing GPU time rather than in raw speed; the GPU memory it saves is only about 86 MiB. Knowledge distillation from the 8B target clearly outperforms ordinary training for this purpose, and starting from a pruned copy of a related small model helps further. After a short pilot the best student agrees with the target 44–59% of the time depending on the domain. Training four times longer raises agreement to 0.56 on English and 0.65 on the financial text, matching the 0.6B model on the latter, and a larger share of structured data in the training mix lifts JSON agreement to 0.89 without hurting prose. Run as a real draft from the CPU, the longer-trained student speeds up the 8B model by 1.18× on English, 1.32× on Portuguese financial text and 1.50× on JSON, beating Qwen3-0.6B on prose and costing only a few percent of speed against running the same draft on the GPU. Trained with more structured data, the draft makes the 8B model more than twice as fast on JSON.
 
 ## References
 

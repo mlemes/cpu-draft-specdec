@@ -1,6 +1,6 @@
 # A small CPU model that drafts for a large GPU model: speculative decoding and distillation on a desktop PC
 
-*Status: working article, updated 2026-11-22. It covers the feasibility study, the first distillation experiments and the first end-to-end speed measurements of the distilled draft.*
+*Status: working article, updated 2026-11-22. It covers the feasibility study, the first distillation experiments, the first end-to-end speed measurements of the distilled draft, and longer training runs.*
 
 ## 1. The problem
 
@@ -184,6 +184,21 @@ Values are greedy acceptance rates with 95% confidence intervals.
 
 **A caveat on the financial domain.** Its training text is small (about 136,000 tokens), so the student saw it roughly nine times. The evaluation minutes are held out, so this is not memorization of the test text, but part of the high score may reflect the minutes' formulaic style.
 
+### 6.1 Longer training and more structured data
+
+Two follow-up runs kept the best recipe (distilled, pruned start) and changed one thing at a time. The first trained four times longer, on 96 million tokens instead of 24 million, about 1 hour on the RTX 3070. Because the scored training text holds only about 25 million tokens, the student saw it about four times. The second run kept the 96 million tokens but raised the share of structured output in the training mix from 8% to 23%, adding about 9,500 function-calling and JSON-mode conversations from the same public collection. None of these overlap the JSON evaluation prompts.
+
+| Student | English | Portuguese financial | JSON |
+|---|---|---|---|
+| 24 million tokens (section 6) | 0.44 (0.42–0.46) | 0.59 (0.58–0.60) | 0.53 (0.51–0.55) |
+| 96 million tokens | 0.56 (0.54–0.58) | 0.65 (0.64–0.67) | 0.75 (0.73–0.77) |
+| 96 million tokens, 23% structured output | 0.56 (0.54–0.58) | 0.65 (0.64–0.66) | **0.89 (0.88–0.90)** |
+| *Untrained Qwen3-0.6B (8× larger)* | *0.63* | *0.66* | *0.99* |
+
+**Longer training pays off, then saturates.** Four times the training raised agreement by 0.13 on English, 0.06 on the financial text and 0.22 on JSON. The financial text now matches the 0.6B model, and English crosses the rate needed for 1.3×. Most of the gain came in the first 60 million tokens. After that, agreement on prose barely moved, which is the expected sign of a student repeating the same text: further gains on prose need new text scored by the teacher, not more passes over the old.
+
+**More structured data helps structured output at no cost to prose.** The larger share raised JSON agreement from 0.75 to 0.89, still rising at the end of the run, while English and financial text stayed within their confidence intervals. The structured examples replaced repeated passes over prose text that the student had already saturated, so prose lost nothing.
+
 ## 7. Measured speedups
 
 ### 7.1 Running the student inside llama.cpp
@@ -216,15 +231,15 @@ Values are speedups over the target alone, with 95% confidence intervals. Longer
 
 ## 8. What remains
 
-1. **Train longer.** The student had not converged. More training should raise acceptance, and the offline measure now shows the effect directly.
-2. **Train for structured output.** A larger share of JSON in the training mix should close part of the gap to the 0.6B model on that domain.
+1. **Measure the longer-trained students as drafts.** Section 6.1 raised offline agreement to 0.56–0.89; the speed runs of section 7 used the 24-million-token student.
+2. **More distinct prose.** Prose agreement saturates once the student repeats its text, so the next run adds about 40 million newly scored tokens of English and Portuguese Wikipedia.
 3. **Quantify the GPU memory saved.** The CPU draft matches the GPU draft's speed at short blocks, so the memory it leaves free on the card is its main benefit and should be measured as such.
 4. **Overlap drafting and verification.** A modified loop that drafts on the CPU while the GPU verifies could add up to about 7% over a GPU draft.
 5. **Conditional computation.** The original plan also compares the dense student with a mixture-of-experts student, which stores more parameters but activates only a cache-sized subset per token.
 
 ## 9. Summary
 
-Speculative decoding turns a large model's spare compute into speed by letting a small model guess ahead. The guesses must agree with the large model often enough to pay for the drafting. On a desktop with an RTX 3070 and a 96 MB-cache CPU, a draft of about 50 million parameters fits in the CPU cache and runs at about 1 ms per token. In llama.cpp's sequential loop, however, the GPU runs such a draft even faster, so the CPU's advantage lies in freeing the GPU rather than in raw speed. Knowledge distillation from the 8B target clearly outperforms ordinary training for this purpose, and starting from a pruned copy of a related small model helps further. After a short pilot the best student agrees with the target 44–59% of the time depending on the domain. Run as a real draft, it speeds up the 8B model by 1.27× on Portuguese financial text and 1.04–1.11× on English and JSON, and running it on the CPU costs no speed relative to the GPU at short block lengths. Longer training is the next step.
+Speculative decoding turns a large model's spare compute into speed by letting a small model guess ahead. The guesses must agree with the large model often enough to pay for the drafting. On a desktop with an RTX 3070 and a 96 MB-cache CPU, a draft of about 50 million parameters fits in the CPU cache and runs at about 1 ms per token. In llama.cpp's sequential loop, however, the GPU runs such a draft even faster, so the CPU's advantage lies in freeing the GPU rather than in raw speed. Knowledge distillation from the 8B target clearly outperforms ordinary training for this purpose, and starting from a pruned copy of a related small model helps further. After a short pilot the best student agrees with the target 44–59% of the time depending on the domain. Run as a real draft, it speeds up the 8B model by 1.27× on Portuguese financial text and 1.04–1.11× on English and JSON, and running it on the CPU costs no speed relative to the GPU at short block lengths. Training four times longer raises agreement to 0.56 on English and 0.65 on the financial text, matching the 0.6B model on the latter, and a larger share of structured data in the training mix lifts JSON agreement to 0.89 without hurting prose.
 
 ## References
 

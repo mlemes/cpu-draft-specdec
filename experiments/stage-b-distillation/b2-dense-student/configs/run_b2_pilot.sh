@@ -10,7 +10,7 @@ HDD=/mnt/hdd1/cpu-draft-specdec
 PY=$HDD/venv-train/bin/python
 TAG=$(sha256sum "$HDD/gguf/Qwen3-8B-Q4_K_M.gguf" | cut -c1-12)
 T=$HDD/teacher
-DATA="$T/general/$TAG:0.435,$T/pt_general/$TAG:0.435,$T/pt_fin/$TAG:0.05,$T/json/$TAG:0.08"
+DATA=${DATA:-"$T/general/$TAG:0.435,$T/pt_general/$TAG:0.435,$T/pt_fin/$TAG:0.05,$T/json/$TAG:0.08"}  # override for mix experiments
 EVAL=$HDD/eval/$TAG
 INIT=$HDD/runs/b2/init/pruned-qwen3-0.6b.pt
 TOKENS=${TOKENS:-24000000}
@@ -23,7 +23,7 @@ common=(--data "$DATA" --tokens "$TOKENS" --batch-seqs 4 --grad-accum 4 --seq-le
         --eval-dir "$EVAL" --eval-every-tokens 4000000 --ckpt-every-tokens 8000000 --seed 0 --device cuda)
 for arm in "${@:-kd-pruned hard-pruned kd-scratch}"; do
   for a in $arm; do
-    out=$HDD/runs/b2/$a-$(date -u +%Y%m%dT%H%M%SZ)
+    out=$HDD/runs/b2/$a${RUN_TAG:+-$RUN_TAG}-$(date -u +%Y%m%dT%H%M%SZ)
     case $a in
       kd-pruned)   "$PY" "$R/src/train/train.py" --init "$INIT" --loss kd   --out "$out" "${common[@]}" ;;
       hard-pruned) "$PY" "$R/src/train/train.py" --init "$INIT" --loss hard --out "$out" "${common[@]}" ;;

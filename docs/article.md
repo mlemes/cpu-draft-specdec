@@ -202,6 +202,8 @@ Two follow-up runs kept the best recipe (distilled, pruned start) and changed on
 
 **New prose does not lift the plateau.** A natural explanation for the flat prose curve was repetition: the student saw the same 25 million tokens about three times. A third run replaced most of those repeats with 40 million tokens of new Wikipedia text in both languages, scored by the teacher, so that each prose token was seen about once. Training loss rose, since the student could no longer partly memorize its text, but agreement on held-out prose stayed within the confidence intervals (0.57 against 0.56 on English, 0.65 on the financial text). The plateau near 0.57 on English is therefore a limit of the student itself, most likely its size, and not of the data. Qwen3-0.6B, about eight times larger, reaches 0.63.
 
+**A deeper student helps only a little.** To test the size explanation, a fourth run used 18 layers instead of 12, still pruned from Qwen3-0.6B and still small enough for the CPU cache (about 75 MB of weights read per token at 8-bit precision). English agreement rose from 0.57 to 0.59, within the confidence intervals, and the other domains did not move. Since the deeper draft also takes about 50% longer per token, the cost model predicts that this small gain does not pay for itself; a speed measurement is under way.
+
 ## 7. Measured speedups
 
 ### 7.1 Running the student inside llama.cpp
@@ -275,7 +277,7 @@ $\gamma = 6$ used 30 prompts per domain, the others 100. Other processes were ru
 ## 8. What remains
 
 1. **Repeat the CPU measurements of section 7.4 on an idle machine.**
-2. **A larger student within the cache.** New prose did not lift the plateau, so the next lever is capacity: a wider or deeper student that still fits the CPU's 96 MB cache, traded against its slower drafting.
+2. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.
 3. **Quantify the GPU memory saved.** The CPU draft matches the GPU draft's speed at short blocks, so the memory it leaves free on the card is its main benefit and should be measured as such.
 4. **Overlap drafting and verification.** A modified loop that drafts on the CPU while the GPU verifies could add up to about 7% over a GPU draft.
 5. **Conditional computation.** The original plan also compares the dense student with a mixture-of-experts student, which stores more parameters but activates only a cache-sized subset per token.

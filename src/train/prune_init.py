@@ -14,6 +14,7 @@ if __name__ == "__main__":
 import argparse
 from dataclasses import asdict
 import hashlib
+import json
 from pathlib import Path
 
 import numpy as np
@@ -22,6 +23,9 @@ import torch
 
 from train.student import StudentConfig
 from train.vprime import load_vprime
+
+# Head selection below assumes the default hidden size and 4/1 heads; only these fields may change.
+PRUNE_OVERRIDES = {"n_layers", "ffn"}
 
 
 def _sha256_file(path: Path) -> str:
@@ -74,8 +78,11 @@ def build_pruned_state_dict(
     src_n_kv_heads = 8
     head_dim = cfg.head_dim
 
+    if cfg.n_layers < 2 or cfg.n_layers > n_src_layers:
+        raise ValueError(f"n_layers must be in [2, {n_src_layers}], got {cfg.n_layers}")
     for i in range(cfg.n_layers):
-        src_l = round(i * 27 / 11)
+        # Evenly spaced source layers, first and last always kept (12 layers: 0, 2, 5, ..., 27).
+        src_l = round(i * (n_src_layers - 1) / (cfg.n_layers - 1))
         src_prefix = f"model.layers.{src_l}"
         dst_prefix = f"layers.{i}"
 
@@ -158,12 +165,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--src", required=True, help="Source HF directory or model.safetensors path")
     parser.add_argument("--vprime-ranking", required=True, help="Path to a5 ranking.json")
     parser.add_argument("--out", required=True, help="Output checkpoint .pt path")
+    parser.add_argument(
+        "--config",
+        default=None,
+        help='JSON object of StudentConfig overrides; only n_layers and ffn, e.g. {"n_layers": 18}',
+    )
     args = parser.parse_args(argv)
 
     src_path = Path(args.src)
     weights_path = src_path / "model.safetensors" if src_path.is_dir() else src_path
 
-    cfg = StudentConfig()
+    overrides = json.loads(args.config) if args.config else {}
+    if not isinstance(overrides, dict) or set(overrides) - PRUNE_OVERRIDES:
+        parser.error(f"--config accepts only a JSON object with keys {sorted(PRUNE_OVERRIDES)}")
+    cfg = StudentConfig(**overrides)
     vprime = load_vprime(args.vprime_ranking, size=cfg.n_vprime)
     source_sha256 = _sha256_file(weights_path)
     src_weights = load_file(str(weights_path), device="cpu")

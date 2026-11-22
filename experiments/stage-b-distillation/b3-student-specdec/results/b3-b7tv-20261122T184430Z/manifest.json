@@ -1,0 +1,63 @@
+{
+  "run_id": "b3-b7tv-20261122T184430Z",
+  "utc_timestamp": "2026-11-22T19:11:05Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 12,
+    "smt_control": "on",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 6004568
+  },
+  "git_commit": "c49c734980a0e41613f0f5ad875a986930d8eaef",
+  "files": [
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "bytes": 5027783488,
+      "sha256": "d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785"
+    },
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/students/ds-b7-tv-Q8_0.gguf",
+      "bytes": 145527680,
+      "sha256": "193f3762fe4fc397de1ec6e1cccacc3cc7d490fb806f85cff728cb9b2f5f7173"
+    }
+  ],
+  "extra": {
+    "options": {
+      "out": "experiments/stage-b-distillation/b3-student-specdec/results/b3-b7tv-20261122T184430Z",
+      "target": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "draft": "/mnt/hdd1/cpu-draft-specdec/gguf/students/ds-b7-tv-Q8_0.gguf",
+      "prompts": [
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl"
+      ],
+      "llama_server": "/home/mlemes/Projects/research/cpu-draft-specdec/third_party/llama.cpp/build/bin/llama-server",
+      "plan": "none:0:all,cpu:2:all,cpu:4:all",
+      "n_predict": 64,
+      "port": 18080,
+      "draft_threads": 4,
+      "seed": 1234
+    },
+    "plan": [
+      {
+        "device": "none",
+        "gamma": 0,
+        "subset": "all"
+      },
+      {
+        "device": "cpu",
+        "gamma": 2,
+        "subset": "all"
+      },
+      {
+        "device": "cpu",
+        "gamma": 4,
+        "subset": "all"
+      }
+    ]
+  }
+}

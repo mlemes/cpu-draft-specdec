@@ -1,0 +1,64 @@
+{
+  "run_id": "b3-b7kd-prob-20261122T191236Z",
+  "utc_timestamp": "2026-11-22T19:38:46Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 12,
+    "smt_control": "on",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 5995580
+  },
+  "git_commit": "5edcf27a982294c52ef34c6dc027651d34b41edf",
+  "files": [
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "bytes": 5027783488,
+      "sha256": "d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785"
+    },
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/students/ds-b7-kd-Q8_0.gguf",
+      "bytes": 145527680,
+      "sha256": "c024e10a35fc2ddddf6d4b0003d0add1bc65bc6ee017f656a5209c43e9490d7b"
+    }
+  ],
+  "extra": {
+    "options": {
+      "out": "experiments/stage-b-distillation/b3-student-specdec/results/b3-b7kd-prob-20261122T191236Z",
+      "target": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "draft": "/mnt/hdd1/cpu-draft-specdec/gguf/students/ds-b7-kd-Q8_0.gguf",
+      "prompts": [
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl"
+      ],
+      "llama_server": "/home/mlemes/Projects/research/cpu-draft-specdec/third_party/llama.cpp/build/bin/llama-server",
+      "plan": "none:0:all,cpu:2:all,cpu:4:all",
+      "n_predict": 64,
+      "port": 18080,
+      "draft_threads": 4,
+      "spec_draft_sampling": "probabilistic",
+      "seed": 1234
+    },
+    "plan": [
+      {
+        "device": "none",
+        "gamma": 0,
+        "subset": "all"
+      },
+      {
+        "device": "cpu",
+        "gamma": 2,
+        "subset": "all"
+      },
+      {
+        "device": "cpu",
+        "gamma": 4,
+        "subset": "all"
+      }
+    ]
+  }
+}

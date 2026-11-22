@@ -422,3 +422,18 @@ class TestA4ReferenceDraft(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_draft_sampling_passthrough():
+    import pathlib
+
+    from measure.a4_reference_draft import PlanItem, build_server_cmd
+
+    kw = dict(llama_server="s", target=pathlib.Path("t"), draft=pathlib.Path("d"), port=1, draft_threads=4,
+              item=PlanItem(device="cpu", gamma=2, subset=None, label="cpu:2:all"))
+    assert "--spec-draft-sampling" not in build_server_cmd(**kw)
+    cmd = build_server_cmd(**kw, draft_sampling="probabilistic")
+    assert cmd[cmd.index("--spec-draft-sampling") + 1] == "probabilistic"
+    none = build_server_cmd(**{**kw, "item": PlanItem(device="none", gamma=0, subset=None, label="none:0:all")},
+                            draft_sampling="probabilistic")
+    assert "--spec-draft-sampling" not in none

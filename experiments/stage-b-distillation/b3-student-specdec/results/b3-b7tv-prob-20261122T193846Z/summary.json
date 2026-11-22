@@ -1,0 +1,182 @@
+[
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "greedy",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 77.26761846614666,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "sampled",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 77.94367783970384,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "greedy",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 77.06226827487023,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "sampled",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 77.75267699784176,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "greedy",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 77.06425240110569,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "sampled",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 77.78053368170842,
+    "speedup": 1.0
+  },
+  {
+    "device": "cpu",
+    "gamma": 2,
+    "mode": "greedy",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": 0.4211945808760676,
+    "mean_tokens_per_s": 90.4092846908105,
+    "speedup": 1.1700798663857048
+  },
+  {
+    "device": "cpu",
+    "gamma": 2,
+    "mode": "sampled",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": 0.41221817104752356,
+    "mean_tokens_per_s": 90.75206210661243,
+    "speedup": 1.1643287130131306
+  },
+  {
+    "device": "cpu",
+    "gamma": 2,
+    "mode": "greedy",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": 0.5235090347597187,
+    "mean_tokens_per_s": 99.38926207874486,
+    "speedup": 1.289726662654639
+  },
+  {
+    "device": "cpu",
+    "gamma": 2,
+    "mode": "sampled",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": 0.5275853601014363,
+    "mean_tokens_per_s": 101.19421406794334,
+    "speedup": 1.3014884885667957
+  },
+  {
+    "device": "cpu",
+    "gamma": 2,
+    "mode": "greedy",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": 0.8405238269434981,
+    "mean_tokens_per_s": 128.35041268089483,
+    "speedup": 1.6654987063632802
+  },
+  {
+    "device": "cpu",
+    "gamma": 2,
+    "mode": "sampled",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": 0.8429419986470582,
+    "mean_tokens_per_s": 129.76962415861038,
+    "speedup": 1.6684074795584514
+  },
+  {
+    "device": "cpu",
+    "gamma": 4,
+    "mode": "greedy",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": 0.26686067777607103,
+    "mean_tokens_per_s": 80.6958080382336,
+    "speedup": 1.044367739554299
+  },
+  {
+    "device": "cpu",
+    "gamma": 4,
+    "mode": "sampled",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": 0.2727604744165714,
+    "mean_tokens_per_s": 82.541987222157,
+    "speedup": 1.0589952836445553
+  },
+  {
+    "device": "cpu",
+    "gamma": 4,
+    "mode": "greedy",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": 0.37924266306060106,
+    "mean_tokens_per_s": 95.51436795303542,
+    "speedup": 1.2394440248287157
+  },
+  {
+    "device": "cpu",
+    "gamma": 4,
+    "mode": "sampled",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": 0.3760841756920121,
+    "mean_tokens_per_s": 96.50808971263761,
+    "speedup": 1.2412188678123128
+  },
+  {
+    "device": "cpu",
+    "gamma": 4,
+    "mode": "greedy",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": 0.7684152220113907,
+    "mean_tokens_per_s": 150.03877262566363,
+    "speedup": 1.9469308784666925
+  },
+  {
+    "device": "cpu",
+    "gamma": 4,
+    "mode": "sampled",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": 0.7703930998374691,
+    "mean_tokens_per_s": 152.14263543586046,
+    "speedup": 1.956050289632298
+  }
+]

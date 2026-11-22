@@ -276,6 +276,25 @@ $\gamma = 6$ used 30 prompts per domain, the others 100. A repeat with 100 promp
 
 **On JSON the CPU's slower drafting shows.** With the draft on the CPU the best JSON speedup is 2.04×, about 0.2 below the GPU draft. At an acceptance rate of 0.89 each cycle drafts and keeps many tokens, so drafting time is a larger share of the cycle than on prose. A loop that drafts on the CPU while the GPU verifies would hide most of this cost.
 
+### 7.5 Sampled generation and a loss aimed at acceptance
+
+All results so far use greedy decoding. With sampling, section 3.1 says a drafted token is accepted with probability $\min(1, p/q)$, so the acceptance rate is $1 - \mathrm{TV}(p, q)$ and depends on the draft's whole distribution, not just its top token. The training loss of section 5.2 (forward KL) is not the same objective: it heavily penalizes the student for missing any token the teacher considers possible, which pushes the student to spread probability over the teacher's tail. A loss that directly maximizes the overlap $\sum_x \min(p(x), q(x))$, computed over the teacher's top 32 tokens, targets acceptance itself.
+
+To test this, the best student was trained for 24 million more tokens in two ways, once with the original loss and once with the overlap loss, at a lower learning rate. Greedy agreement was the same for both. The offline estimate of sampled acceptance at temperature 1 rose from 0.49 to 0.54 on English, from 0.63 to 0.65 on the financial text and from 0.85 to 0.87 on JSON with the overlap loss.
+
+The first speed measurement showed no difference, for a practical reason: by default, llama.cpp's draft proposes only its most likely token, and the target accepts it when its own sample happens to match. Acceptance then depends only on the draft's top token, and the rest of its distribution is ignored. The rule of section 3.1 is available as an option, in which the draft samples its proposal and the target accepts or rejects it with $\min(1, p/q)$.
+
+| Block length $\gamma$ | Draft proposal | English | Portuguese financial | JSON |
+|---|---|---|---|---|
+| 4 | Top token (default), original loss | 0.97 | 1.10 | 1.92 |
+| 4 | Top token (default), overlap loss | 0.97 | 1.12 | 1.97 |
+| 4 | Sampled, accept with $\min(1, p/q)$, original loss | 1.02 | 1.19 | 1.91 |
+| 4 | Sampled, accept with $\min(1, p/q)$, overlap loss | **1.06** | **1.24** | 1.96 |
+
+Speedups with the draft on the CPU and sampling at temperature 0.7 (top-k 20, top-p 0.8); confidence intervals about ±0.03.
+
+**The proper acceptance rule matters more than the loss.** Switching the draft to sampled proposals raised sampled speedups by 0.05–0.09 on prose, bringing them close to the greedy speedups. The overlap loss adds a further 0.04–0.05 on prose at $\gamma = 4$. Both gains are smaller than the offline estimate suggests, because at temperature 0.7 with top-k and top-p truncation the target's distribution is sharper and has less of the tail where the two losses differ.
+
 ## 8. What remains
 
 1. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.

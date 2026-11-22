@@ -43,5 +43,25 @@ top-p 0.8.
 No difference: with `--spec-draft-sampling greedy` (the server default) the draft proposes its argmax and the target
 accepts when its own sample equals it (`common_sampler_sample_and_accept_n`, `common/sampling.cpp:698`), so acceptance
 is p(argmax q) and does not depend on the rest of q. The rejection rule is behind `--spec-draft-sampling
-probabilistic` (`common_sampler_sample_and_accept_n_rejection`, `common/sampling.cpp:744`); that benchmark is queued
-(`b3-b7{kd,tv}-prob-*`).
+probabilistic` (`common_sampler_sample_and_accept_n_rejection`, `common/sampling.cpp:744`); see below.
+
+## Speed with rejection sampling (`--spec-draft-sampling probabilistic`)
+
+`../../b3-student-specdec/results/b3-b7{kd,tv}-prob-*`, same prompts and settings, sampled rows (T 0.7, top-k 20,
+top-p 0.8). Greedy rows are unchanged (at temperature 0 the two rules coincide).
+
+| γ | draft sampling | general kd / tv | pt_fin kd / tv | json kd / tv |
+|---|---|---|---|---|
+| 2 | greedy (default) | 1.11 / 1.12 | 1.21 / 1.22 | 1.66 / 1.66 |
+| 2 | probabilistic | 1.14 / 1.16 | 1.30 / 1.30 | 1.65 / 1.67 |
+| 4 | greedy (default) | 0.97 / 0.97 | 1.10 / 1.12 | 1.92 / 1.97 |
+| 4 | probabilistic | 1.02 / **1.06** | 1.19 / **1.24** | 1.91 / 1.96 |
+
+CIs about ±0.02–0.04. Implied alpha, probabilistic, general: kd 0.52, tv 0.53 (default: 0.48–0.49 for both).
+
+- Rejection sampling closes most of the gap between sampled and greedy speed for both drafts (general γ 4: 0.97 to
+  1.02–1.06; pt_fin: 1.10–1.12 to 1.19–1.24).
+- With it, the TV draft is ahead of the KD draft by 0.02–0.05 on prose at γ 4 (intervals touch); json unchanged.
+- The offline +0.056 (at temperature 1, full distribution) shrinks at T 0.7 with top-k 20 and top-p 0.8, because the
+  truncated target puts less mass in the tail where the two losses differ.
+- Practical: use `--spec-draft-sampling probabilistic` for sampled generation; a short TV phase is a small additional gain.

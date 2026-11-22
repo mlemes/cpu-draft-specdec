@@ -293,7 +293,7 @@ The first speed measurement showed no difference, for a practical reason: by def
 
 Speedups with the draft on the CPU and sampling at temperature 0.7 (top-k 20, top-p 0.8); confidence intervals about ±0.03.
 
-**The proper acceptance rule matters more than the loss.** Switching the draft to sampled proposals raised sampled speedups by 0.05–0.09 on prose, bringing them close to the greedy speedups. The overlap loss adds a further 0.04–0.05 on prose at $\gamma = 4$. Both gains are smaller than the offline estimate suggests, because at temperature 0.7 with top-k and top-p truncation the target's distribution is sharper and has less of the tail where the two losses differ.
+**The proper acceptance rule matters more than the loss.** Switching the draft to sampled proposals raised sampled speedups by 0.05–0.12 on prose, bringing them close to the greedy speedups. The overlap loss adds a further 0.04–0.05 on prose at $\gamma = 4$. Both gains are smaller than the offline estimate suggests, because at temperature 0.7 with top-k and top-p truncation the target's distribution is sharper and has less of the tail where the two losses differ.
 
 ## 8. What remains
 

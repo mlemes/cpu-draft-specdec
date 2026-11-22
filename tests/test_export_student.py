@@ -7,7 +7,9 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
+from unittest import mock
 
 SRC_DIR = Path(__file__).resolve().parents[1] / "src"
 if str(SRC_DIR) not in sys.path:
@@ -28,11 +30,16 @@ from models.export_student_gguf import (  # noqa: E402
 )
 
 HAS_NUMPY = importlib.util.find_spec("numpy") is not None
+HAS_TORCH = importlib.util.find_spec("torch") is not None
 
 
 class _FakeTensor:
-    def __init__(self, shape: tuple[int, ...]) -> None:
+    def __init__(self, shape: tuple[int, ...], is_float: bool = True) -> None:
         self.shape = shape
+        self._is_float = is_float
+
+    def is_floating_point(self) -> bool:
+        return self._is_float
 
 
 class _FakeField:
@@ -158,6 +165,116 @@ class TestExportStudentGGUF(unittest.TestCase):
         del ckpt["state_dict"]["lm_head.weight"]
         with self.assertRaises(UsageError):
             validate_checkpoint(ckpt)
+
+    def test_validate_checkpoint_rejects_bad_tensor_shapes(self) -> None:
+        base_sd = _make_valid_ckpt()["state_dict"]
+        for key, tensor in base_sd.items():
+            with self.subTest(key=key):
+                ckpt = _make_valid_ckpt()
+                bad_shape = (1,) if tensor.shape != (1,) else (2,)
+                ckpt["state_dict"][key] = _FakeTensor(bad_shape)
+                with self.assertRaises(UsageError):
+                    validate_checkpoint(ckpt)
+
+    def test_validate_checkpoint_rejects_non_floating_tensor(self) -> None:
+        ckpt = _make_valid_ckpt()
+        q_shape = ckpt["state_dict"]["layers.0.self_attn.q_proj.weight"].shape
+        ckpt["state_dict"]["layers.0.self_attn.q_proj.weight"] = _FakeTensor(
+            q_shape, is_float=False
+        )
+        with self.assertRaises(UsageError):
+            validate_checkpoint(ckpt)
+
+        ckpt = _make_valid_ckpt()
+        ckpt["state_dict"]["norm.weight"] = [1.0] * 6
+        with self.assertRaises(UsageError):
+            validate_checkpoint(ckpt)
+
+    def test_validate_checkpoint_rejects_vprime_ge_vocab_in(self) -> None:
+        for n_vprime in (8, 9):
+            with self.subTest(n_vprime=n_vprime):
+                ckpt = _make_valid_ckpt(n_vocab_in=8, n_vprime=n_vprime)
+                with self.assertRaises(UsageError):
+                    validate_checkpoint(ckpt)
+
+    def test_corrupt_checkpoint_exits_2_with_mocked_torch(self) -> None:
+        fake_torch = types.ModuleType("torch")
+
+        def _fail_load(*args: object, **kwargs: object) -> object:
+            raise RuntimeError("corrupt checkpoint")
+
+        fake_torch.load = _fail_load  # type: ignore[attr-defined]
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            ckpt_path = tmp_path / "bad.pt"
+            ref_path = tmp_path / "ref.gguf"
+            out_path = tmp_path / "out.gguf"
+            ckpt_path.write_bytes(b"not a checkpoint")
+            ref_path.write_bytes(b"GGUF")
+            with mock.patch.dict(
+                sys.modules,
+                {"numpy": types.ModuleType("numpy"), "torch": fake_torch},
+            ):
+                rc = main(
+                    [
+                        "--ckpt",
+                        str(ckpt_path),
+                        "--ref-gguf",
+                        str(ref_path),
+                        "--out",
+                        str(out_path),
+                    ]
+                )
+            self.assertEqual(rc, 2)
+            self.assertFalse(out_path.exists())
+            self.assertFalse(out_path.with_name(out_path.name + ".tmp").exists())
+
+    @unittest.skipUnless(HAS_TORCH and HAS_NUMPY, "torch and numpy not installed")
+    def test_corrupt_and_invalid_torch_checkpoint_exits_2(self) -> None:
+        import torch  # type: ignore[import-not-found]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            ckpt_path = tmp_path / "bad.pt"
+            ref_path = tmp_path / "ref.gguf"
+            out_path = tmp_path / "out.gguf"
+            ckpt_path.write_bytes(b"corrupt")
+            ref_path.write_bytes(b"GGUF")
+
+            rc = main(
+                [
+                    "--ckpt",
+                    str(ckpt_path),
+                    "--ref-gguf",
+                    str(ref_path),
+                    "--out",
+                    str(out_path),
+                ]
+            )
+            self.assertEqual(rc, 2)
+            self.assertFalse(out_path.exists())
+
+            ckpt = _make_valid_ckpt()
+            ckpt["state_dict"] = {
+                k: torch.zeros(v.shape, dtype=torch.float32)
+                for k, v in ckpt["state_dict"].items()
+            }
+            ckpt["state_dict"]["layers.0.self_attn.k_proj.weight"] = torch.zeros(
+                (4, 6), dtype=torch.int64
+            )
+            torch.save(ckpt, ckpt_path)
+            rc = main(
+                [
+                    "--ckpt",
+                    str(ckpt_path),
+                    "--ref-gguf",
+                    str(ref_path),
+                    "--out",
+                    str(out_path),
+                ]
+            )
+            self.assertEqual(rc, 2)
+            self.assertFalse(out_path.exists())
 
     def test_copy_tokenizer_keys_with_fake_reader(self) -> None:
         reader = _FakeReader(

@@ -87,6 +87,50 @@ def _tensor_specs(n_layers: int) -> list[tuple[str, str, bool]]:
     return specs
 
 
+def _expected_tensor_shapes(cfg: dict[str, Any]) -> dict[str, tuple[int, ...]]:
+    """Return expected PyTorch tensor shapes for every required state_dict key."""
+    hidden = cfg["hidden"]
+    q_dim = cfg["n_heads"] * cfg["head_dim"]
+    kv_dim = cfg["n_kv_heads"] * cfg["head_dim"]
+    ffn = cfg["ffn"]
+    shapes: dict[str, tuple[int, ...]] = {
+        "embed_tokens.weight": (cfg["n_vocab_in"], hidden),
+        "norm.weight": (hidden,),
+        "lm_head.weight": (cfg["n_vprime"], hidden),
+    }
+    for i in range(cfg["n_layers"]):
+        shapes.update(
+            {
+                f"layers.{i}.input_layernorm.weight": (hidden,),
+                f"layers.{i}.self_attn.q_proj.weight": (q_dim, hidden),
+                f"layers.{i}.self_attn.k_proj.weight": (kv_dim, hidden),
+                f"layers.{i}.self_attn.v_proj.weight": (kv_dim, hidden),
+                f"layers.{i}.self_attn.o_proj.weight": (hidden, q_dim),
+                f"layers.{i}.self_attn.q_norm.weight": (cfg["head_dim"],),
+                f"layers.{i}.self_attn.k_norm.weight": (cfg["head_dim"],),
+                f"layers.{i}.post_attention_layernorm.weight": (hidden,),
+                f"layers.{i}.mlp.gate_proj.weight": (ffn, hidden),
+                f"layers.{i}.mlp.up_proj.weight": (ffn, hidden),
+                f"layers.{i}.mlp.down_proj.weight": (hidden, ffn),
+            }
+        )
+    return shapes
+
+
+def _is_floating_point_tensor(tensor: Any) -> bool:
+    """Return True if tensor has a floating-point dtype."""
+    is_fp = getattr(tensor, "is_floating_point", None)
+    if callable(is_fp):
+        return bool(is_fp())
+    dtype = getattr(tensor, "dtype", None)
+    if dtype is not None:
+        if hasattr(dtype, "is_floating_point"):
+            return bool(dtype.is_floating_point)
+        if hasattr(dtype, "kind"):
+            return dtype.kind == "f"
+    return False
+
+
 def validate_checkpoint(ckpt: Any) -> tuple[dict[str, Any], dict[str, Any], list[int]]:
     """Validate a loaded Student checkpoint and return (config, state_dict, vprime)."""
     if not isinstance(ckpt, dict):
@@ -127,9 +171,10 @@ def validate_checkpoint(ckpt: Any) -> tuple[dict[str, Any], dict[str, Any], list
 
     n_vocab_in = cfg["n_vocab_in"]
     n_vprime = cfg["n_vprime"]
-    if n_vprime > n_vocab_in:
+    if n_vprime >= n_vocab_in:
         raise UsageError(
-            f"Malformed checkpoint config: n_vprime ({n_vprime}) > n_vocab_in ({n_vocab_in})"
+            f"Malformed checkpoint config: n_vprime ({n_vprime}) >= n_vocab_in ({n_vocab_in}); "
+            "llama.cpp requires n_vprime < n_vocab_in"
         )
 
     raw_vprime = ckpt["vprime"]
@@ -156,20 +201,25 @@ def validate_checkpoint(ckpt: Any) -> tuple[dict[str, Any], dict[str, Any], list
     if not isinstance(state_dict, dict):
         raise UsageError("Malformed checkpoint: 'state_dict' must be a dict")
 
+    expected_shapes = _expected_tensor_shapes(cfg)
     for sd_key, _, _ in _tensor_specs(cfg["n_layers"]):
         if sd_key not in state_dict:
             raise UsageError(f"Malformed checkpoint state_dict: missing {sd_key!r}")
-
-    emb_shape = tuple(state_dict["embed_tokens.weight"].shape)
-    if emb_shape != (n_vocab_in, cfg["hidden"]):
-        raise UsageError(
-            f"embed_tokens.weight shape {emb_shape} != ({n_vocab_in}, {cfg['hidden']})"
-        )
-    head_shape = tuple(state_dict["lm_head.weight"].shape)
-    if head_shape != (n_vprime, cfg["hidden"]):
-        raise UsageError(
-            f"lm_head.weight shape {head_shape} != ({n_vprime}, {cfg['hidden']})"
-        )
+        tensor = state_dict[sd_key]
+        if not hasattr(tensor, "shape"):
+            raise UsageError(
+                f"Malformed checkpoint state_dict: {sd_key!r} has no 'shape' attribute"
+            )
+        actual_shape = tuple(tensor.shape)
+        exp_shape = expected_shapes[sd_key]
+        if actual_shape != exp_shape:
+            raise UsageError(
+                f"Malformed checkpoint state_dict: {sd_key!r} shape {actual_shape} != {exp_shape}"
+            )
+        if not _is_floating_point_tensor(tensor):
+            raise UsageError(
+                f"Malformed checkpoint state_dict: {sd_key!r} must be floating-point"
+            )
 
     return cfg, state_dict, vprime
 
@@ -307,7 +357,10 @@ def export_student_gguf(
     import numpy as np
     import torch
 
-    ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+    try:
+        ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+    except Exception as exc:
+        raise UsageError(f"Failed to load checkpoint {ckpt_path}: {exc}") from exc
     cfg, state_dict, vprime = validate_checkpoint(ckpt)
 
     gguf = _import_gguf()

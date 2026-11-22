@@ -193,11 +193,14 @@ Two follow-up runs kept the best recipe (distilled, pruned start) and changed on
 | 24 million tokens (section 6) | 0.44 (0.42–0.46) | 0.59 (0.58–0.60) | 0.53 (0.51–0.55) |
 | 96 million tokens | 0.56 (0.54–0.58) | 0.65 (0.64–0.67) | 0.75 (0.73–0.77) |
 | 96 million tokens, 23% structured output | 0.56 (0.54–0.58) | 0.65 (0.64–0.66) | **0.89 (0.88–0.90)** |
+| Same, with 40 million tokens of new prose | 0.57 (0.55–0.59) | 0.65 (0.63–0.66) | 0.89 (0.88–0.90) |
 | *Untrained Qwen3-0.6B (8× larger)* | *0.63* | *0.66* | *0.99* |
 
-**Longer training pays off, then saturates.** Four times the training raised agreement by 0.13 on English, 0.06 on the financial text and 0.22 on JSON. The financial text now matches the 0.6B model, and English crosses the rate needed for 1.3×. Most of the gain came in the first 60 million tokens. After that, agreement on prose barely moved, which is the expected sign of a student repeating the same text: further gains on prose need new text scored by the teacher, not more passes over the old.
+**Longer training pays off, then saturates.** Four times the training raised agreement by 0.13 on English, 0.06 on the financial text and 0.22 on JSON. The financial text now matches the 0.6B model, and English crosses the rate needed for 1.3×. Most of the gain came in the first 60 million tokens. After that, agreement on prose barely moved.
 
 **More structured data helps structured output at no cost to prose.** The larger share raised JSON agreement from 0.75 to 0.89, still rising at the end of the run, while English and financial text stayed within their confidence intervals. The structured examples replaced repeated passes over prose text that the student had already saturated, so prose lost nothing.
+
+**New prose does not lift the plateau.** A natural explanation for the flat prose curve was repetition: the student saw the same 25 million tokens about three times. A third run replaced most of those repeats with 40 million tokens of new Wikipedia text in both languages, scored by the teacher, so that each prose token was seen about once. Training loss rose, since the student could no longer partly memorize its text, but agreement on held-out prose stayed within the confidence intervals (0.57 against 0.56 on English, 0.65 on the financial text). The plateau near 0.57 on English is therefore a limit of the student itself, most likely its size, and not of the data. Qwen3-0.6B, about eight times larger, reaches 0.63.
 
 ## 7. Measured speedups
 
@@ -256,7 +259,7 @@ Values are greedy speedups over the target alone with 95% confidence intervals; 
 ## 8. What remains
 
 1. **Measure the structured-output student as a draft.** Its offline JSON agreement of 0.89 should lift the 1.50× of section 7.3 further.
-2. **More distinct prose.** Prose agreement saturates once the student repeats its text, so the next run adds about 40 million newly scored tokens of English and Portuguese Wikipedia.
+2. **A larger student within the cache.** New prose did not lift the plateau, so the next lever is capacity: a wider or deeper student that still fits the CPU's 96 MB cache, traded against its slower drafting.
 3. **Quantify the GPU memory saved.** The CPU draft matches the GPU draft's speed at short blocks, so the memory it leaves free on the card is its main benefit and should be measured as such.
 4. **Overlap drafting and verification.** A modified loop that drafts on the CPU while the GPU verifies could add up to about 7% over a GPU draft.
 5. **Conditional computation.** The original plan also compares the dense student with a mixture-of-experts student, which stores more parameters but activates only a cache-sized subset per token.

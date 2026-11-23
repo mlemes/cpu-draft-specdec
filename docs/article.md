@@ -314,6 +314,12 @@ Two bounds follow from the measured step times. The simplest overlap keeps draft
 
 **Simple overlap pays only where acceptance is high.** Drafting ahead adds 0.2–0.3 on JSON, where the draft usually matches all tokens, but only 0.01–0.05 on prose. The larger gains on prose need drafting for several outcomes. The fixed per-step overhead is as large as the drafting time at $\gamma = 2$ and is a separate target. These bounds use isolated timings and treat acceptances as independent; real acceptances are correlated, which favours drafting ahead.
 
+### 7.8 A draft-free baseline: n-gram lookup
+
+llama.cpp also offers a proposer that needs no draft model: it looks up the last three tokens in the prompt and the text generated so far, and proposes the tokens that followed the previous occurrence. With up to 4 or 8 proposed tokens, on the same 100 prompts per domain, the speedup over the target alone is about 1.13–1.17× in every domain and in both greedy and sampled generation (1.07–1.11× on sampled general and Portuguese financial text). Acceptance per proposed token is 0.14–0.33, and falls when the proposal is longer.
+
+The comparison is informative in both directions. On prose the n-gram lookup (1.13–1.15× greedy) beats the CPU student at γ = 4 on general text (1.03×) and is close on Portuguese financial text (1.24×), at zero training and memory cost. On JSON the student (1.89× at γ = 4) is far ahead of the lookup (1.14×), so the distilled draft is worth its cost only where the output is structured and the lookup cannot exploit it.
+
 ## 8. What remains
 
 1. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.

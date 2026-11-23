@@ -31,7 +31,7 @@ HEALTH_TIMEOUT_S = 180.0
 REQUEST_TIMEOUT_S = 300.0
 STOP_TIMEOUT_S = 10.0
 
-VALID_DEVICES = ("none", "cpu", "gpu")
+VALID_DEVICES = ("none", "cpu", "gpu", "ngram")
 MODES: tuple[tuple[str, dict[str, Any]], ...] = (
     ("greedy", {"temperature": 0, "top_k": 0, "top_p": 1.0, "min_p": 0}),
     ("sampled", {"temperature": 0.7, "top_k": 20, "top_p": 0.8, "min_p": 0}),
@@ -154,7 +154,15 @@ def build_server_cmd(
         str(port),
         "--no-webui",
     ]
-    if item.device != "none":
+    if item.device == "ngram":
+        # draft-free proposer: n-gram lookup in the prompt/generated history (gamma = max drafted tokens)
+        cmd.extend([
+            "--spec-type", "ngram-simple",
+            "--spec-ngram-simple-size-n", "3",
+            "--spec-ngram-simple-size-m", str(item.gamma),
+            "--spec-ngram-simple-min-hits", "1",
+        ])
+    elif item.device != "none":
         cmd.extend([
             "-md",
             str(draft),

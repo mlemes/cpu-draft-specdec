@@ -320,6 +320,12 @@ llama.cpp also offers a proposer that needs no draft model: it looks up the last
 
 The comparison is informative in both directions. On prose the n-gram lookup (1.13–1.15× greedy) beats the CPU student at γ = 4 on general text (1.03×) and is close on Portuguese financial text (1.24×), at zero training and memory cost. On JSON the student (1.89× at γ = 4) is far ahead of the lookup (1.14×), so the distilled draft is worth its cost only where the output is structured and the lookup cannot exploit it.
 
+### 7.9 Output equality under greedy decoding
+
+Greedy outputs with speculation were compared with target-only greedy outputs on 60 prompts (20 per domain, 128 generated tokens, prompt cache off). With the CPU draft and with the GPU draft, 30 of 60 outputs are identical to the baseline; with the n-gram lookup, 34 of 60. The two draft placements produce the same count, as expected when the output is decided by the verification pass and not by the draft.
+
+The remaining outputs diverge at a median of about 190 characters of roughly 480, and differ from that point on. Speculative decoding as implemented here is therefore not bit-exact against token-by-token decoding. The likely cause is that verification evaluates several positions in one batch, where the matrix kernels accumulate in a different order than in single-token decoding, so near-tied logits can flip the argmax; the flip then changes every later token. This explanation was not isolated in these runs. A direct test would compare the target's logits for the same prefix from the batched and the single-token path, and is left to the planned correctness suite, together with the stochastic distribution tests, the sampler-chain check and the cache rollback check.
+
 ## 8. What remains
 
 1. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.

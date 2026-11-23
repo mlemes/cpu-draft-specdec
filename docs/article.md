@@ -336,7 +336,15 @@ The CPU draft was also run with 3 and 6 threads (4 drafted tokens, greedy, same 
 | 4 | 1.03× | 1.24× | 1.89× |
 | 6 | 1.09× | 1.31× | 2.07× |
 
-Acceptance is the same in every row (0.26, 0.38, 0.76), so the whole difference is draft latency: more threads shorten each drafting burst, and the GPU verification does not need the cores. The 6-thread setting raises the JSON speedup to 2.07× and lifts general text above break-even. The machine has six physical cores, so 6 threads leaves none for the server's own thread; whether that costs anything under longer prompts was not measured.
+Acceptance is the same in every row (0.26, 0.38, 0.76), so the whole difference is draft latency: more threads shorten each drafting burst, and the GPU verification does not need the cores. The 6-thread setting raises the JSON speedup to 2.07× and lifts general text above break-even. With 6 threads the draft length can be revisited:
+
+| Drafted tokens | General | Portuguese financial | JSON |
+|---|---|---|---|
+| 2 | 1.22× | 1.34× | 1.75× |
+| 4 | 1.09× | 1.31× | 2.07× |
+| 6 | 0.97× | 1.19× | 2.26× |
+
+The best length depends on the domain: 2 tokens on prose, 6 or more on JSON, where acceptance stays at 0.70. A fixed length leaves speedup on the table, which motivates an adaptive draft length. The machine has six physical cores, so 6 threads leaves none for the server's own thread; whether that costs anything under longer prompts was not measured.
 
 ## 8. What remains
 

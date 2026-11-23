@@ -1,6 +1,8 @@
 # A small CPU model that drafts for a large GPU model: speculative decoding and distillation on a desktop PC
 
-*Status: working article, updated 2026-11-22. It covers the feasibility study, the first distillation experiments, the first end-to-end speed measurements of the distilled draft, and longer training runs.*
+*Status: working article, updated 2026-11-23. It covers the feasibility study, distillation experiments, end-to-end speed measurements, a draft-free baseline, thread and draft-length sweeps, and an output-equality check.*
+
+**The answer in short.** Yes, a small draft model running on the CPU can speed up the GPU model, but by how much depends on the kind of text. On structured JSON output the speedup is about 2×. On Portuguese financial text it is about 1.3×. On general English it is close to zero, and a plain n-gram lookup (no draft model at all) does about as well. The speedup also depends on how many tokens the draft proposes per cycle and on how many CPU threads it gets. Output matches the plain model's output on about half of the test prompts, and that gap is not yet explained (section 7.9).
 
 ## 1. The problem
 
@@ -208,6 +210,8 @@ Follow-up runs kept the best recipe (distilled, pruned start) and changed one th
 
 ## 7. Measured speedups
 
+**How to read the tables in this section.** Every number is a *speedup*: tokens per second with the draft divided by tokens per second with the target model alone. 1.00 means no gain, and below 1.00 means the draft made generation slower. Numbers in parentheses are 95% confidence intervals. The *block length* $\gamma$ is how many tokens the draft proposes per cycle. *CPU* and *GPU* say where the draft ran; the target is always on the GPU. *English*, *Portuguese financial* and *JSON* are the three kinds of text tested. Each subsection opens with a one-line summary.
+
 ### 7.1 Running the student inside llama.cpp
 
 llama.cpp expects a draft model to produce a score for every token of the target's vocabulary. The student scores only its 32,768 kept tokens, so a small change to llama.cpp was needed. The model file now carries a map from each vocabulary token to its row in the student's output layer. After computing the reduced scores, the engine expands them to the full vocabulary and gives every token outside the kept set a score of minus infinity, so it can never be drafted. The rest of the engine, including sampling and the speculative loop, is unchanged.
@@ -215,6 +219,8 @@ llama.cpp expects a draft model to produce a score for every token of the target
 Two checks confirmed the conversion. The engine's probabilities for the converted student match those of the original training code. And in an initial comparison, speculative decoding with the student as the draft produced the same text as the target alone, as the method intends. A broader greedy test (section 7.9) found exact matches on only about half of the prompts. The converted student occupies 139 MB at 8-bit precision. About 82 MB of that is the input embedding table, of which only one row is read per token.
 
 ### 7.2 Results
+
+*In brief: the pilot student helps on Portuguese financial text (1.27×) and is at or below break-even on English and JSON.*
 
 The first speed test used the pilot student. Sections 7.3 and 7.4 test the long and the structured students. It was run as the draft for Qwen3-8B in llama.cpp's speculative loop. The prompts and settings were the same as in the earlier measurement with Qwen3-0.6B as the draft: greedy decoding, 64 generated tokens, 100 prompts per domain for $\gamma = 4$ and 30 for $\gamma = 2$ and 6. The baseline is the target alone, at 76 tokens per second.
 
@@ -237,6 +243,8 @@ Values are speedups over the target alone, with 95% confidence intervals. Longer
 **English sits at break-even,** as the cost model predicted for an acceptance rate of about 0.44.
 
 ### 7.3 The longer-trained draft
+
+*In brief: training four times longer gives 1.18× on English, 1.32× on financial text and 1.50× on JSON, and the best block length is longer for the more predictable text.*
 
 The long student (section 6.1, with JSON at 8% of the mix) was measured the same way, adding $\gamma = 3$. The baseline is again the target alone, at 77.5 tokens per second.
 
@@ -262,6 +270,8 @@ Values are greedy speedups over the target alone with 95% confidence intervals; 
 
 ### 7.4 The structured-output draft
 
+*In brief: adding structured data to the training mix leaves prose speed unchanged and takes JSON above 2× (2.17× with the draft on the GPU, 2.04× on the CPU).*
+
 The structured student (section 6.1) was measured next. Its prose agreement is the same as that of the long student in section 7.3, so the interest is JSON.
 
 | Block length $\gamma$ | Draft runs on | English | Portuguese financial | JSON |
@@ -279,6 +289,8 @@ $\gamma = 6$ used 30 prompts per domain, the others 100. A repeat with 100 promp
 **On JSON the CPU's slower drafting shows.** With the draft on the CPU the best JSON speedup is 2.04×, about 0.2 below the GPU draft. At an acceptance rate of 0.89 each cycle drafts and keeps many tokens, so drafting time is a larger share of the cycle than on prose. A loop that drafts on the CPU while the GPU verifies would hide most of this cost.
 
 ### 7.5 Sampled generation and a loss aimed at acceptance
+
+*In brief: under sampling, letting the draft propose by sampling matters more than the new loss, and the new loss adds a small further gain on prose.*
 
 All results so far use greedy decoding. With sampling, section 3.1 says a drafted token is accepted with probability $\min(1, p/q)$, so the acceptance rate is $1 - \mathrm{TV}(p, q)$ and depends on the draft's whole distribution, not just its top token. The training loss of section 5.2 (forward KL) is not the same objective: it heavily penalizes the student for missing any token the teacher considers possible, which pushes the student to spread probability over the teacher's tail. A loss that directly maximizes the overlap $\sum_x \min(p(x), q(x))$, computed over the teacher's top 32 tokens, targets acceptance itself.
 
@@ -299,9 +311,13 @@ Speedups with the draft on the CPU and sampling at temperature 0.7 (top-k 20, to
 
 ### 7.6 GPU memory
 
+*In brief: moving the draft to the CPU saves only about 86 MiB of GPU memory.*
+
 The server's own GPU memory was measured with the benchmark settings (2,048-token context): 5,034 MiB for the target alone, 5,120 MiB with the draft on the GPU, and 5,034 MiB with the draft on the CPU. The GPU draft costs only 86 MiB, because its largest part, the input embedding table, stays in main memory even when the rest of the draft is on the GPU. That is about 600 tokens of the target's attention cache. For a draft this small, the memory saved by moving it to the CPU is negligible; its resource benefit is the GPU time it no longer uses.
 
 ### 7.7 Overlapping drafting and verification
+
+*In brief: letting the CPU draft while the GPU verifies could lift JSON to about 2.2–2.4×, and adds little on prose.*
 
 In llama.cpp's loop the GPU waits while the draft runs and the CPU waits while the GPU verifies. The cost of each part was measured separately. A target pass on the RTX 3070 takes 14–15 ms whether it checks 1 or 7 tokens, because verification is limited by reading the weights. The draft takes 1.7 ms per token on the CPU. Per step, drafting is therefore 16% of the time at $\gamma = 2$ and about a third at $\gamma = 6$. The remaining step time exceeds draft plus verification by 3–8 ms, spent on sampling, catching the draft up and server bookkeeping.
 
@@ -318,17 +334,23 @@ All table entries below are speedups over the target alone; only the first colum
 
 ### 7.8 A draft-free baseline: n-gram lookup
 
+*In brief: a lookup with no draft model gives about 1.13–1.17× in every domain, so the trained draft clearly wins only on JSON.*
+
 llama.cpp also offers a proposer that needs no draft model: it looks up the last three tokens in the prompt and the text generated so far, and proposes the tokens that followed the previous occurrence. With up to 4 or 8 proposed tokens, on the same 100 prompts per domain, the speedup over the target alone is about 1.13–1.17× in every domain and in both greedy and sampled generation (1.07–1.11× on sampled general and Portuguese financial text). Acceptance per proposed token is 0.14–0.33, and falls when the proposal is longer.
 
 The comparison is informative in both directions. On prose the n-gram lookup (1.13–1.15× greedy) beats the CPU student at γ = 4 on general text (1.03×) and is close on Portuguese financial text (1.24×), at zero training and memory cost. On JSON the student (1.89× at γ = 4) is far ahead of the lookup (1.14×), so with four-token proposals the distilled draft shows its clearest return on structured output, where the lookup cannot exploit the structure. Section 7.10 shows that other settings shift the prose figures.
 
 ### 7.9 Output equality under greedy decoding
 
+*In brief: only about half of the speculative outputs match plain greedy output exactly, and the cause is not yet isolated.*
+
 Greedy outputs with speculation were compared with target-only greedy outputs on 60 prompts (20 per domain, 128 generated tokens, prompt cache off). With the CPU draft and with the GPU draft, 30 of 60 outputs are identical to the baseline; with the n-gram lookup, 34 of 60. The two draft placements produce the same count, as expected when the output is decided by the verification pass and not by the draft.
 
 The remaining outputs diverge at a median of about 190 characters of roughly 480, and differ from that point on. Speculative decoding as implemented here is therefore not bit-exact against token-by-token decoding. The likely cause is that verification evaluates several positions in one batch, where the matrix kernels accumulate in a different order than in single-token decoding, so near-tied logits can flip the argmax; the flip then changes every later token. This explanation was not isolated in these runs. A direct test would compare the target's logits for the same prefix from the batched and the single-token path, and is left to the planned correctness suite, together with the stochastic distribution tests, the sampler-chain check and the cache rollback check.
 
 ### 7.10 Draft thread count
+
+*In brief: more draft threads help, and the best number of drafted tokens differs by domain.*
 
 The CPU draft was also run with 3 and 6 threads (4 drafted tokens, greedy, same prompts; 4 threads is the default used above). Speedup over the target alone:
 

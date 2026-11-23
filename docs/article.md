@@ -326,6 +326,18 @@ Greedy outputs with speculation were compared with target-only greedy outputs on
 
 The remaining outputs diverge at a median of about 190 characters of roughly 480, and differ from that point on. Speculative decoding as implemented here is therefore not bit-exact against token-by-token decoding. The likely cause is that verification evaluates several positions in one batch, where the matrix kernels accumulate in a different order than in single-token decoding, so near-tied logits can flip the argmax; the flip then changes every later token. This explanation was not isolated in these runs. A direct test would compare the target's logits for the same prefix from the batched and the single-token path, and is left to the planned correctness suite, together with the stochastic distribution tests, the sampler-chain check and the cache rollback check.
 
+### 7.10 Draft thread count
+
+The CPU draft was also run with 3 and 6 threads (4 drafted tokens, greedy, same prompts; 4 threads is the default used above). Speedup over the target alone:
+
+| Draft threads | General | Portuguese financial | JSON |
+|---|---|---|---|
+| 3 | 0.96× | 1.16× | 1.81× |
+| 4 | 1.03× | 1.24× | 1.89× |
+| 6 | 1.09× | 1.31× | 2.07× |
+
+Acceptance is the same in every row (0.26, 0.38, 0.76), so the whole difference is draft latency: more threads shorten each drafting burst, and the GPU verification does not need the cores. The 6-thread setting raises the JSON speedup to 2.07× and lifts general text above break-even. The machine has six physical cores, so 6 threads leaves none for the server's own thread; whether that costs anything under longer prompts was not measured.
+
 ## 8. What remains
 
 1. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.

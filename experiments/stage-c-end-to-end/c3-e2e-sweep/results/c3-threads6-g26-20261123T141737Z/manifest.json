@@ -1,0 +1,64 @@
+{
+  "run_id": "c3-threads6-g26-20261123T141737Z",
+  "utc_timestamp": "2026-11-23T14:43:59Z",
+  "system": {
+    "kernel": "7.0.0-43-generic",
+    "cpu_model": "AMD Ryzen 5 5500X3D 6-Core Processor",
+    "nproc": 12,
+    "smt_control": "on",
+    "governor": "performance",
+    "boost": "1",
+    "thp": "always [madvise] never",
+    "mem_total_kib": 31738056,
+    "swap_used_kib": 3876444
+  },
+  "git_commit": "acf430d80c910f1acc918e70e863e5aeed5e557c",
+  "files": [
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "bytes": 5027783488,
+      "sha256": "d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785"
+    },
+    {
+      "path": "/mnt/hdd1/cpu-draft-specdec/gguf/students/ds-kd-pruned-json23-96M-Q8_0.gguf",
+      "bytes": 145527712,
+      "sha256": "f615c0d91900a51fde2cf6fb7572927c62e04c3fee693c588afe72e4f53d1620"
+    }
+  ],
+  "extra": {
+    "options": {
+      "out": "experiments/stage-c-end-to-end/c3-e2e-sweep/results/c3-threads6-g26-20261123T141737Z",
+      "target": "/mnt/hdd1/cpu-draft-specdec/gguf/Qwen3-8B-Q4_K_M.gguf",
+      "draft": "/mnt/hdd1/cpu-draft-specdec/gguf/students/ds-kd-pruned-json23-96M-Q8_0.gguf",
+      "prompts": [
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_general.jsonl",
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_pt_fin.jsonl",
+        "experiments/stage-a-feasibility/a4-reference-draft/configs/prompts_json.jsonl"
+      ],
+      "llama_server": "/home/mlemes/Projects/research/cpu-draft-specdec/third_party/llama.cpp/build/bin/llama-server",
+      "plan": "none:0:all,cpu:2:all,cpu:6:all",
+      "n_predict": 64,
+      "port": 18080,
+      "draft_threads": 6,
+      "spec_draft_sampling": null,
+      "seed": 1234
+    },
+    "plan": [
+      {
+        "device": "none",
+        "gamma": 0,
+        "subset": "all"
+      },
+      {
+        "device": "cpu",
+        "gamma": 2,
+        "subset": "all"
+      },
+      {
+        "device": "cpu",
+        "gamma": 6,
+        "subset": "all"
+      }
+    ]
+  }
+}

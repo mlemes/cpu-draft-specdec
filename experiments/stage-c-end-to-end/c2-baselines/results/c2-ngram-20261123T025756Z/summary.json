@@ -1,0 +1,182 @@
+[
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "greedy",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 76.47304753104197,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "sampled",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 76.7934620001236,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "greedy",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 76.72336403360181,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "sampled",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 77.30414571833725,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "greedy",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 76.68672379663663,
+    "speedup": 1.0
+  },
+  {
+    "device": "none",
+    "gamma": 0,
+    "mode": "sampled",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": null,
+    "mean_tokens_per_s": 77.21678654904355,
+    "speedup": 1.0
+  },
+  {
+    "device": "ngram",
+    "gamma": 4,
+    "mode": "greedy",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": 0.2965897512281847,
+    "mean_tokens_per_s": 86.71475489572333,
+    "speedup": 1.133925712330531
+  },
+  {
+    "device": "ngram",
+    "gamma": 4,
+    "mode": "sampled",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": 0.22906954266230553,
+    "mean_tokens_per_s": 81.8623179574126,
+    "speedup": 1.0660063477445625
+  },
+  {
+    "device": "ngram",
+    "gamma": 4,
+    "mode": "greedy",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": 0.3339416403265437,
+    "mean_tokens_per_s": 88.37056517114152,
+    "speedup": 1.1518077483208204
+  },
+  {
+    "device": "ngram",
+    "gamma": 4,
+    "mode": "sampled",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": 0.29798870424311896,
+    "mean_tokens_per_s": 85.39693639794854,
+    "speedup": 1.1046876671931398
+  },
+  {
+    "device": "ngram",
+    "gamma": 4,
+    "mode": "greedy",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": 0.21626595192184223,
+    "mean_tokens_per_s": 87.73675205841535,
+    "speedup": 1.1440931065340851
+  },
+  {
+    "device": "ngram",
+    "gamma": 4,
+    "mode": "sampled",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": 0.21763861867511325,
+    "mean_tokens_per_s": 88.65256857660845,
+    "speedup": 1.1480996884052093
+  },
+  {
+    "device": "ngram",
+    "gamma": 8,
+    "mode": "greedy",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": 0.192920017068438,
+    "mean_tokens_per_s": 87.16711010484656,
+    "speedup": 1.1398409363699498
+  },
+  {
+    "device": "ngram",
+    "gamma": 8,
+    "mode": "sampled",
+    "domain": "general",
+    "requests": 100,
+    "mean_acceptance": 0.14337133668990065,
+    "mean_tokens_per_s": 81.9145353822492,
+    "speedup": 1.0666863200166359
+  },
+  {
+    "device": "ngram",
+    "gamma": 8,
+    "mode": "greedy",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": 0.2142209615673897,
+    "mean_tokens_per_s": 89.84979454202647,
+    "speedup": 1.1710877862794937
+  },
+  {
+    "device": "ngram",
+    "gamma": 8,
+    "mode": "sampled",
+    "domain": "pt_fin",
+    "requests": 100,
+    "mean_acceptance": 0.17164152893004728,
+    "mean_tokens_per_s": 85.43016452150876,
+    "speedup": 1.1051175034360925
+  },
+  {
+    "device": "ngram",
+    "gamma": 8,
+    "mode": "greedy",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": 0.1355384733292035,
+    "mean_tokens_per_s": 88.30632659263419,
+    "speedup": 1.1515203965005893
+  },
+  {
+    "device": "ngram",
+    "gamma": 8,
+    "mode": "sampled",
+    "domain": "json",
+    "requests": 100,
+    "mean_acceptance": 0.13680220135071763,
+    "mean_tokens_per_s": 89.23472136798154,
+    "speedup": 1.1556388883303879
+  }
+]

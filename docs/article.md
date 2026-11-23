@@ -47,7 +47,7 @@ $$
 
    and the cycle ends. If all $\gamma$ tokens are accepted, the target's distribution at position $\gamma + 1$ is already available, so one extra token is sampled from it for free.
 
-This rule makes the output distribution exactly equal to the target's. Speculative decoding changes speed, never the text distribution. In greedy decoding (always taking the most likely token) the rule reduces to a simple check: $x_i$ is accepted if and only if it equals the target's most likely token at that position.
+In exact arithmetic this rule makes the output distribution equal to the target's: speculative decoding changes speed, not the text distribution. Section 7.9 reports how closely the real implementation follows this in greedy runs. In greedy decoding (always taking the most likely token) the rule reduces to a simple check: $x_i$ is accepted if and only if it equals the target's most likely token at that position.
 
 ### 3.2 How many tokens per cycle
 
@@ -75,7 +75,7 @@ $$
 S = \frac{E(\alpha, \gamma)\; t_t}{\gamma\, t_d + t_v + t_o}.
 $$
 
-The numerator is the time plain decoding would need for the tokens one cycle produces; the denominator is what the cycle actually costs. Speculative decoding wins when $S > 1$. Solving $S = 1$ for $\alpha$ gives the *break-even acceptance rate*, the minimum agreement a draft needs to be worth running.
+In plain terms: speed is the tokens gained per cycle divided by what the cycle costs, so the draft must be both accurate (large $E$) and cheap ($t_d$ small). The numerator is the time plain decoding would need for the tokens one cycle produces; the denominator is what the cycle actually costs. Speculative decoding wins when $S > 1$. Solving $S = 1$ for $\alpha$ gives the *break-even acceptance rate*, the minimum agreement a draft needs to be worth running.
 
 On this machine the measured values were $t_t \approx 12.6$ ms and $t_v \approx 14.2$ ms for a block of five tokens ($\gamma = 4$). Verifying five tokens costs only 12% more than generating one, which is why the method works. For a draft of the planned size on the CPU ($t_d \approx 1.1$ ms) and the roughly 2–3 ms of loop overhead measured in llama.cpp, the model gives:
 
@@ -165,11 +165,11 @@ A student can start from random weights or from a shrunk copy of an existing mod
 
 ## 6. First results
 
-Three students were trained with the same data, size, and budget of 24 million training tokens. Each run took about 14 minutes on the RTX 3070. They differ in how they learn and where they start, which isolates the effect of each choice.
+Three students were trained with the same data, size, and budget of 24 million training tokens. The best of them, the first row of the table, is called the *pilot student* in the rest of the article. Each run took about 14 minutes on the RTX 3070. They differ in how they learn and where they start, which isolates the effect of each choice.
 
 | Student | Learns from | Starts from | English | Portuguese financial | JSON |
 |---|---|---|---|---|---|
-| Distilled, pruned start | Teacher's probabilities | Shrunk Qwen3-0.6B | **0.44** (0.42–0.46) | **0.59** (0.58–0.60) | **0.53** (0.51–0.55) |
+| Distilled, pruned start (pilot student) | Teacher's probabilities | Shrunk Qwen3-0.6B | **0.44** (0.42–0.46) | **0.59** (0.58–0.60) | **0.53** (0.51–0.55) |
 | Hard labels, pruned start | Next token in the text | Shrunk Qwen3-0.6B | 0.40 (0.39–0.42) | 0.48 (0.46–0.49) | 0.47 (0.45–0.49) |
 | Distilled, random start | Teacher's probabilities | Random weights | 0.41 (0.39–0.43) | 0.58 (0.56–0.59) | 0.43 (0.40–0.45) |
 | *Off-the-shelf Qwen3-0.6B (8× larger)* | | | *0.63* | *0.66* | *0.99* |
@@ -182,7 +182,7 @@ Values are greedy acceptance rates with 95% confidence intervals.
 
 **The pruned start helps.** Starting from a shrunk Qwen3-0.6B beats random initialization by 0.03 on English and 0.10 on JSON. On the financial text the two are statistically indistinguishable.
 
-**The targets are partly met.** The best student clears the break-even rate in all three domains and the 1.3× rate on the financial text. Plugging its rates into the cost model of section 3.3 ($\gamma = 4$, $t_d = 1.1$ ms, $t_o = 3$ ms) gives estimated speedups of about 1.03× on English and 1.32× on the financial text. Section 7 compares these estimates with measurements.
+**The targets are partly met.** The pilot student clears the break-even rate in all three domains and the 1.3× rate on the financial text. Plugging its rates into the cost model of section 3.3 ($\gamma = 4$, $t_d = 1.1$ ms, $t_o = 3$ ms) gives estimated speedups of about 1.03× on English and 1.32× on the financial text. Section 7 compares these estimates with measurements.
 
 **Training was not finished.** Over the last quarter of the run, agreement still rose by 0.01–0.03 for every 4 million tokens, even with the learning rate decayed to 10% of its peak.
 

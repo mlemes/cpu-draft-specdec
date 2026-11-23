@@ -170,7 +170,7 @@ Three students were trained with the same data, size, and budget of 24 million t
 | Distilled, pruned start | Teacher's probabilities | Shrunk Qwen3-0.6B | **0.44** (0.42–0.46) | **0.59** (0.58–0.60) | **0.53** (0.51–0.55) |
 | Hard labels, pruned start | Next token in the text | Shrunk Qwen3-0.6B | 0.40 (0.39–0.42) | 0.48 (0.46–0.49) | 0.47 (0.45–0.49) |
 | Distilled, random start | Teacher's probabilities | Random weights | 0.41 (0.39–0.43) | 0.58 (0.56–0.59) | 0.43 (0.40–0.45) |
-| *Untrained Qwen3-0.6B (8× larger)* | | | *0.63* | *0.66* | *0.99* |
+| *Off-the-shelf Qwen3-0.6B (8× larger)* | | | *0.63* | *0.66* | *0.99* |
 | *Needed to break even* | | | *≈ 0.40* | *≈ 0.40* | *≈ 0.40* |
 | *Needed for 1.3×* | | | *≈ 0.55* | *≈ 0.55* | *≈ 0.55* |
 
@@ -188,15 +188,15 @@ Values are greedy acceptance rates with 95% confidence intervals.
 
 ### 6.1 Longer training and more structured data
 
-Follow-up runs kept the best recipe (distilled, pruned start) and changed one thing at a time. The first two are described here; the table and the text after it add further variants. The first trained four times longer, on 96 million tokens instead of 24 million, about 1 hour on the RTX 3070. Because the scored training text holds only about 25 million tokens, the student saw it about four times. The second run kept the 96 million tokens but raised the share of structured output in the training mix from 8% to 23%, adding about 9,500 function-calling and JSON-mode conversations from the same public collection. None of these overlap the JSON evaluation prompts.
+Follow-up runs kept the best recipe (distilled, pruned start) and changed one thing at a time. Five students result, named here and used under these names in the rest of the article: the **pilot student** (section 6, 24 million tokens); the **long student** (96 million tokens); the **structured student** (96 million tokens, 23% structured output); the **fresh-prose student** (the structured student plus 40 million tokens of new prose); and the **deep student** (18 layers instead of 12). Qwen3-0.6B, used as a comparison throughout, is called the off-the-shelf Qwen3-0.6B. The first trained four times longer, on 96 million tokens instead of 24 million, about 1 hour on the RTX 3070. Because the scored training text holds only about 25 million tokens, the student saw it about four times. The second run kept the 96 million tokens but raised the share of structured output in the training mix from 8% to 23%, adding about 9,500 function-calling and JSON-mode conversations from the same public collection. None of these overlap the JSON evaluation prompts.
 
 | Student | English | Portuguese financial | JSON |
 |---|---|---|---|
-| 24 million tokens (section 6) | 0.44 (0.42–0.46) | 0.59 (0.58–0.60) | 0.53 (0.51–0.55) |
-| 96 million tokens | 0.56 (0.54–0.58) | 0.65 (0.64–0.67) | 0.75 (0.73–0.77) |
-| 96 million tokens, 23% structured output | 0.56 (0.54–0.58) | 0.65 (0.64–0.66) | **0.89 (0.88–0.90)** |
-| Same, with 40 million tokens of new prose | 0.57 (0.55–0.59) | 0.65 (0.63–0.66) | 0.89 (0.88–0.90) |
-| *Untrained Qwen3-0.6B (8× larger)* | *0.63* | *0.66* | *0.99* |
+| Pilot: 24 million tokens (section 6) | 0.44 (0.42–0.46) | 0.59 (0.58–0.60) | 0.53 (0.51–0.55) |
+| Long: 96 million tokens | 0.56 (0.54–0.58) | 0.65 (0.64–0.67) | 0.75 (0.73–0.77) |
+| Structured: 96 million tokens, 23% structured output | 0.56 (0.54–0.58) | 0.65 (0.64–0.66) | **0.89 (0.88–0.90)** |
+| Fresh-prose: structured, plus 40 million tokens of new prose | 0.57 (0.55–0.59) | 0.65 (0.63–0.66) | 0.89 (0.88–0.90) |
+| *Off-the-shelf Qwen3-0.6B (8× larger)* | *0.63* | *0.66* | *0.99* |
 
 **Longer training pays off, then saturates.** Four times the training raised agreement by 0.13 on English, 0.06 on the financial text and 0.22 on JSON. The financial text now matches the 0.6B model, and English crosses the rate needed for 1.3×. Most of the gain came in the first 60 million tokens. After that, agreement on prose barely moved.
 
@@ -204,7 +204,7 @@ Follow-up runs kept the best recipe (distilled, pruned start) and changed one th
 
 **New prose does not lift the plateau.** A natural explanation for the flat prose curve was repetition: the student saw the same 25 million tokens about three times. A third run replaced most of those repeats with 40 million tokens of new Wikipedia text in both languages, scored by the teacher, so that each prose token was seen about once. Training loss rose, since the student could no longer partly memorize its text, but agreement on held-out prose stayed within the confidence intervals (0.57 against 0.56 on English, 0.65 on the financial text). The plateau near 0.57 on English is therefore a limit of the student itself, most likely its size, and not of the data. Qwen3-0.6B, about eight times larger, reaches 0.63.
 
-**A deeper student helps only a little.** To test the size explanation, a fourth run used 18 layers instead of 12, still pruned from Qwen3-0.6B and still small enough for the CPU cache (about 75 MB of weights read per token at 8-bit precision). English agreement rose from 0.57 to 0.59, within the confidence intervals, and the other domains did not move. Since the deeper draft also takes about 50% longer per token, the cost model predicts that this small gain does not pay for itself, and the speed measurement confirms it: with the draft on the CPU at $\gamma = 2$, the 18-layer draft gives 1.07× on English, 1.17× on the financial text and 1.50× on JSON, against 1.14×, 1.28× and 1.68× for the 12-layer draft measured under the same conditions. It is slower in every domain and at every block length, on the CPU and on the GPU. For a draft, extra capacity is only useful if it does not increase the weights read per token.
+**A deeper student helps only a little.** To test the size explanation, a fourth run, the deep student, used 18 layers instead of 12, still pruned from Qwen3-0.6B and still small enough for the CPU cache (about 75 MB of weights read per token at 8-bit precision). English agreement rose from 0.57 to 0.59, within the confidence intervals, and the other domains did not move. Since the deeper draft also takes about 50% longer per token, the cost model predicts that this small gain does not pay for itself, and the speed measurement confirms it: with the draft on the CPU at $\gamma = 2$, the deep student gives 1.07× on English, 1.17× on the financial text and 1.50× on JSON, against 1.14×, 1.28× and 1.68× for the 12-layer draft measured under the same conditions. It is slower in every domain and at every block length, on the CPU and on the GPU. For a draft, extra capacity is only useful if it does not increase the weights read per token.
 
 ## 7. Measured speedups
 
@@ -216,7 +216,7 @@ Two checks confirmed the conversion. The engine's probabilities for the converte
 
 ### 7.2 Results
 
-The first speed test used the best student from section 6: pruned start, distilled, trained on 24 million tokens. Sections 7.3 and 7.4 test longer training and more structured data. It was run as the draft for Qwen3-8B in llama.cpp's speculative loop. The prompts and settings were the same as in the earlier measurement with Qwen3-0.6B as the draft: greedy decoding, 64 generated tokens, 100 prompts per domain for $\gamma = 4$ and 30 for $\gamma = 2$ and 6. The baseline is the target alone, at 76 tokens per second.
+The first speed test used the pilot student. Sections 7.3 and 7.4 test the long and the structured students. It was run as the draft for Qwen3-8B in llama.cpp's speculative loop. The prompts and settings were the same as in the earlier measurement with Qwen3-0.6B as the draft: greedy decoding, 64 generated tokens, 100 prompts per domain for $\gamma = 4$ and 30 for $\gamma = 2$ and 6. The baseline is the target alone, at 76 tokens per second.
 
 | Block length $\gamma$ | Draft runs on | English | Portuguese financial | JSON |
 |---|---|---|---|---|
@@ -224,7 +224,7 @@ The first speed test used the best student from section 6: pruned start, distill
 | 2 | GPU | 1.05 (1.01–1.09) | 1.26 (1.23–1.30) | 1.11 (1.07–1.15) |
 | 4 | CPU | 0.92 (0.89–0.94) | 1.18 (1.15–1.21) | 1.02 (0.99–1.05) |
 | 4 | GPU | 0.96 (0.93–0.98) | 1.26 (1.23–1.29) | 1.09 (1.06–1.12) |
-| 4 | *GPU, Qwen3-0.6B as draft* | *1.03* | *1.09* | *1.90* |
+| 4 | *GPU, off-the-shelf Qwen3-0.6B as draft* | *1.03* | *1.09* | *1.90* |
 
 Values are speedups over the target alone, with 95% confidence intervals. Longer blocks ($\gamma = 6$) were slower in every domain.
 
@@ -232,13 +232,13 @@ Values are speedups over the target alone, with 95% confidence intervals. Longer
 
 **At short blocks the CPU draft costs almost nothing.** At $\gamma = 2$ the CPU and GPU versions of this draft are statistically indistinguishable in every domain. The GPU pulls ahead only at longer blocks, where the CPU's slower drafting accumulates over more tokens. Since short blocks are also the fastest setting at this level of agreement, the CPU draft delivers the full speedup while using no GPU memory and no GPU time.
 
-**A distilled 50M draft beats an off-the-shelf model eight times its size on prose.** On the financial text the student reaches 1.27× against 1.09× for Qwen3-0.6B, and on English 1.05× against 1.03×. On JSON it falls far behind (1.11× against 1.90×). The 0.6B model agrees with the target almost perfectly on structured output, while the student, which saw JSON in only 8% of its training data, does not.
+**A distilled 50M draft beats an off-the-shelf model eight times its size on prose.** On the financial text the pilot student reaches 1.27× against 1.09× for the off-the-shelf Qwen3-0.6B, and on English 1.05× against 1.03×. On JSON it falls far behind (1.11× against 1.90×). The 0.6B model agrees with the target almost perfectly on structured output, while the pilot student, which saw JSON in only 8% of its training data, does not.
 
 **English sits at break-even,** as the cost model predicted for an acceptance rate of about 0.44.
 
 ### 7.3 The longer-trained draft
 
-The student trained on 96 million tokens (section 6.1, with JSON at 8% of the mix) was measured the same way, adding $\gamma = 3$. The baseline is again the target alone, at 77.5 tokens per second.
+The long student (section 6.1, with JSON at 8% of the mix) was measured the same way, adding $\gamma = 3$. The baseline is again the target alone, at 77.5 tokens per second.
 
 | Block length $\gamma$ | Draft runs on | English | Portuguese financial | JSON |
 |---|---|---|---|---|
@@ -248,7 +248,7 @@ The student trained on 96 million tokens (section 6.1, with JSON at 8% of the mi
 | 3 | GPU | 1.15 (1.11–1.19) | 1.37 (1.32–1.42) | 1.52 (1.45–1.58) |
 | 4 | CPU | 1.06 (1.03–1.09) | 1.28 (1.25–1.31) | **1.50 (1.46–1.55)** |
 | 4 | GPU | 1.11 (1.08–1.14) | 1.34 (1.31–1.38) | 1.59 (1.53–1.64) |
-| 4 | *GPU, Qwen3-0.6B as draft* | *1.03* | *1.09* | *1.90* |
+| 4 | *GPU, off-the-shelf Qwen3-0.6B as draft* | *1.03* | *1.09* | *1.90* |
 
 Values are greedy speedups over the target alone with 95% confidence intervals; $\gamma = 3$ used 30 prompts per domain, the others 100. At $\gamma = 6$ every setting was slower than at $\gamma = 4$.
 
@@ -262,7 +262,7 @@ Values are greedy speedups over the target alone with 95% confidence intervals; 
 
 ### 7.4 The structured-output draft
 
-The student trained with 23% structured output (section 6.1) was measured next. Its prose agreement is the same as that of the student in section 7.3, so the interest is JSON.
+The structured student (section 6.1) was measured next. Its prose agreement is the same as that of the long student in section 7.3, so the interest is JSON.
 
 | Block length $\gamma$ | Draft runs on | English | Portuguese financial | JSON |
 |---|---|---|---|---|
@@ -270,11 +270,11 @@ The student trained with 23% structured output (section 6.1) was measured next. 
 | 4 | CPU | 0.97 (0.95–1.00) | 1.22 (1.18–1.26) | 1.94 (1.90–1.98) |
 | 4 | GPU | 1.09 (1.06–1.13) | 1.36 (1.33–1.40) | **2.17 (2.12–2.21)** |
 | 6 | GPU | 0.99 (0.94–1.05) | 1.26 (1.19–1.32) | **2.28 (2.17–2.41)** |
-| 4 | *GPU, Qwen3-0.6B as draft* | *1.03* | *1.09* | *1.90* |
+| 4 | *GPU, off-the-shelf Qwen3-0.6B as draft* | *1.03* | *1.09* | *1.90* |
 
 $\gamma = 6$ used 30 prompts per domain, the others 100. A repeat with 100 prompts at every block length reproduced all rows within 0.08 and gave 2.04× (1.98–2.10) with the draft on the CPU at $\gamma = 6$.
 
-**JSON more than doubles the target's speed.** The acceptance rate implied by the engine's counts is 0.89, exactly the offline prediction. At that rate long blocks pay off, and the best setting is 6 tokens or more. With the draft on the GPU the 8B model runs 2.17× faster at $\gamma = 4$ and 2.28× at $\gamma = 6$, against 1.90× for Qwen3-0.6B. The 50-million-parameter student now beats the off-the-shelf model eight times its size in all three domains.
+**JSON more than doubles the target's speed.** The acceptance rate implied by the engine's counts is 0.89, exactly the offline prediction. At that rate long blocks pay off, and the best setting is 6 tokens or more. With the draft on the GPU the 8B model runs 2.17× faster at $\gamma = 4$ and 2.28× at $\gamma = 6$, against 1.90× for the off-the-shelf Qwen3-0.6B. The 50-million-parameter student now beats the off-the-shelf model eight times its size in all three domains.
 
 **On JSON the CPU's slower drafting shows.** With the draft on the CPU the best JSON speedup is 2.04×, about 0.2 below the GPU draft. At an acceptance rate of 0.89 each cycle drafts and keeps many tokens, so drafting time is a larger share of the cycle than on prose. A loop that drafts on the CPU while the GPU verifies would hide most of this cost.
 
@@ -282,7 +282,7 @@ $\gamma = 6$ used 30 prompts per domain, the others 100. A repeat with 100 promp
 
 All results so far use greedy decoding. With sampling, section 3.1 says a drafted token is accepted with probability $\min(1, p/q)$, so the acceptance rate is $1 - \mathrm{TV}(p, q)$ and depends on the draft's whole distribution, not just its top token. The training loss of section 5.2 (forward KL) is not the same objective: it heavily penalizes the student for missing any token the teacher considers possible, which pushes the student to spread probability over the teacher's tail. A loss that directly maximizes the overlap $\sum_x \min(p(x), q(x))$, computed over the teacher's top 32 tokens, targets acceptance itself.
 
-To test this, the best student was trained for 24 million more tokens in two ways, once with the original loss and once with the overlap loss, at a lower learning rate. Greedy agreement was the same for both. The offline estimate of sampled acceptance at temperature 1 rose from 0.49 to 0.54 on English, from 0.63 to 0.65 on the financial text and from 0.85 to 0.87 on JSON with the overlap loss.
+To test this, the fresh-prose student (the best at that point) was trained for 24 million more tokens in two ways, once with the original loss and once with the overlap loss, at a lower learning rate. Greedy agreement was the same for both. The offline estimate of sampled acceptance at temperature 1 rose from 0.49 to 0.54 on English, from 0.63 to 0.65 on the financial text and from 0.85 to 0.87 on JSON with the overlap loss.
 
 The first speed measurement showed no difference, for a practical reason. The draft can propose in two ways. By default, llama.cpp's draft proposes only its most likely token, and the target accepts it when its own sample happens to match. Acceptance then depends only on the draft's top token, and the rest of its distribution is ignored. The rule of section 3.1 is available as an option, in which the draft samples its proposal and the target accepts or rejects it with $\min(1, p/q)$.
 
@@ -350,7 +350,7 @@ The best length depends on the domain: 2 tokens on prose, 6 or more on JSON, whe
 
 ## 8. What remains
 
-1. **Better use of the student's size.** Neither new text nor 50% more depth moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.
+1. **Better use of the student's size.** Neither new text (fresh-prose student) nor 50% more depth (deep student) moved English agreement much. Remaining options are a sparser design that reads fewer weights per token (below) and training objectives aimed directly at acceptance rather than at matching the full distribution.
 2. **Measure the value of freed GPU time.** The memory saving is negligible (section 7.6); the CPU draft's remaining resource benefit is GPU time, which matters when the card is shared, for example with a second model or several requests at once.
 3. **Overlap drafting and verification.** Drafting ahead during verification would add 0.2–0.3 on JSON (section 7.7); on prose it needs drafting for several outcomes, and the fixed per-step overhead of the loop is a comparable target.
 4. **Adaptive draft length.** The best number of drafted tokens differs by domain (section 7.10): 2 on prose, 6 or more on JSON. Choosing it per request or per step from recent acceptance is untested.
@@ -366,7 +366,7 @@ Speculative decoding turns a large model's spare compute into speed by letting a
 
 Knowledge distillation from the 8B target clearly outperforms ordinary training for this purpose, and starting from a pruned copy of a related small model helps further. After a short pilot the best student agrees with the target 44–59% of the time depending on the domain. Training four times longer raises agreement to 0.56 on English and 0.65 on the financial text, matching the 0.6B model on the latter, and a larger share of structured data in the training mix lifts JSON agreement to 0.89 without hurting prose.
 
-Run as a real draft from the CPU, the longer-trained student speeds up the 8B model by 1.18× on English, 1.32× on Portuguese financial text and 1.50× on JSON, beating Qwen3-0.6B on prose and costing only a few percent of speed against running the same draft on the GPU. Trained with more structured data, the draft makes the 8B model more than twice as fast on JSON.
+Run as a real draft from the CPU, the long student speeds up the 8B model by 1.18× on English, 1.32× on Portuguese financial text and 1.50× on JSON, beating Qwen3-0.6B on prose and costing only a few percent of speed against running the same draft on the GPU. Trained with more structured data, the draft makes the 8B model more than twice as fast on JSON.
 
 Overlapping CPU drafting with GPU verification could raise JSON further, to about 2.2–2.4×, but adds little on prose unless the draft prepares for several outcomes at once. A draft-free n-gram lookup gives about 1.13–1.17× in every domain (section 7.8), so the student pays off mainly on JSON (1.89× against 1.14×). Giving the CPU draft six threads instead of four raises the speedups to 1.09× on English, 1.31× on Portuguese financial text and 2.07× on JSON, and the best draft length varies by domain, reaching 2.26× on JSON at six tokens. Greedy outputs with speculation match target-only outputs on about half of the test prompts, diverging mid-text, which points to numerical differences in the batched verification pass.
 

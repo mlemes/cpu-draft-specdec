@@ -23,6 +23,7 @@ from dataclasses import asdict
 from collections.abc import Iterable
 import json
 import math
+import os
 from pathlib import Path
 
 import torch
@@ -96,10 +97,14 @@ def fit_ffn_layerwise(
 ) -> list[dict]:
     """Fit every ``dst.layers[l].mlp`` to the source FFN output of ``src``.
 
-    ``batches`` yields int64 token tensors [B, T]. Up to ``steps`` of them are kept and
-    the fit cycles over that list, so each layer sees exactly ``steps`` Adam steps on mean
-    squared error. Returns one ``{layer, rel_mse_before, rel_mse_after}`` record per layer,
-    with rel_mse = MSE / mean(target**2) measured before and after the fit.
+    ``batches`` yields int64 token tensors [B, T]. The first ``FIT_EVAL_BATCHES`` batches
+    are held out and never trained on: they are only used to measure rel_mse, both before
+    and after the fit. Up to ``steps`` further batches are kept and the fit cycles over
+    that list, so each layer sees exactly ``steps`` Adam steps on mean squared error. If
+    fewer than ``FIT_EVAL_BATCHES + 1`` batches are available there is nothing to hold
+    out, so the fit runs on and rel_mse is measured on every available batch. Returns one
+    ``{layer, rel_mse_before, rel_mse_after}`` record per layer, with
+    rel_mse = MSE / mean(target**2) measured before and after the fit.
     """
     if src.cfg.hidden != dst.cfg.hidden or src.cfg.n_layers != dst.cfg.n_layers:
         raise ValueError(
@@ -111,20 +116,29 @@ def fit_ffn_layerwise(
     if not math.isfinite(lr) or lr <= 0.0:
         raise ValueError(f"lr must be finite and > 0, got {lr}")
 
-    batch_list: list[torch.Tensor] = []
-    for batch in batches:
-        batch_list.append(torch.as_tensor(batch, dtype=torch.long))
-        if len(batch_list) >= steps:
+    iterator = iter(batches)
+    eval_batches: list[torch.Tensor] = []
+    for batch in iterator:
+        eval_batches.append(torch.as_tensor(batch, dtype=torch.long))
+        if len(eval_batches) >= FIT_EVAL_BATCHES:
             break
-    if not batch_list:
+
+    train_batches: list[torch.Tensor] = []
+    for batch in iterator:
+        train_batches.append(torch.as_tensor(batch, dtype=torch.long))
+        if len(train_batches) >= steps:
+            break
+
+    if not train_batches:
+        # Fewer than FIT_EVAL_BATCHES + 1 batches: nothing left to hold out.
+        train_batches = eval_batches
+    if not train_batches:
         raise ValueError("no token batches were given")
 
     device = next(src.parameters()).device
     n_layers = src.cfg.n_layers
     src.eval()
     dst.eval()
-
-    eval_batches = batch_list[: min(FIT_EVAL_BATCHES, len(batch_list))]
 
     def measure() -> list[float]:
         sq = [0.0] * n_layers
@@ -147,7 +161,7 @@ def fit_ffn_layerwise(
         for layer in range(n_layers)
     ]
     for step in range(steps):
-        tokens = batch_list[step % len(batch_list)].to(device)
+        tokens = train_batches[step % len(train_batches)].to(device)
         captured = _capture_ffn_io(src, tokens)
         for layer in range(n_layers):
             hidden, target = captured[layer]
@@ -224,12 +238,30 @@ def build_init_checkpoint(
     # non-FFN tensor, and the FFN keeps exactly this freshly initialized state.
     dst_state = {k: v.detach().clone() for k, v in dst.state_dict().items()}
     src_state = src_ckpt["state_dict"]
+
+    # Check the whole non-FFN tensor set before copying anything, so a source that does
+    # not fit the new geometry fails cleanly instead of being partially copied.
+    missing = sorted(
+        name for name in dst_state if FFN_MARKER not in name and name not in src_state
+    )
+    if missing:
+        raise UsageError(
+            "Source checkpoint is missing non-FFN tensors required by the new model: "
+            + ", ".join(missing)
+        )
+    unexpected = sorted(
+        name for name in src_state if FFN_MARKER not in name and name not in dst_state
+    )
+    if unexpected:
+        raise UsageError(
+            "Source checkpoint has non-FFN tensors with no counterpart in the new model: "
+            + ", ".join(unexpected)
+        )
+
     copied = 0
     for name, tensor in src_state.items():
         if FFN_MARKER in name:
             continue
-        if name not in dst_state:
-            raise UsageError(f"Source tensor {name!r} has no counterpart in the new model")
         if tuple(tensor.shape) != tuple(dst_state[name].shape):
             raise UsageError(
                 f"Shape mismatch for {name!r}: source {tuple(tensor.shape)} != "
@@ -254,6 +286,18 @@ def build_init_checkpoint(
         "fit": None,
     }
     return out, dst
+
+
+def _save_checkpoint(obj: dict, out_path: Path) -> None:
+    """Write ``obj`` to ``out_path`` atomically: ``--out`` never exists half-written."""
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = out_path.with_name(out_path.name + ".tmp")
+    try:
+        torch.save(obj, tmp_path)
+        os.replace(tmp_path, out_path)
+    except BaseException:
+        tmp_path.unlink(missing_ok=True)
+        raise
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -358,8 +402,7 @@ def main(argv: list[str] | None = None) -> int:
             }
             out["ffn_init"]["fit"] = report
 
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        torch.save(out, out_path)
+        _save_checkpoint(out, out_path)
         print(
             f"wrote {out_path} (ffn_type={out['config']['ffn_type']}, ffn={out['config']['ffn']}, "
             f"fit={'yes' if args.fit else 'no'})"

@@ -12,7 +12,7 @@ Status (2026-11-22): Stage A measurement tooling, Stage B teacher/training tooli
 | Speculative loop | `src/specdec/` | One process holding both models: drafts γ tokens on the CPU, verifies on the GPU (greedy or stochastic), rolls back both KV caches, logs per-round timings |
 | Measurement | `src/measure/` | resctrl (CAT masks, MBM, occupancy), `perf` core and uncore events, IBS sampling, manifest writer, touched-byte calculator from tensor layouts and routing traces |
 | Teacher scorer | `src/teacher/teacher_score` (C++, libllama) | Built. Packs corpus text into fixed-length sequences, runs the deployed target and stores per-position top-32 log-probabilities (spec: `docs/specs/stage-b-tooling.md` §2) |
-| Training | `src/train/` | Built: V′ selection, Qwen3-layout student, pruned initialization from Qwen3-0.6B, teacher batcher, KD/CE/TV losses, trainer and offline-acceptance evaluator (§3). Planned: MoE upcycling, sticky-routing penalty, KAN/rational FFN types for b10 |
+| Training | `src/train/` | Built: V′ selection, Qwen3-layout student, pruned initialization from Qwen3-0.6B, teacher batcher, KD/CE/TV losses, trainer and offline-acceptance evaluator, FFN types (swiglu, mlp, mlp_rational, gr_kan, bspline_kan) and train.ffn_init for b10 (§3). Planned: MoE upcycling, sticky-routing penalty |
 | Model building | `src/models/` | Built: GGUF I/O, random-weight GGUFs for latency sweeps, and student GGUF exporter with V′ head (`export_student_gguf.py`). Quantize with the patched `llama-quantize` (`output_vmap.weight` stays I32) (pruning lives in `src/train/prune_init.py`) |
 
 ## Pinned runtime

@@ -38,6 +38,8 @@ H1 is falsified if the lower bound of the 95% confidence interval of the speedup
 
 **H4.** An update to the student pays off only when the remaining workload is longer than N* = C_update / Δt_per_token (defined in Stage D).
 
+**H5 (added 2026-11-24, exploratory).** At the touched bytes per token of D-S, a student whose FFN is a Kolmogorov-Arnold block (B-spline KAN or group-rational KAN) reaches a higher acceptance rate α than D-S and than a plain MLP of equal bytes. H5 is falsified if no KAN variant beats both outside the confidence interval. Prior evidence points against it [R: Yu et al. 2024], so a negative result is the expected outcome [E].
+
 ### Prior work
 
 | Work | What it contributes here |
@@ -230,6 +232,16 @@ Both models drop cache positions past the accepted length (`seq_rm`). The draft 
 | C. End-to-end | Batch 1. Context 512 and 2048. γ = 2, 4, 6. Threads 3 and 6. A chosen subset of combinations, not a full grid. Optional: the CPU drafts the next block while the GPU verifies. | GPU target alone; CPU draft with GPU target; the same draft on the GPU; n-gram or prompt-lookup proposer; standalone CPU student for its quality–latency tradeoff. Same target checkpoint, quantization and sampler chain everywhere. | ≈ 2 days | The speedup's 95% CI lower bound is ≤ 1.0 for every draft: report the negative result. |
 | D. Adaptation economics | Held-out streams of general text, Portuguese financial text (public central bank and securities-regulator documents) and structured JSON outputs, in segments of 20k–200k tokens with stable periods, abrupt switches and recurrences. Policies: frozen, periodic, change-triggered (CUSUM on α), and an amortization rule (update when expected remaining tokens × predicted Δ exceeds C_u). | C_u counts teacher scoring, training, quantization and repacking, reload, cache warm-up and lost GPU serving throughput. Teacher data captured during verification (as in Online Speculative Decoding) has near-zero generation cost. Prior student versions are kept for recurring workloads. | 3–4 days | N* exceeds typical segment length: the frozen student wins. Cumulative net seconds saved are reported either way. |
 
+### Design change 2026-11-24: KAN feed-forward arms (experiment b10)
+
+Adds H5 as an exploratory Stage B arm. The operator asked whether Kolmogorov-Arnold networks make a better student at the same budget.
+
+- **Matched quantity.** Touched weight bytes per token at Q8_0, as everywhere else (section 4). The arms do not share widths: a KAN edge stores G + k + 1 numbers (9 at G = 5, k = 3), so a KAN at D-S widths would read about 9× the FFN bytes [E]. Matched widths: B-spline KAN 512-256-512; two-matrix MLP, rational MLP and GR-KAN 512-2304-512. All are within 0.01% of D-S's 56.3 MB [V, arithmetic in `experiments/stage-b-distillation/b10-kan-ffn/configs/budget.py`].
+- **Scope.** Only the FFN changes. Every arm copies attention, norms, embeddings and the V′ head from the trained b5 D-S checkpoint and trains 96M more tokens; controls are D-S continued unchanged and D-S with its FFN re-initialized. The arms form a chain where each changes one property: gate removed, then learnable activation, then rational on both layers' inputs, then per-edge splines.
+- **"KAN approximating the student's layers"** becomes an initialization variant: each KAN FFN is first fitted to the trained D-S FFN on D-S hidden states, then trained with the same KD run. Fitting each layer on its own without end-to-end training would compound errors across layers, so it is not an arm by itself.
+- **Budget.** 96M tokens per arm (the b5/b6 budget), offline greedy agreement first. The llama.cpp runtime path (basis-expansion or rational ops plus a standard quantized matmul) is built only if a KAN arm passes. Draft latency on AVX2 is [U] until then.
+- **Order.** Runs after the D-S gate, on a dedicated GPU, and does not delay Stage C.
+
 ### Adaptation cost model
 
 For an update u:
@@ -324,6 +336,14 @@ Newer work [R unless noted]:
 - SuffixDecoding: https://arxiv.org/abs/2411.04975
 - REST: https://arxiv.org/abs/2311.08252
 - SpecExec: https://arxiv.org/abs/2406.02532
+
+Kolmogorov-Arnold networks (b10) [R; titles and authors confirmed by search 2026-11-24]:
+
+- KAN (Liu et al. 2024): https://arxiv.org/abs/2404.19756
+- Kolmogorov-Arnold Transformer, GR-KAN (Yang and Wang, ICLR 2025): https://arxiv.org/abs/2409.10594
+- KAN or MLP: A Fairer Comparison (Yu, Yu and Wang 2024): https://arxiv.org/abs/2407.16674
+- FastKAN, KANs as RBF networks (Li 2024): https://arxiv.org/abs/2405.06721
+- FlashKAT, KAT training bottlenecks (Raffel and Chen): https://arxiv.org/abs/2505.13813
 
 Models, runtimes and tools [R]:
 

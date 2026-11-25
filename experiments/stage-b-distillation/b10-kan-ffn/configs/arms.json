@@ -1,0 +1,102 @@
+{
+  "experiment": "b10-kan-ffn",
+  "note": "FFN replacement only. Every trained arm copies attention, norms, embeddings and the V' head from the b5 D-S checkpoint (ds-ref) and trains 96M more tokens with the b5 recipe. Widths chosen so touched bytes per token match D-S within 1% (check: python budget.py). Arms ds-fresh..kan-bspline form a chain where each differs from the previous in one property; kan-bspline-fit differs from kan-bspline in FFN initialization only.",
+  "common": {
+    "tokens": 96000000,
+    "loss": "kd",
+    "seq_len": 1024,
+    "lr": 0.0006,
+    "warmup": 100,
+    "batch_seqs": 4,
+    "grad_accum": 4,
+    "seed": 0,
+    "data_mix": "b5 (same DATA string as configs/run_b6.sh)",
+    "init_source": "ds-ref: /mnt/hdd1/cpu-draft-specdec/runs/b2/kd-pruned-prose45json23-20261122T105044Z (final checkpoint)"
+  },
+  "arms": [
+    {
+      "id": "ds-ref",
+      "type": "swiglu",
+      "width": 1536,
+      "init": "b5 checkpoint",
+      "changes_vs_prev": "reference only, not retrained"
+    },
+    {
+      "id": "ds-cont",
+      "type": "swiglu",
+      "width": 1536,
+      "init": "ds-ref, all tensors",
+      "changes_vs_prev": "control for the extra 96M tokens with a trained FFN"
+    },
+    {
+      "id": "ds-fresh",
+      "type": "swiglu",
+      "width": 1536,
+      "init": "ds-ref non-FFN, FFN re-initialized",
+      "changes_vs_prev": "control for discarding the trained FFN"
+    },
+    {
+      "id": "mlp-silu",
+      "type": "mlp",
+      "width": 2304,
+      "activation": "silu",
+      "init": "ds-ref non-FFN, FFN re-initialized",
+      "changes_vs_prev": "gate removed, two matrices, width rescaled to equal bytes"
+    },
+    {
+      "id": "mlp-rational",
+      "type": "mlp_rational",
+      "width": 2304,
+      "rational_groups": 8,
+      "rational_m": 5,
+      "rational_n": 4,
+      "init": "ds-ref non-FFN, FFN re-initialized",
+      "rational_init": "fit to SiLU",
+      "changes_vs_prev": "SiLU replaced by learnable safe-Pade rational P5/Q4, shared within 8 channel groups"
+    },
+    {
+      "id": "gr-kan",
+      "type": "gr_kan",
+      "width": 2304,
+      "rational_groups": 8,
+      "rational_m": 5,
+      "rational_n": 4,
+      "init": "ds-ref non-FFN, FFN re-initialized",
+      "rational_init": "layer 1 identity, layer 2 fit to SiLU (KAT variance-preserving)",
+      "changes_vs_prev": "rational unit applied to the inputs of both linear maps (KAT GR-KAN layout)"
+    },
+    {
+      "id": "kan-bspline",
+      "type": "bspline_kan",
+      "width": 256,
+      "grid": 5,
+      "order": 3,
+      "grid_range": [
+        -2,
+        2
+      ],
+      "input_norm": "existing pre-FFN RMSNorm; inner layer LayerNorm without affine to keep inputs in grid range",
+      "init": "ds-ref non-FFN, FFN re-initialized",
+      "changes_vs_prev": "per-edge cubic B-spline (G=5) plus SiLU base, efficient-KAN layout"
+    },
+    {
+      "id": "kan-bspline-fit",
+      "type": "bspline_kan",
+      "width": 256,
+      "grid": 5,
+      "order": 3,
+      "grid_range": [
+        -2,
+        2
+      ],
+      "init": "ds-ref non-FFN, FFN fitted per layer to ds-ref FFN",
+      "fit": {
+        "source": "ds-ref",
+        "objective": "per-layer MSE between KAN FFN output and D-S FFN output on D-S hidden states",
+        "fit_tokens": 4000000
+      },
+      "changes_vs_prev": "initialization only: each KAN FFN pre-fitted to the D-S FFN, then the same KD run"
+    }
+  ],
+  "stop_if": "No KAN arm (gr-kan, kan-bspline, kan-bspline-fit) beats both ds-fresh and mlp-silu on general-prose offline greedy agreement outside the paired bootstrap CI: report negative, do not build the llama.cpp runtime path. kan-bspline-fit is also compared with ds-cont (both start from the trained FFN function)."
+}

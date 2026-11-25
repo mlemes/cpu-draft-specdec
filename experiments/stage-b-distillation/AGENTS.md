@@ -12,6 +12,7 @@ Teacher data and training never share the GPU: run `b1` first, then train with t
 | `b4-dense-large-control` | D-L, dense with the same stored bytes as M |
 | `b5-cache-behavior` | Routing churn, expert reuse, DRAM traffic and CAT sweeps for each student |
 | `b6-standalone-quality` | Each student evaluated on its own |
+| `b10-kan-ffn` | KAN and rational FFN blocks at the D-S byte budget (H5, exploratory, added 2026-11-24) |
 
 ## Controls
 

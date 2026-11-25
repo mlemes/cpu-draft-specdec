@@ -8,6 +8,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.utils.checkpoint
 
 
 # FFN block types; `ffn` is the hidden width for every one of them.
@@ -349,7 +350,15 @@ def build_ffn(cfg: StudentConfig) -> nn.Module:
 
 
 class StudentBlock(nn.Module):
-    """Pre-norm Transformer block."""
+    """Pre-norm Transformer block.
+
+    The non-SwiGLU FFNs (rational, B-spline KAN) keep large float32 intermediates
+    alive for backward and do not fit on the training GPU at batch 1. While
+    training with grad enabled, their FFN is therefore run through activation
+    checkpointing and recomputed in the backward pass. SwiGLU, evaluation and
+    ``no_grad`` paths run the FFN directly, exactly as before. Checkpointing does
+    not change forward values, only how they are stored.
+    """
 
     def __init__(self, cfg: StudentConfig) -> None:
         super().__init__()
@@ -357,10 +366,20 @@ class StudentBlock(nn.Module):
         self.self_attn = StudentAttention(cfg)
         self.post_attention_layernorm = RMSNorm(cfg.hidden, eps=cfg.rms_eps)
         self.mlp = build_ffn(cfg)
+        # SwiGLU is the memory baseline and must keep its exact code path.
+        self.checkpoint_mlp = not isinstance(self.mlp, StudentMLP)
+
+    def _ffn(self, h: torch.Tensor) -> torch.Tensor:
+        if self.checkpoint_mlp and self.training and torch.is_grad_enabled():
+            # Non-reentrant checkpointing keeps the autocast state and the RNG
+            # state of the recomputed forward pass.
+            return torch.utils.checkpoint.checkpoint(self.mlp, h, use_reentrant=False)
+        return self.mlp(h)
 
     def forward(self, x: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor) -> torch.Tensor:
         x = x + self.self_attn(self.input_layernorm(x), cos, sin)
-        x = x + self.mlp(self.post_attention_layernorm(x))
+        h = self.post_attention_layernorm(x)
+        x = x + self._ffn(h)
         return x
 
 

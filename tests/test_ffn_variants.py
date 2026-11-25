@@ -5,8 +5,11 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
+import torch.nn.functional as F  # noqa: E402
+import torch.utils.checkpoint  # noqa: E402
+
 from train import ffn_init  # noqa: E402
-from train.student import Student, StudentConfig  # noqa: E402
+from train.student import FFN_TYPES, Student, StudentBlock, StudentConfig  # noqa: E402
 
 V, VP, H, FFN, LAYERS, HD = 64, 16, 32, 64, 2, 16
 
@@ -167,3 +170,123 @@ def test_fit_measures_on_all_batches_when_nothing_can_be_held_out(tmp_path, monk
     assert seen[:2] == ids  # measured on all batches
     assert seen[2:4] == ids  # trained on them too
     assert seen[4:] == ids
+
+
+# --- activation checkpointing of the non-SwiGLU FFNs ---------------------------
+
+NON_SWIGLU = tuple(t for t in FFN_TYPES if t != "swiglu")
+
+_REAL_CHECKPOINT = torch.utils.checkpoint.checkpoint
+
+
+def _tiny(ffn_type: str) -> StudentConfig:
+    return StudentConfig(
+        n_vocab_in=V,
+        n_vprime=VP,
+        hidden=H,
+        n_layers=LAYERS,
+        n_heads=2,
+        n_kv_heads=1,
+        head_dim=HD,
+        ffn=FFN,
+        max_seq=32,
+        ffn_type=ffn_type,
+    )
+
+
+def _loss_and_grads(model, tokens, targets, autocast=False):
+    """One training step without an optimizer update; returns loss, logits, grads."""
+    model.zero_grad(set_to_none=True)
+    with torch.autocast("cpu", dtype=torch.bfloat16, enabled=autocast):
+        logits = model(tokens)
+        loss = F.cross_entropy(logits.float().reshape(-1, VP), targets.reshape(-1))
+    loss.backward()
+    grads = {
+        name: param.grad.detach().clone()
+        for name, param in model.named_parameters()
+        if param.grad is not None
+    }
+    return loss.detach(), logits.detach(), grads
+
+
+def _spy(monkeypatch, calls, *, bypass):
+    """Record checkpoint calls; ``bypass`` replaces checkpointing with a plain call."""
+
+    def spy(fn, *args, **kwargs):
+        calls.append(args[0].shape if args else None)
+        if bypass:
+            return fn(*args)
+        return _REAL_CHECKPOINT(fn, *args, **kwargs)
+
+    monkeypatch.setattr(torch.utils.checkpoint, "checkpoint", spy)
+
+
+@pytest.mark.parametrize("ffn_type", NON_SWIGLU)
+@pytest.mark.parametrize("autocast", [False, True])
+def test_checkpointed_ffn_matches_direct(ffn_type, autocast, monkeypatch):
+    torch.manual_seed(0)
+    model = Student(_tiny(ffn_type))
+    model.train()
+    tokens = torch.randint(2, V, (2, 8))
+    targets = torch.randint(0, VP, (2, 8))
+    kwargs = {"rtol": 2e-2, "atol": 2e-2} if autocast else {"rtol": 1e-5, "atol": 1e-6}
+
+    calls: list = []
+    _spy(monkeypatch, calls, bypass=False)
+    ck_loss, ck_logits, ck_grads = _loss_and_grads(model, tokens, targets, autocast)
+    assert calls, "checkpointing was not used in train() mode with grad enabled"
+
+    # Same weights and inputs, checkpointing replaced by a direct call.
+    calls.clear()
+    _spy(monkeypatch, calls, bypass=True)
+    di_loss, di_logits, di_grads = _loss_and_grads(model, tokens, targets, autocast)
+    assert calls
+
+    assert torch.allclose(ck_loss.float(), di_loss.float(), **kwargs)
+    assert torch.allclose(ck_logits.float(), di_logits.float(), **kwargs)
+    assert set(ck_grads) == set(di_grads)
+    # Every parameter that gets a gradient must still get one through the recompute.
+    assert len(di_grads) == sum(1 for p in model.parameters() if p.requires_grad)
+    for name, grad in ck_grads.items():
+        assert torch.allclose(grad.float(), di_grads[name].float(), **kwargs), name
+
+
+def test_swiglu_never_checkpoints(monkeypatch):
+    torch.manual_seed(0)
+    model = Student(_tiny("swiglu"))
+    model.train()
+    tokens = torch.randint(2, V, (2, 8))
+    targets = torch.randint(0, VP, (2, 8))
+    assert all(not block.checkpoint_mlp for block in model.layers)
+
+    calls: list = []
+    _spy(monkeypatch, calls, bypass=False)
+    _loss_and_grads(model, tokens, targets)
+    assert calls == []
+
+
+@pytest.mark.parametrize("ffn_type", NON_SWIGLU)
+def test_checkpoint_only_in_training_with_grad(ffn_type, monkeypatch):
+    torch.manual_seed(0)
+    model = Student(_tiny(ffn_type))
+    assert all(isinstance(block, StudentBlock) for block in model.layers)
+    assert all(block.checkpoint_mlp for block in model.layers)
+    tokens = torch.randint(2, V, (1, 8))
+
+    calls: list = []
+    _spy(monkeypatch, calls, bypass=False)
+
+    # eval() with grad enabled: no checkpointing.
+    model.eval()
+    model(tokens)
+    assert calls == []
+
+    # train() without grad (e.g. a metrics pass): no checkpointing.
+    model.train()
+    with torch.no_grad():
+        model(tokens)
+    assert calls == []
+
+    # train() with grad: one checkpoint call per block.
+    model(tokens).sum().backward()
+    assert len(calls) == len(model.layers)

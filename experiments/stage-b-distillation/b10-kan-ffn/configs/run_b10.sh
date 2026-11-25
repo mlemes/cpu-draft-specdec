@@ -12,10 +12,6 @@ DATA="$T/general/$TAG:0.135,$T/general2/$TAG:0.225,$T/pt_general/$TAG:0.135,$T/p
 # b5 D-S checkpoint: source of every non-FFN weight and of the FFN in ds-cont.
 DSREF=${DSREF:-$HDD/runs/b2/kd-pruned-prose45json23-20261122T105044Z/final.pt}
 BATCH=${BATCH:-4}; ACCUM=${ACCUM:-4}  # effective batch 16 sequences, as in b6
-# Rational and KAN FFNs keep far more activations for backward: peak 3.96 (mlp_rational), 4.32 (gr_kan) and
-# 4.77 GiB (bspline_kan) against 2.48 GiB (swiglu) per 1024-token sequence [V, 2026-11-24, synthetic
-# full-head loss], so on 8 GB they run HEAVY_BATCH sequences per micro-batch with the same effective batch.
-HEAVY_BATCH=${HEAVY_BATCH:-1}
 SEED=${SEED:-0}
 INITDIR=$HDD/runs/b10/init
 # Fit of kan-bspline-fit: --fit-tokens 4000000 at 4 x 1024 tokens per batch = 977 batches,
@@ -41,11 +37,6 @@ for ARM in "$@"; do
     *) echo "unknown arm: $ARM (ds-ref is not retrained)" >&2; exit 2 ;;
   esac
 
-  case "$ARM" in
-    ds-*|mlp-silu) B=$BATCH; A=$ACCUM ;;
-    *)             B=$HEAVY_BATCH; A=$(( BATCH * ACCUM / HEAVY_BATCH )) ;;
-  esac
-
   if [ -z "${INIT:-}" ]; then
     INIT=$INITDIR/$ARM.pt
     if [ ! -f "$INIT" ]; then
@@ -55,7 +46,7 @@ for ARM in "$@"; do
   fi
 
   "$PY" "$R/src/train/train.py" --init "$INIT" --loss kd --out "$HDD/runs/b10/$ARM-$(date -u +%Y%m%dT%H%M%SZ)" \
-    --data "$DATA" --tokens 96000000 --batch-seqs "$B" --grad-accum "$A" --seq-len 1024 --lr 6e-4 --warmup 100 \
+    --data "$DATA" --tokens 96000000 --batch-seqs "$BATCH" --grad-accum "$ACCUM" --seq-len 1024 --lr 6e-4 --warmup 100 \
     --eval-dir "$HDD/eval/$TAG" --eval-every-tokens 4000000 --ckpt-every-tokens 8000000 --seed "$SEED" --device cuda
   unset INIT
 done

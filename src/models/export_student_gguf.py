@@ -143,6 +143,14 @@ def validate_checkpoint(ckpt: Any) -> tuple[dict[str, Any], dict[str, Any], list
     if not isinstance(raw_cfg, dict):
         raise UsageError("Malformed checkpoint: 'config' must be a dict")
 
+    # b10 FFN variants have no llama.cpp graph; only SwiGLU checkpoints can be exported.
+    ffn_type = raw_cfg.get("ffn_type", "swiglu")
+    if ffn_type != "swiglu":
+        raise UsageError(
+            f"Unsupported config.ffn_type {ffn_type!r}: only 'swiglu' checkpoints can be "
+            "exported to GGUF (llama.cpp has no graph for the b10 FFN variants)"
+        )
+
     cfg: dict[str, Any] = {}
     for field in _REQUIRED_CFG_INT_FIELDS:
         if field not in raw_cfg:

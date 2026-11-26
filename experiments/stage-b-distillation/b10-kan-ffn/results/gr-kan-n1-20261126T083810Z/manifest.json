@@ -1,0 +1,36 @@
+{
+  "args": {
+    "init": "/mnt/hdd1/cpu-draft-specdec/runs/b10/init/gr-kan-n1.pt",
+    "config": null,
+    "vprime_ranking": "experiments/stage-a-feasibility/a5-vocab-coverage/results/a5-20261121T011928Z/ranking.json",
+    "data": "/mnt/hdd1/cpu-draft-specdec/teacher/general/d98cdcbd03e1:0.135,/mnt/hdd1/cpu-draft-specdec/teacher/general2/d98cdcbd03e1:0.225,/mnt/hdd1/cpu-draft-specdec/teacher/pt_general/d98cdcbd03e1:0.135,/mnt/hdd1/cpu-draft-specdec/teacher/pt_general2/d98cdcbd03e1:0.225,/mnt/hdd1/cpu-draft-specdec/teacher/pt_fin/d98cdcbd03e1:0.05,/mnt/hdd1/cpu-draft-specdec/teacher/json/d98cdcbd03e1:0.08,/mnt/hdd1/cpu-draft-specdec/teacher/json_extra/d98cdcbd03e1:0.15",
+    "out": "/mnt/hdd1/cpu-draft-specdec/runs/b10/gr-kan-n1-20261126T083810Z",
+    "loss": "kd",
+    "tokens": 96000000,
+    "batch_seqs": 4,
+    "grad_accum": 4,
+    "seq_len": 1024,
+    "lr": 0.0006,
+    "min_lr_frac": 0.1,
+    "warmup": 100,
+    "weight_decay": 0.1,
+    "seed": 0,
+    "eval_dir": "/mnt/hdd1/cpu-draft-specdec/eval/d98cdcbd03e1",
+    "eval_every_tokens": 4000000,
+    "ckpt_every_tokens": 32000000,
+    "device": "cuda",
+    "compile": true
+  },
+  "git_commit": "dbf407b258957a9f1b1170ca3d599afa7a8e91a9",
+  "data_index_sha256": {
+    "/mnt/hdd1/cpu-draft-specdec/teacher/general/d98cdcbd03e1": "5e62f2aa7ae13778eb9391bf962d4d4cd47cd351a630a2882f09885a12e6337f",
+    "/mnt/hdd1/cpu-draft-specdec/teacher/general2/d98cdcbd03e1": "c9ca4ea1077febef88ac6fa16c483c66d2ae048dd1675e6a3b30afd2f5379643",
+    "/mnt/hdd1/cpu-draft-specdec/teacher/pt_general/d98cdcbd03e1": "ef2080b5783fd1a5a2ae8b03371a57e9309ccb6f5fb1a2dc50d0c503ec61ad91",
+    "/mnt/hdd1/cpu-draft-specdec/teacher/pt_general2/d98cdcbd03e1": "54b6a3021fc0bc6120eae22efcb59728976b9b8eddbed2bed7d8485edfdae46d",
+    "/mnt/hdd1/cpu-draft-specdec/teacher/pt_fin/d98cdcbd03e1": "9c4ee2b01bb58c331d16c209cc6b5b12487dfa270e5034e4993219857316c6b1",
+    "/mnt/hdd1/cpu-draft-specdec/teacher/json/d98cdcbd03e1": "08753e5b34c50029701dca1f22a06d65142887bf291751f678fcca533dc23325",
+    "/mnt/hdd1/cpu-draft-specdec/teacher/json_extra/d98cdcbd03e1": "a582e60543acb164d0301ee652444fa55904f99e4cde5c26c2994c5ea5d489c1"
+  },
+  "start_time": "2026-11-26T08:38:17.183706+00:00",
+  "end_time": "2026-11-26T10:25:10.450825+00:00"
+}

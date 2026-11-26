@@ -241,6 +241,7 @@ Adds H5 as an exploratory Stage B arm. The operator asked whether Kolmogorov-Arn
 - **"KAN approximating the student's layers"** becomes an initialization variant: each KAN FFN is first fitted to the trained D-S FFN on D-S hidden states, then trained with the same KD run. Fitting each layer on its own without end-to-end training would compound errors across layers, so it is not an arm by itself.
 - **Budget.** 96M tokens per arm (the b5/b6 budget), offline greedy agreement first. The llama.cpp runtime path (basis-expansion or rational ops plus a standard quantized matmul) is built only if a KAN arm passes. Draft latency on AVX2 is [U] until then.
 - **Order.** Runs after the D-S gate, on a dedicated GPU, and does not delay Stage C.
+- **Result (2026-11-26).** H5 rejected for this setup (one seed): at matched bytes, the B-spline KAN loses 0.021 general-prose agreement against D-S with a fresh FFN (paired 95% CI excludes 0), the fitted-start KAN loses 0.011, and GR-KAN (with FFN input gains reset after a divergence) ties the two-matrix MLP and stays below D-S. No llama.cpp path is built. Details: `docs/article-kan.md`, `experiments/stage-b-distillation/b10-kan-ffn/results/b10-20261126/`.
 
 ### Adaptation cost model
 

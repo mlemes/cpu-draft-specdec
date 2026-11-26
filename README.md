@@ -18,6 +18,15 @@ Can a small model distilled from a GPU-resident LLM, running on an otherwise idl
 - A draft-free n-gram lookup gives about 1.13–1.17×, so the trained draft pays off mainly on structured output.
 - **Open issue:** speculative greedy output matches target-only greedy output on only 30 of 60 prompts. The likely cause is batched-verification numerics flipping near-tied logits, but this is not yet isolated (article section 7.9).
 
+## Current experiment: KAN feed-forward blocks (b10, running)
+
+Does a Kolmogorov-Arnold network (KAN) give the draft more agreement with the target for the same bytes read per token? All variants are matched at the student's 56.3 MB/token (Q8_0) budget, so a true KAN, with 9 numbers per connection, has to be much narrower (512 → 256 → 512). Seven arms each change one property: a continued-training control, a reset-FFN control, a two-matrix SiLU MLP, a learnable rational activation, GR-KAN (Kolmogorov-Arnold Transformer layout), a B-spline KAN, and a B-spline KAN first fitted layer by layer to imitate the trained SwiGLU block. Every arm starts from the trained student, gets 96M more distillation tokens, and is scored by offline greedy agreement on held-out prompts, with paired-bootstrap 95% confidence intervals. Published fair comparisons find KANs no better than MLPs on language tasks, so the expected outcome is neutral or negative. No results yet.
+
+- Experiment: [`experiments/stage-b-distillation/b10-kan-ffn/`](https://github.com/mlemes/cpu-draft-specdec/tree/stage-b/experiments/stage-b-distillation/b10-kan-ffn) (arms, byte budget, run and analysis scripts)
+- Implementation spec: [`docs/specs/b10-ffn-variants.md`](https://github.com/mlemes/cpu-draft-specdec/blob/stage-b/docs/specs/b10-ffn-variants.md)
+- Code: [`src/train/ffn_init.py`](https://github.com/mlemes/cpu-draft-specdec/blob/stage-b/src/train/ffn_init.py), [`tests/test_ffn_variants.py`](https://github.com/mlemes/cpu-draft-specdec/blob/stage-b/tests/test_ffn_variants.py)
+- References: Liu et al. 2024, [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). Yang and Wang, [Kolmogorov-Arnold Transformer](https://arxiv.org/abs/2409.10594) (ICLR 2025). Yu, Yu and Wang 2024, [KAN or MLP: A Fairer Comparison](https://arxiv.org/abs/2407.16674). Li 2024, [FastKAN](https://arxiv.org/abs/2405.06721).
+
 ## Next steps
 
 Adaptive draft length, overlapping drafting with verification, exactness and sampling tests, a mixture-of-experts student at the same active-byte budget, and cache-residency evidence from L3 allocation control (CAT) and memory-bandwidth (MBM) counters.

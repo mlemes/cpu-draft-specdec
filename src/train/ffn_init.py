@@ -5,6 +5,10 @@ keeps every tensor that is not part of an FFN and replaces all FFNs with freshly
 initialized ones of a different ``ffn_type``. With ``--fit`` each new FFN is also trained
 layer by layer to reproduce the source FFN output on source hidden states; this is the
 ``kan-bspline-fit`` initialization of ``experiments/stage-b-distillation/b10-kan-ffn``.
+
+``--reset-ffn-norm`` additionally resets every FFN input RMSNorm gain
+(``layers.{i}.post_attention_layernorm.weight``) to 1, so a freshly initialized FFN sees
+unit-gain inputs instead of the source's learned gains (up to |w| = 191 in layer 11).
 """
 
 from __future__ import annotations
@@ -49,6 +53,9 @@ ALLOWED_OVERRIDES = (
 
 # Any parameter of an FFN block lives under "<layer>.mlp."; everything else is copied.
 FFN_MARKER = ".mlp."
+
+# Gain of the RMSNorm that feeds the FFN; --reset-ffn-norm sets these to 1.
+FFN_NORM_SUFFIX = ".post_attention_layernorm.weight"
 
 DEFAULT_FIT_TOKENS = 4_000_000
 DEFAULT_FIT_STEPS = 1954  # two epochs over 4M tokens at 4 x 1024 tokens per batch
@@ -215,8 +222,13 @@ def build_init_checkpoint(
     seed: int,
     src_path: str,
     src_sha256: str,
+    reset_ffn_norm: bool = False,
 ) -> tuple[dict, Student]:
-    """Return (checkpoint dict, fresh Student with copied non-FFN tensors)."""
+    """Return (checkpoint dict, fresh Student with copied non-FFN tensors).
+
+    With ``reset_ffn_norm`` the copied FFN input norm gains are replaced by 1.0 after the
+    copy, so the new FFN is trained from unit-gain inputs.
+    """
     try:
         src_cfg = StudentConfig(**src_ckpt["config"])
     except (TypeError, ValueError) as exc:
@@ -271,6 +283,17 @@ def build_init_checkpoint(
         copied += 1
     if copied == 0:
         raise UsageError("Source checkpoint has no non-FFN tensors to copy")
+
+    if reset_ffn_norm:
+        reset = [name for name in dst_state if name.endswith(FFN_NORM_SUFFIX)]
+        if not reset:
+            raise UsageError(
+                f"--reset-ffn-norm found no '*{FFN_NORM_SUFFIX}' tensors in the new model"
+            )
+        for name in reset:
+            dst_state[name] = torch.ones(
+                dst_state[name].shape, dtype=torch.float32, device=dst_state[name].device
+            )
     dst.load_state_dict(dst_state, strict=True)
 
     out = dict(src_ckpt)
@@ -284,6 +307,7 @@ def build_init_checkpoint(
         "overrides": dict(overrides),
         "seed": int(seed),
         "fit": None,
+        "reset_ffn_norm": bool(reset_ffn_norm),
     }
     return out, dst
 
@@ -309,6 +333,11 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--out", required=True, help="Output checkpoint (.pt, must not exist)")
     parser.add_argument("--seed", type=int, default=0, help="Seed for the fresh FFN init")
     parser.add_argument("--fit", action="store_true", help="Fit each new FFN to the source FFN")
+    parser.add_argument(
+        "--reset-ffn-norm",
+        action="store_true",
+        help="Set every layers.{i}.post_attention_layernorm.weight of the new model to 1.0",
+    )
     parser.add_argument(
         "--fit-data",
         default=None,
@@ -363,6 +392,11 @@ def main(argv: list[str] | None = None) -> int:
             raise UsageError(f"--fit-batch-seqs must be positive, got {args.fit_batch_seqs}")
         if args.fit and not args.fit_data:
             raise UsageError("--fit requires --fit-data")
+        if args.fit and args.reset_ffn_norm:
+            raise UsageError(
+                "--fit cannot be combined with --reset-ffn-norm: the fit targets were "
+                "produced with the source FFN input gains, not unit gains"
+            )
 
         out, dst = build_init_checkpoint(
             ckpt,
@@ -370,6 +404,7 @@ def main(argv: list[str] | None = None) -> int:
             args.seed,
             str(src_path),
             _sha256_file(src_path),
+            reset_ffn_norm=args.reset_ffn_norm,
         )
 
         if args.fit:
@@ -405,7 +440,8 @@ def main(argv: list[str] | None = None) -> int:
         _save_checkpoint(out, out_path)
         print(
             f"wrote {out_path} (ffn_type={out['config']['ffn_type']}, ffn={out['config']['ffn']}, "
-            f"fit={'yes' if args.fit else 'no'})"
+            f"fit={'yes' if args.fit else 'no'}, "
+            f"reset_ffn_norm={'yes' if args.reset_ffn_norm else 'no'})"
         )
         return 0
     except UsageError as exc:

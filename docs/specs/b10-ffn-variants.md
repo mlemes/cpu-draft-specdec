@@ -42,12 +42,13 @@ Parameter counts must equal `experiments/stage-b-distillation/b10-kan-ffn/config
 
 Builds the init checkpoint for one arm from a trained source checkpoint (the format `_save_checkpoint` in `src/train/train.py` writes).
 
-`python -m train.ffn_init --src SRC.pt --config JSON --out OUT.pt [--seed 0] [--fit --fit-data SPEC --fit-tokens N --fit-steps S --fit-lr LR --device cpu|cuda]`
+`python -m train.ffn_init --src SRC.pt --config JSON --out OUT.pt [--seed 0] [--reset-ffn-norm] [--fit --fit-data SPEC --fit-tokens N --fit-steps S --fit-lr LR --device cpu|cuda]`
 
 - New config = source config updated with `--config` (a JSON object). Only `ffn_type`, `ffn`, `rational_*`, `kan_*` keys are allowed; others, invalid JSON, a missing source, or an existing `--out` exit 2 with a message on stderr and write nothing.
 - Builds `Student(new_cfg)` with `torch.manual_seed(seed)`, copies every source tensor whose name has no `.mlp.` segment (a shape mismatch exits 2), and always keeps the freshly initialized FFN (so `--config '{}'` gives D-S with a re-initialized FFN).
-- Output: same keys as the source checkpoint, with `config` and `state_dict` replaced (float32, CPU), `vprime` copied, `step` 0, plus `ffn_init` = {`src`, `src_sha256`, `overrides`, `seed`, `fit`}. `train.py --init OUT.pt` must load it unchanged.
+- Output: same keys as the source checkpoint, with `config` and `state_dict` replaced (float32, CPU), `vprime` copied, `step` 0, plus `ffn_init` = {`src`, `src_sha256`, `overrides`, `seed`, `fit`, `reset_ffn_norm`}. `train.py --init OUT.pt` must load it unchanged.
 - `--fit`: `SPEC` uses the `--data` syntax of `train.py` (`dir:weight,...`). Runs the source model on teacher-data token batches (no gradients); for each layer l, the input is the output of the source's `post_attention_layernorm` and the target is the source FFN output. Each new FFN l is trained with Adam on mean squared error for S steps. Writes `fit` = list of per-layer {`layer`, `rel_mse_before`, `rel_mse_after`} where rel_mse = MSE / mean(target²).
+- `--reset-ffn-norm`: after the copy, sets every `layers.{i}.post_attention_layernorm.weight` of the new model to 1.0 (float32), i.e. the fresh FFN is fed unit-gain normed inputs instead of the source's learned gains (max |w| 191 in layer 11), and `ffn_init.reset_ffn_norm` records the flag. Combining it with `--fit` exits 2, because the fit targets were produced with the source gains.
 - Importable core: `fit_ffn_layerwise(src: Student, dst: Student, batches: Iterable[Tensor[B, T] int64], steps: int, lr: float) -> list[dict]` with the same report, no file I/O. Requires equal `hidden` and `n_layers`.
 
 ## 3. `src/models/export_student_gguf.py`
@@ -56,7 +57,7 @@ A checkpoint whose `config.ffn_type` is present and not `swiglu` exits 2 with a 
 
 ## 4. `experiments/stage-b-distillation/b10-kan-ffn/configs/run_b10.sh`
 
-`run_b10.sh <arm> [...]` for the arm IDs in `arms.json` except `ds-ref`. Same variables and training flags as `../../b6-deeper-student/configs/run_b6.sh` (b5 data mix, 96M tokens, seed 0), with `DSREF` defaulting to `$HDD/runs/b2/kd-pruned-prose45json23-20261122T105044Z/final.pt`. `ds-cont` trains from `DSREF` directly; other arms first run `ffn_init` into `$HDD/runs/b10/init/<arm>.pt` (reused when present) with the arm's config (`kan-bspline-fit` adds `--fit` over the same data, 4M tokens). Run directories `$HDD/runs/b10/<arm>-<UTC>`.
+`run_b10.sh <arm> [...]` for the arm IDs in `arms.json` except `ds-ref`. Same variables and training flags as `../../b6-deeper-student/configs/run_b6.sh` (b5 data mix, 96M tokens, seed 0), with `DSREF` defaulting to `$HDD/runs/b2/kd-pruned-prose45json23-20261122T105044Z/final.pt`. `ds-cont` trains from `DSREF` directly; other arms first run `ffn_init` into `$HDD/runs/b10/init/<arm>.pt` (reused when present) with the arm's config (`kan-bspline-fit` adds `--fit` over the same data, 4M tokens). The two unit-gain arms `gr-kan-n1` and `mlp-silu-n1` use the same configs as `gr-kan` and `mlp-silu` but also pass `--reset-ffn-norm` (init file `$INITDIR/<arm>.pt`); their training command is identical to the other arms. Run directories `$HDD/runs/b10/<arm>-<UTC>`, so the arm names never collide with the original pair.
 
 ## 5. Constraints
 

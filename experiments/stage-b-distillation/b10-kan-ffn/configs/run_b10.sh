@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # b10: FFN variants at the D-S touched-byte budget (one change per arm; see ../AGENTS.md).
-# Usage: configs/run_b10.sh <arm> [...]   arms: ds-cont ds-fresh mlp-silu mlp-rational gr-kan kan-bspline kan-bspline-fit
+# Usage: configs/run_b10.sh <arm> [...]   arms: ds-cont ds-fresh mlp-silu mlp-silu-n1
+#        mlp-rational gr-kan gr-kan-n1 kan-bspline kan-bspline-fit  (the -n1 arms also pass
+#        ffn_init --reset-ffn-norm: FFN input norm gains reset to 1 for the fresh FFN)
 # Same variables, data mix and training flags as ../../b6-deeper-student/configs/run_b6.sh, plus --compile
 # (bspline_kan: 21.1k against 4.7k tokens/s; loss after 40 steps 4.551 against 4.554) and checkpoints every 32M tokens.
 set -euo pipefail
@@ -27,12 +29,15 @@ export PYTHONPATH=$R/src
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 for ARM in "$@"; do
+  RESETFLAGS=''
   case "$ARM" in
     ds-cont)          CONFIG=''; FITFLAGS=''; INIT=$DSREF ;;
     ds-fresh)         CONFIG='{}'; FITFLAGS='' ;;
     mlp-silu)         CONFIG='{"ffn_type": "mlp", "ffn": 2304}'; FITFLAGS='' ;;
+    mlp-silu-n1)      CONFIG='{"ffn_type": "mlp", "ffn": 2304}'; FITFLAGS=''; RESETFLAGS='--reset-ffn-norm' ;;
     mlp-rational)     CONFIG='{"ffn_type": "mlp_rational", "ffn": 2304}'; FITFLAGS='' ;;
     gr-kan)           CONFIG='{"ffn_type": "gr_kan", "ffn": 2304}'; FITFLAGS='' ;;
+    gr-kan-n1)        CONFIG='{"ffn_type": "gr_kan", "ffn": 2304}'; FITFLAGS=''; RESETFLAGS='--reset-ffn-norm' ;;
     kan-bspline)      CONFIG='{"ffn_type": "bspline_kan", "ffn": 256}'; FITFLAGS='' ;;
     kan-bspline-fit)  CONFIG='{"ffn_type": "bspline_kan", "ffn": 256}'; FITFLAGS=$FIT ;;
     *) echo "unknown arm: $ARM (ds-ref is not retrained)" >&2; exit 2 ;;
@@ -42,7 +47,7 @@ for ARM in "$@"; do
     INIT=$INITDIR/$ARM.pt
     if [ ! -f "$INIT" ]; then
       mkdir -p "$INITDIR"
-      "$PY" -m train.ffn_init --src "$DSREF" --config "$CONFIG" --out "$INIT" --seed "$SEED" $FITFLAGS
+      "$PY" -m train.ffn_init --src "$DSREF" --config "$CONFIG" --out "$INIT" --seed "$SEED" $FITFLAGS $RESETFLAGS
     fi
   fi
 

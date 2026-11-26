@@ -74,7 +74,71 @@ def test_old_swiglu_checkpoint_still_loads(tmp_path):
     assert out["config"]["ffn"] == FFN
     assert out["step"] == 0 and out["vprime"] == list(range(VP))
     assert out["ffn_init"]["fit"] is None
+    assert out["ffn_init"]["reset_ffn_norm"] is False
     Student(StudentConfig(**out["config"])).load_state_dict(out["state_dict"])
+
+
+def test_reset_ffn_norm_sets_gains_to_one(tmp_path):
+    src_path, ckpt = _source(tmp_path)
+    gains = [n for n in ckpt["state_dict"] if n.endswith(".post_attention_layernorm.weight")]
+    assert len(gains) == LAYERS
+    for name in gains:
+        ckpt["state_dict"][name] = torch.full_like(ckpt["state_dict"][name], 191.0)
+    torch.save(ckpt, src_path)
+    out_path = tmp_path / "out.pt"
+
+    assert (
+        ffn_init.main(
+            [
+                "--src",
+                str(src_path),
+                "--config",
+                '{"ffn_type": "mlp", "ffn": %d}' % FFN,
+                "--out",
+                str(out_path),
+                "--reset-ffn-norm",
+            ]
+        )
+        == 0
+    )
+    out = torch.load(out_path, map_location="cpu", weights_only=False)
+    assert out["ffn_init"]["reset_ffn_norm"] is True
+    for name in gains:
+        gain = out["state_dict"][name]
+        assert gain.dtype is torch.float32, name
+        assert torch.equal(gain, torch.ones(H, dtype=torch.float32)), name
+
+    # Every other copied (non-FFN) tensor is still exactly the source tensor.
+    for name, tensor in ckpt["state_dict"].items():
+        if ".mlp." in name or name in gains:
+            continue
+        assert torch.equal(out["state_dict"][name], tensor.to(torch.float32)), name
+    Student(StudentConfig(**out["config"])).load_state_dict(out["state_dict"])
+
+
+def test_fit_with_reset_ffn_norm_exits_2(tmp_path, capsys):
+    src_path, _ = _source(tmp_path)
+    out_path = tmp_path / "out.pt"
+
+    assert (
+        ffn_init.main(
+            [
+                "--src",
+                str(src_path),
+                "--config",
+                "{}",
+                "--out",
+                str(out_path),
+                "--fit",
+                "--fit-data",
+                "some/dir:1.0",
+                "--reset-ffn-norm",
+            ]
+        )
+        == 2
+    )
+    assert "reset-ffn-norm" in capsys.readouterr().err
+    assert not out_path.exists()
 
 
 def test_missing_non_ffn_key_exits_2(tmp_path, capsys):

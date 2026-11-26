@@ -2,7 +2,7 @@
 
 *Status: working article, 2026-11-26. Experiment b10 (`experiments/stage-b-distillation/b10-kan-ffn/`). Companion to `docs/article.md`, which explains the project, speculative decoding and the student model.*
 
-**The answer in short.** No, not in this setup. At the same bytes per token, a B-spline KAN feed-forward block gives the draft *lower* agreement with the target than an ordinary block: −0.021 on general English and −0.018 on Portuguese financial text against the SwiGLU control, with 95% confidence intervals that exclude zero. Starting the KAN from a layer-by-layer imitation of the trained block helps early in training and adds +0.010 on English at the end, but it still finishes below both ordinary controls. The KAN also trains 2.3× slower per token. The group-rational KAN (GR-KAN) diverged at first because of the trained input scaling it inherits; a corrected run is <!-- GRKAN-STATUS -->.
+**The answer in short.** No, not in this setup. At the same bytes per token, a B-spline KAN feed-forward block gives the draft *lower* agreement with the target than an ordinary block: −0.021 on general English and −0.018 on Portuguese financial text against the SwiGLU control, with 95% confidence intervals that exclude zero. Starting the KAN from a layer-by-layer imitation of the trained block helps early in training and adds +0.010 on English at the end, but it still finishes below both ordinary controls. The KAN also trains 2.3× slower per token. The group-rational KAN (GR-KAN) diverged at first because of the trained input scaling it inherits. With that scaling reset, it trains stably and ties the plain two-matrix MLP, but it does not beat the SwiGLU block the student already uses. The best result of the night came from simply training the existing SwiGLU student longer (`ds-cont`, 0.595 on English).
 
 ## 1. The question
 
@@ -72,6 +72,8 @@ Offline greedy agreement per domain, with 95% confidence intervals over prompts.
 | `mlp-silu` (two-matrix MLP) | 0.581 [0.562, 0.602] | 0.681 [0.666, 0.697] | 0.874 [0.866, 0.882] |
 | `kan-bspline` (B-spline KAN) | 0.564 [0.545, 0.585] | 0.668 [0.653, 0.685] | 0.879 [0.869, 0.889] |
 | `kan-bspline-fit` (KAN, fitted start) | 0.574 [0.555, 0.595] | 0.663 [0.649, 0.677] | 0.868 [0.860, 0.877] |
+| `ds-cont` (SwiGLU, trained block kept) | **0.595** [0.576, 0.615] | 0.667 [0.652, 0.681] | 0.883 [0.873, 0.893] |
+| `gr-kan-n1` (GR-KAN, input gains reset, section 6.5) | 0.581 [0.562, 0.601] | 0.675 [0.661, 0.690] | 0.881 [0.872, 0.889] |
 <!-- MORE-ARMS -->
 
 The intervals of different arms overlap, because the prompts themselves vary a lot. The paired comparison in the next table removes that variation: every arm is scored on the same prompts, and the interval is computed on the per-prompt differences.
@@ -86,6 +88,11 @@ The intervals of different arms overlap, because the prompts themselves vary a l
 | `kan-bspline-fit` − `kan-bspline` (fitted start) | +0.010 [+0.003, +0.016] | −0.005 [−0.013, +0.003] | −0.011 [−0.016, −0.006] |
 | `kan-bspline-fit` − `ds-fresh` | −0.011 [−0.018, −0.004] | −0.023 [−0.030, −0.016] | −0.017 [−0.022, −0.012] |
 | `kan-bspline-fit` − `mlp-silu` | −0.007 [−0.012, −0.001] | −0.018 [−0.025, −0.011] | −0.006 [−0.010, −0.002] |
+| `kan-bspline-fit` − `ds-cont` (both start from the trained block's function) | −0.021 [−0.028, −0.014] | −0.004 [−0.011, +0.004] | −0.015 [−0.020, −0.010] |
+| `ds-fresh` − `ds-cont` (new block against kept block) | −0.010 [−0.016, −0.003] | +0.019 [+0.012, +0.027] | +0.002 [−0.003, +0.006] |
+| `ds-cont` − `ds-ref` (96M more tokens) | +0.026 [+0.019, +0.033] | +0.018 [+0.013, +0.024] | −0.005 [−0.009, −0.001] |
+| `gr-kan-n1` − `mlp-silu` | −0.000 [−0.006, +0.006] | −0.006 [−0.013, +0.001] | +0.007 [+0.002, +0.012] |
+| `gr-kan-n1` − `ds-fresh` | −0.005 [−0.010, +0.001] | −0.011 [−0.017, −0.004] | −0.004 [−0.009, +0.000] |
 <!-- MORE-PAIRS -->
 
 For scale: in the speed model of `docs/article.md` section 3.3 (γ = 4, draft 1.1 ms per token, verification 14.2 ms, 2–3 ms overhead), raising α from 0.57 to 0.58 raises the expected tokens per cycle from 2.186 to 2.225, about 1.8% more speed [E]. The KAN's loss of 0.02 is small in absolute terms but consistent, and it comes on top of the slower training.
@@ -115,36 +122,51 @@ So a byte-matched KAN, 256 units wide, captures about 55–80% of what the 1536-
 
 ### 6.5 The rational variants
 
-<!-- RATIONAL -->
+**First attempt: divergence.** The GR-KAN arm (`gr-kan`) failed from the first step: loss 10.4, gradient norm 2.7 × 10⁷, and NaN by step 11. The cause is the input it receives. Each block's input passes through the b5 student's normalization layer, whose trained per-channel gains reach 191 in the last layer, so the new rational unit saw inputs up to 92. A degree-5 polynomial evaluated at 92 is about 6.6 × 10⁹, and its coefficients' gradients swamped everything else.
+
+A second weakness is built into the rational form itself. The SiLU-shaped starting function is accurate on the interval it was fitted on (±4, error 0.014), but far outside it, it behaves like a straight line on *both* sides: f(−30) = −3.4 and f(100) = 661, where SiLU gives about 0 and 100. A ratio of a degree-5 and a degree-4 polynomial cannot follow SiLU's flat left tail. The original GR-KAN avoids both problems because its inputs come straight out of a normalization layer with gains near 1.
+
+**Second attempt: inputs reset.** In `gr-kan-n1`, the normalization gains in front of the new block are reset to 1 when the block is created. Since the block is new anyway, nothing learned is lost. On a CPU probe, this cut the first-step gradient norm from 7.9 × 10⁶ to 335. The run trained stably: it started slowest of all arms (0.286 on English at 4M tokens, against 0.38–0.51 for the others), caught up by about 20M tokens, and finished level with the two-matrix MLP (−0.000 on English, −0.006 on Portuguese financial text, +0.007 on JSON). It stays below the SwiGLU block on Portuguese financial text (−0.011, interval excludes zero) and on the other two domains within the interval.
+
+<!-- N1CONTROL -->
+
+The rational MLP arm (`mlp-rational`) was not run: it shares the instability, and the night's GPU time went to the corrected GR-KAN.
 
 ### 6.6 Training cost
 
-| Block | Training speed (tokens/s, RTX 3070) | 96M tokens |
+| Arm | Wall time for 96M tokens | Steady speed (tokens/s) |
 |---|---|---|
-| SwiGLU, two-matrix MLP | about 32,000 | about 50 min |
-| B-spline KAN | about 14,200 | about 1 h 55 min |
+| `ds-fresh` (SwiGLU) | 50 min | about 32,000 |
+| `mlp-silu` | 65 min | about 28,000 |
+| `kan-bspline` | 1 h 57 min | about 14,200 |
+| `kan-bspline-fit` | 1 h 58 min, including a 17-minute fit | about 14,200 |
+| `gr-kan-n1` | 1 h 48 min | about 15,000 |
+
+Some runs shared the machine with analysis jobs, which slowed the SwiGLU control `ds-cont` to 1 h 26 min, so differences of 10–20% are not meaningful. The factor of about 2 between the KAN-type blocks and the ordinary ones is.
 
 Without activation checkpointing (recomputing the block in the backward pass instead of storing its intermediate values), the rational and KAN blocks did not fit in 8 GB even at one sequence per step. With it, their peak memory matches SwiGLU, and `torch.compile` raises the KAN from 4,700 to 14,000–21,000 tokens/s. On the CPU, where the draft runs, the KAN's basis evaluation is extra work per token whose cost is unmeasured.
 
 ## 7. Reading the results
 
-- **The B-spline KAN fails the experiment's stop rule.** The rule asked for a KAN arm to beat both the SwiGLU and the two-matrix MLP controls on general English, outside the confidence interval. Both KAN arms are below both controls.
+- **Every KAN arm fails the experiment's stop rule.** The rule asked for a KAN arm to beat both the SwiGLU and the two-matrix MLP controls on general English, outside the confidence interval. Both B-spline arms are below both controls; GR-KAN ties the MLP and is below SwiGLU.
 - **Imitating the trained block is a good start, not a good model.** The fitted start gives +0.12 at 4M tokens and +0.010 at the end on English, but it is worse on JSON (−0.011), and it does not reach the ordinary blocks.
 - **The result agrees with the independent comparison** of Yu et al. (2024): at matched parameters, KANs lose to ordinary layers outside symbolic-formula fitting. Here the comparison is matched in runtime bytes, which is what matters for a cache-resident draft.
 - **Removing the gate costs a little** (−0.005 on prose, −0.011 on JSON), so the gated SwiGLU block is the right baseline for the student.
-- **Training a fresh block for 96M more tokens helps** (`ds-fresh` against the b5 start: +0.016 on English, +0.038 on Portuguese financial text). Part of that is simply more training; <!-- DSCONT --> separates the two.
+- **Training a fresh block for 96M more tokens helps** (`ds-fresh` against the b5 start: +0.016 on English, +0.038 on Portuguese financial text). Keeping the trained block helps more on English (`ds-cont`: +0.026 over the start, and +0.010 over `ds-fresh`), while the fresh block learns the Portuguese financial domain better (+0.019 over `ds-cont`). This is the largest effect measured tonight, and it has nothing to do with KANs: the student was not yet saturated at 96M tokens.
 
 ## 8. Limitations
 
 - **One seed per arm.** The paired intervals cover prompt variation, not training-run variation.
 - **Agreement, not speed.** No KAN draft ran inside llama.cpp, so there is no end-to-end speed. Because the KAN loses on agreement, the speed test was not built.
-- **Inherited input scaling.** Each fresh block receives its input through the b5 student's trained normalization gains, which reach 191 in the last layer. In the trained KAN, 0.5–8.5% of the spline inputs fall outside the spline grid [−2, 2] in layers 0–10, and 37% in layer 11; there, only the block's ordinary weight path is active. A grid sized to the inputs might narrow the gap.
+- **Inherited input scaling.** The B-spline arms kept the trained gains (only GR-KAN was rerun with them reset). Each fresh block receives its input through the b5 student's trained normalization gains, which reach 191 in the last layer. In the trained KAN, 0.5–8.5% of the spline inputs fall outside the spline grid [−2, 2] in layers 0–10, and 37% in layer 11; there, only the block's ordinary weight path is active. A grid sized to the inputs might narrow the gap.
 - **Untuned KAN settings.** One grid size (G = 5), one grid range, and one fitting schedule were tried.
 - **Scoring precision.** These scores were computed in float32 on the CPU. The training-time scores, in bfloat16 on the GPU, differ by about 0.001 (0.5693 against 0.5679 for the b5 student on English).
 
 ## 9. What next
 
-<!-- NEXT -->
+- **Drop KANs as the student's feed-forward block.** Neither the spline nor the rational form beats the existing SwiGLU block at the same bytes, and both train about 2× slower. The llama.cpp work they would need (a new graph and a basis-evaluation kernel for the CPU) is not justified by these results.
+- **Train the SwiGLU student longer.** `ds-cont` gained +0.026 on English from 96M more tokens. The next experiment should continue it, since agreement is what the speed depends on (`docs/article.md` section 3.3).
+- **If KANs are revisited**, the fair retest is all fresh-block arms with the input gains reset, several seeds, and a spline grid sized to the measured inputs.
 
 
 ## References

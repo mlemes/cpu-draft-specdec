@@ -25,6 +25,8 @@ PAIRS = [  # (candidate, reference): the comparisons the b10 design names
     ("kan-bspline", "mlp-silu"), ("kan-bspline", "ds-fresh"), ("gr-kan", "ds-fresh"), ("gr-kan", "mlp-silu"),
     ("kan-bspline-fit", "kan-bspline"), ("kan-bspline-fit", "ds-cont"), ("kan-bspline-fit", "ds-fresh"),
     ("kan-bspline-fit", "mlp-silu"), ("ds-cont", "ds-ref"),
+    ("ds-fresh", "ds-ref"), ("gr-kan-n1", "mlp-silu-n1"), ("mlp-silu-n1", "mlp-silu"), ("gr-kan-n1", "mlp-silu"),
+    ("gr-kan-n1", "ds-fresh"),
 ]
 
 

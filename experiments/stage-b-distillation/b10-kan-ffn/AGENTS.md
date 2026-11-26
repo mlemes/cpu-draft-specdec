@@ -32,6 +32,6 @@ Every trained arm copies attention, norms, embeddings and the V′ head from `ds
 
 **Added 2026-11-26.** `gr-kan` diverged (NaN at step 11): the copied post-attention RMSNorm gains (up to 191) feed inputs up to 92 into the fresh rational unit. Arms `gr-kan-n1` and `mlp-silu-n1` reset those gains to 1 (`ffn_init --reset-ffn-norm`) and form their own pair. `mlp-rational` was not run.
 
-**Result (2026-11-26, one seed, offline greedy agreement at 96M tokens, `results/b10-20261126/`).** Every KAN arm fails the stop rule. Against `ds-fresh` on general prose: `kan-bspline` −0.021, `kan-bspline-fit` −0.011, `gr-kan-n1` −0.005 (CI includes 0). Best arm: `ds-cont` (0.595). Write-up: `docs/article-kan.md`.
+**Result (2026-11-26, one seed, offline greedy agreement at 96M tokens, `results/b10-20261126/`).** Every KAN arm fails the stop rule. Against `ds-fresh` on general prose: `kan-bspline` −0.021, `kan-bspline-fit` −0.011, `gr-kan-n1` −0.005 (CI includes 0). `gr-kan-n1` − `mlp-silu-n1` (same reset): −0.006 general, +0.005 pt_fin (CIs include 0), +0.008 json. Best arm: `ds-cont` (0.595). Write-up: `docs/article-kan.md`.
 
 **Outputs.** Per-arm `metrics.jsonl` and agreement summaries in `results/<run_id>/`, byte budgets from `configs/budget.py` in each manifest.

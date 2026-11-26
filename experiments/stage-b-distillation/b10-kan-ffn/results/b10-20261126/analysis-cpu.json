@@ -118,6 +118,23 @@
         0.8657693272900753,
         0.8821248294353569
       ]
+    },
+    "mlp-silu-n1": {
+      "general": [
+        0.5867158671586716,
+        0.5668510869845235,
+        0.6086738281249999
+      ],
+      "pt_fin": [
+        0.6697905181918412,
+        0.6554558791861907,
+        0.6849815874315217
+      ],
+      "json": [
+        0.8726625111308994,
+        0.8625280136919868,
+        0.8814489749928645
+      ]
     }
   },
   "pairs": [
@@ -228,6 +245,28 @@
       "ci95": [
         0.009656556727481693,
         0.022769417469773096
+      ],
+      "excludes_zero": true
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": -0.005809845332495878,
+      "ci95": [
+        -0.012485279108110231,
+        0.00047106854047263875
+      ],
+      "excludes_zero": false
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-silu-n1",
+      "reference": "mlp-silu",
+      "delta": 0.005731333909083772,
+      "ci95": [
+        0.0008635193910948418,
+        0.010810777415871067
       ],
       "excludes_zero": true
     },
@@ -366,6 +405,28 @@
     {
       "domain": "pt_fin",
       "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.005355174043156403,
+      "ci95": [
+        -0.0008664535279120928,
+        0.012109375
+      ],
+      "excludes_zero": false
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-silu-n1",
+      "reference": "mlp-silu",
+      "delta": -0.011261616002520082,
+      "ci95": [
+        -0.017089305402425578,
+        -0.005682414123592682
+      ],
+      "excludes_zero": true
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
       "reference": "mlp-silu",
       "delta": -0.005906441959363679,
       "ci95": [
@@ -492,6 +553,28 @@
       "ci95": [
         -0.008109805945856498,
         0.0024547229158839857
+      ],
+      "excludes_zero": false
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.008141457829792647,
+      "ci95": [
+        0.0032046506717913607,
+        0.013070478272624586
+      ],
+      "excludes_zero": true
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-silu-n1",
+      "reference": "mlp-silu",
+      "delta": -0.0013993130644956112,
+      "ci95": [
+        -0.006616473403133779,
+        0.0037383993491280133
       ],
       "excludes_zero": false
     },

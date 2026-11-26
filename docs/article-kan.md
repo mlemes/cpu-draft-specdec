@@ -2,7 +2,7 @@
 
 *Status: working article, 2026-11-26. Experiment b10 (`experiments/stage-b-distillation/b10-kan-ffn/`). Companion to `docs/article.md`, which explains the project, speculative decoding and the student model.*
 
-**The answer in short.** No, not in this setup. At the same bytes per token, a B-spline KAN feed-forward block gives the draft *lower* agreement with the target than an ordinary block: −0.021 on general English and −0.018 on Portuguese financial text against the SwiGLU control, with 95% confidence intervals that exclude zero. Starting the KAN from a layer-by-layer imitation of the trained block helps early in training and adds +0.010 on English at the end, but it still finishes below both ordinary controls. The KAN also trains 2.3× slower per token. The group-rational KAN (GR-KAN) diverged at first because of the trained input scaling it inherits. With that scaling reset, it trains stably and ties the plain two-matrix MLP, but it does not beat the SwiGLU block the student already uses. The best result of the night came from simply training the existing SwiGLU student longer (`ds-cont`, 0.595 on English).
+**The answer in short.** No, not in this setup. At the same bytes per token, a B-spline KAN feed-forward block gives the draft *lower* agreement with the target than an ordinary block: −0.021 on general English and −0.018 on Portuguese financial text against the SwiGLU control, with 95% confidence intervals that exclude zero. Starting the KAN from a layer-by-layer imitation of the trained block helps early in training and adds +0.010 on English at the end, but it still finishes below both ordinary controls. The KAN also trains 2.3× slower per token. The group-rational KAN (GR-KAN) diverged at first because of the trained input scaling it inherits. With that scaling reset, it trains stably. Against a two-matrix MLP given the same reset, it is slightly better on JSON (+0.008) and no better on prose, and it does not beat the SwiGLU block the student already uses. The best result of the night came from simply training the existing SwiGLU student longer (`ds-cont`, 0.595 on English).
 
 ## 1. The question
 
@@ -74,7 +74,7 @@ Offline greedy agreement per domain, with 95% confidence intervals over prompts.
 | `kan-bspline-fit` (KAN, fitted start) | 0.574 [0.555, 0.595] | 0.663 [0.649, 0.677] | 0.868 [0.860, 0.877] |
 | `ds-cont` (SwiGLU, trained block kept) | **0.595** [0.576, 0.615] | 0.667 [0.652, 0.681] | 0.883 [0.873, 0.893] |
 | `gr-kan-n1` (GR-KAN, input gains reset, section 6.5) | 0.581 [0.562, 0.601] | 0.675 [0.661, 0.690] | 0.881 [0.872, 0.889] |
-<!-- MORE-ARMS -->
+| `mlp-silu-n1` (two-matrix MLP, input gains reset) | 0.587 [0.567, 0.609] | 0.670 [0.655, 0.685] | 0.873 [0.863, 0.881] |
 
 The intervals of different arms overlap, because the prompts themselves vary a lot. The paired comparison in the next table removes that variation: every arm is scored on the same prompts, and the interval is computed on the per-prompt differences.
 
@@ -93,7 +93,8 @@ The intervals of different arms overlap, because the prompts themselves vary a l
 | `ds-cont` − `ds-ref` (96M more tokens) | +0.026 [+0.019, +0.033] | +0.018 [+0.013, +0.024] | −0.005 [−0.009, −0.001] |
 | `gr-kan-n1` − `mlp-silu` | −0.000 [−0.006, +0.006] | −0.006 [−0.013, +0.001] | +0.007 [+0.002, +0.012] |
 | `gr-kan-n1` − `ds-fresh` | −0.005 [−0.010, +0.001] | −0.011 [−0.017, −0.004] | −0.004 [−0.009, +0.000] |
-<!-- MORE-PAIRS -->
+| `gr-kan-n1` − `mlp-silu-n1` (same reset; the clean GR-KAN test) | −0.006 [−0.013, +0.001] | +0.005 [−0.001, +0.012] | +0.008 [+0.003, +0.013] |
+| `mlp-silu-n1` − `mlp-silu` (effect of the reset alone) | +0.006 [+0.001, +0.011] | −0.011 [−0.017, −0.006] | −0.001 [−0.007, +0.004] |
 
 For scale: in the speed model of `docs/article.md` section 3.3 (γ = 4, draft 1.1 ms per token, verification 14.2 ms, 2–3 ms overhead), raising α from 0.57 to 0.58 raises the expected tokens per cycle from 2.186 to 2.225, about 1.8% more speed [E]. The KAN's loss of 0.02 is small in absolute terms but consistent, and it comes on top of the slower training.
 
@@ -126,9 +127,9 @@ So a byte-matched KAN, 256 units wide, captures about 55–80% of what the 1536-
 
 A second weakness is built into the rational form itself. The SiLU-shaped starting function is accurate on the interval it was fitted on (±4, error 0.014), but far outside it, it behaves like a straight line on *both* sides: f(−30) = −3.4 and f(100) = 661, where SiLU gives about 0 and 100. A ratio of a degree-5 and a degree-4 polynomial cannot follow SiLU's flat left tail. The original GR-KAN avoids both problems because its inputs come straight out of a normalization layer with gains near 1.
 
-**Second attempt: inputs reset.** In `gr-kan-n1`, the normalization gains in front of the new block are reset to 1 when the block is created. Since the block is new anyway, nothing learned is lost. On a CPU probe, this cut the first-step gradient norm from 7.9 × 10⁶ to 335. The run trained stably: it started slowest of all arms (0.286 on English at 4M tokens, against 0.38–0.51 for the others), caught up by about 20M tokens, and finished level with the two-matrix MLP (−0.000 on English, −0.006 on Portuguese financial text, +0.007 on JSON). It stays below the SwiGLU block on Portuguese financial text (−0.011, interval excludes zero) and on the other two domains within the interval.
+**Second attempt: inputs reset.** In `gr-kan-n1`, the normalization gains in front of the new block are reset to 1 when the block is created. Since the block is new anyway, nothing learned is lost. On a CPU probe, this cut the first-step gradient norm from 7.9 × 10⁶ to 335. The run trained stably: it started slowest of all arms (0.286 on English at 4M tokens, against 0.38–0.51 for the others), caught up by about 20M tokens, and finished level with the two-matrix MLP trained without the reset (−0.000 on English, −0.006 on Portuguese financial text, +0.007 on JSON). It stays below the SwiGLU block on Portuguese financial text (−0.011, interval excludes zero) and on the other two domains within the interval.
 
-<!-- N1CONTROL -->
+**The clean comparison.** The reset itself changes results: the two-matrix MLP with reset gains (`mlp-silu-n1`) gains 0.006 on English and loses 0.011 on Portuguese financial text against the same MLP without the reset. GR-KAN must therefore be compared with `mlp-silu-n1`, which received the same reset. Against it, GR-KAN is −0.006 on English and +0.005 on Portuguese financial text (both intervals include zero) and +0.008 on JSON (excludes zero). Learnable rational activations help slightly on structured output only, and they do not reach the SwiGLU block on the prose domains.
 
 The rational MLP arm (`mlp-rational`) was not run: it shares the instability, and the night's GPU time went to the corrected GR-KAN.
 
@@ -148,7 +149,7 @@ Without activation checkpointing (recomputing the block in the backward pass ins
 
 ## 7. Reading the results
 
-- **Every KAN arm fails the experiment's stop rule.** The rule asked for a KAN arm to beat both the SwiGLU and the two-matrix MLP controls on general English, outside the confidence interval. Both B-spline arms are below both controls; GR-KAN ties the MLP and is below SwiGLU.
+- **Every KAN arm fails the experiment's stop rule.** The rule asked for a KAN arm to beat both the SwiGLU and the two-matrix MLP controls on general English, outside the confidence interval. Both B-spline arms are below both controls; GR-KAN does not differ significantly from its matched MLP on English and is below SwiGLU.
 - **Imitating the trained block is a good start, not a good model.** The fitted start gives +0.12 at 4M tokens and +0.010 at the end on English, but it is worse on JSON (−0.011), and it does not reach the ordinary blocks.
 - **The result agrees with the independent comparison** of Yu et al. (2024): at matched parameters, KANs lose to ordinary layers outside symbolic-formula fitting. Here the comparison is matched in runtime bytes, which is what matters for a cache-resident draft.
 - **Removing the gate costs a little** (−0.005 on prose, −0.011 on JSON), so the gated SwiGLU block is the right baseline for the student.

@@ -1,6 +1,6 @@
 # CPU draft, GPU target: cache-resident speculative decoding
 
-> **Status: ongoing research (master's project).** Results are preliminary and will change as experiments continue. Last updated 2026-11-25.
+> **Status: ongoing independent research.** Results are preliminary and will change as experiments continue. Last updated 2026-11-25.
 
 Can a small model distilled from a GPU-resident LLM, running on an otherwise idle CPU, speed up the LLM's generation through speculative decoding? The draft's active weights are sized to stay resident in the 96 MB L3 cache of a Ryzen 5 5500X3D.
 

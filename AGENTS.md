@@ -1,6 +1,6 @@
 # CPU draft, GPU target: cache-resident speculative decoding
 
-Master's research project. It asks whether a small model distilled from a GPU target model, running on the CPU, can speed up the target's generation through speculative decoding. The idea is that the draft's active weights stay resident in the CPU's 96 MB L3 cache. The full design is in `docs/proposal.md`; read it before working on any experiment.
+Independent research project. It asks whether a small model distilled from a GPU target model, running on the CPU, can speed up the target's generation through speculative decoding. The idea is that the draft's active weights stay resident in the CPU's 96 MB L3 cache. The full design is in `docs/proposal.md`; read it before working on any experiment.
 
 ## Objectives
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # b10: FFN variants at the D-S touched-byte budget (one change per arm; see ../AGENTS.md).
 # Usage: configs/run_b10.sh <arm> [...]   arms: ds-cont ds-fresh mlp-silu mlp-rational gr-kan kan-bspline kan-bspline-fit
-# Same variables, data mix and training flags as ../../b6-deeper-student/configs/run_b6.sh.
+# Same variables, data mix and training flags as ../../b6-deeper-student/configs/run_b6.sh, plus --compile
+# (bspline_kan: 21.1k against 4.7k tokens/s; loss after 40 steps 4.551 against 4.554) and checkpoints every 32M tokens.
 set -euo pipefail
 R=$(cd "$(dirname "$0")/../../../.." && pwd)
 HDD=/mnt/hdd1/cpu-draft-specdec
@@ -47,6 +48,6 @@ for ARM in "$@"; do
 
   "$PY" "$R/src/train/train.py" --init "$INIT" --loss kd --out "$HDD/runs/b10/$ARM-$(date -u +%Y%m%dT%H%M%SZ)" \
     --data "$DATA" --tokens 96000000 --batch-seqs "$BATCH" --grad-accum "$ACCUM" --seq-len 1024 --lr 6e-4 --warmup 100 \
-    --eval-dir "$HDD/eval/$TAG" --eval-every-tokens 4000000 --ckpt-every-tokens 8000000 --seed "$SEED" --device cuda
+    --eval-dir "$HDD/eval/$TAG" --eval-every-tokens 4000000 --ckpt-every-tokens 32000000 --seed "$SEED" --device cuda --compile
   unset INIT
 done

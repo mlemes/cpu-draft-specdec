@@ -19,5 +19,5 @@ Large artifacts live under `/mnt/hdd1/cpu-draft-specdec/` (abbreviated `$HDD` be
 
 ## Retention
 
-- Teacher data and GGUF files are kept until the thesis is submitted, because results must be reproducible from them.
+- Teacher data and GGUF files are kept for as long as the project runs, because results must be reproducible from them.
 - Random-weight GGUFs used for latency sweeps can be regenerated from their seed and configuration and may be deleted.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # b10: FFN variants at the D-S touched-byte budget (one change per arm; see ../AGENTS.md).
 # Usage: configs/run_b10.sh <arm> [...]   arms: ds-cont ds-fresh mlp-silu mlp-silu-n1
-#        mlp-rational gr-kan gr-kan-n1 kan-bspline kan-bspline-fit  (the -n1 arms also pass
+#        mlp-rational mlp-rational-n1 gr-kan gr-kan-n1 kan-bspline kan-bspline-fit  (the -n1 arms also pass
 #        ffn_init --reset-ffn-norm: FFN input norm gains reset to 1 for the fresh FFN)
 # Same variables, data mix and training flags as ../../b6-deeper-student/configs/run_b6.sh, plus --compile
 # (bspline_kan: 21.1k against 4.7k tokens/s; loss after 40 steps 4.551 against 4.554) and checkpoints every 32M tokens.
@@ -16,6 +16,9 @@ DATA="$T/general/$TAG:0.135,$T/general2/$TAG:0.225,$T/pt_general/$TAG:0.135,$T/p
 DSREF=${DSREF:-$HDD/runs/b2/kd-pruned-prose45json23-20261122T105044Z/final.pt}
 BATCH=${BATCH:-4}; ACCUM=${ACCUM:-4}  # effective batch 16 sequences, as in b6
 SEED=${SEED:-0}
+# Seed 0 keeps the original file names; other seeds get a -s<seed> suffix on init and run dir,
+# so a fresh FFN init (ffn_init --seed) and data order (train.py --seed) both follow SEED.
+SFX=''; [ "$SEED" = 0 ] || SFX="-s$SEED"
 INITDIR=$HDD/runs/b10/init
 # Fit of kan-bspline-fit: --fit-tokens 4000000 at 4 x 1024 tokens per batch = 977 batches,
 # so --fit-steps 1954 is two epochs over that data. --fit-lr 3e-3 is an Adam step on a
@@ -36,6 +39,7 @@ for ARM in "$@"; do
     mlp-silu)         CONFIG='{"ffn_type": "mlp", "ffn": 2304}'; FITFLAGS='' ;;
     mlp-silu-n1)      CONFIG='{"ffn_type": "mlp", "ffn": 2304}'; FITFLAGS=''; RESETFLAGS='--reset-ffn-norm' ;;
     mlp-rational)     CONFIG='{"ffn_type": "mlp_rational", "ffn": 2304}'; FITFLAGS='' ;;
+    mlp-rational-n1)  CONFIG='{"ffn_type": "mlp_rational", "ffn": 2304}'; FITFLAGS=''; RESETFLAGS='--reset-ffn-norm' ;;
     gr-kan)           CONFIG='{"ffn_type": "gr_kan", "ffn": 2304}'; FITFLAGS='' ;;
     gr-kan-n1)        CONFIG='{"ffn_type": "gr_kan", "ffn": 2304}'; FITFLAGS=''; RESETFLAGS='--reset-ffn-norm' ;;
     kan-bspline)      CONFIG='{"ffn_type": "bspline_kan", "ffn": 256}'; FITFLAGS='' ;;
@@ -44,14 +48,14 @@ for ARM in "$@"; do
   esac
 
   if [ -z "${INIT:-}" ]; then
-    INIT=$INITDIR/$ARM.pt
+    INIT=$INITDIR/$ARM$SFX.pt
     if [ ! -f "$INIT" ]; then
       mkdir -p "$INITDIR"
       "$PY" -m train.ffn_init --src "$DSREF" --config "$CONFIG" --out "$INIT" --seed "$SEED" $FITFLAGS $RESETFLAGS
     fi
   fi
 
-  "$PY" "$R/src/train/train.py" --init "$INIT" --loss kd --out "$HDD/runs/b10/$ARM-$(date -u +%Y%m%dT%H%M%SZ)" \
+  "$PY" "$R/src/train/train.py" --init "$INIT" --loss kd --out "$HDD/runs/b10/$ARM$SFX-$(date -u +%Y%m%dT%H%M%SZ)" \
     --data "$DATA" --tokens 96000000 --batch-seqs "$BATCH" --grad-accum "$ACCUM" --seq-len 1024 --lr 6e-4 --warmup 100 \
     --eval-dir "$HDD/eval/$TAG" --eval-every-tokens 4000000 --ckpt-every-tokens 32000000 --seed "$SEED" --device cuda --compile
   unset INIT

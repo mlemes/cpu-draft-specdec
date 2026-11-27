@@ -34,4 +34,6 @@ Every trained arm copies attention, norms, embeddings and the V′ head from `ds
 
 **Result (2026-11-26, one seed, offline greedy agreement at 96M tokens, `results/b10-20261126/`).** Every KAN arm fails the stop rule. Against `ds-fresh` on general prose: `kan-bspline` −0.021, `kan-bspline-fit` −0.011, `gr-kan-n1` −0.005 (CI includes 0). `gr-kan-n1` − `mlp-silu-n1` (same reset): −0.006 general, +0.005 pt_fin (CIs include 0), +0.008 json. Best arm: `ds-cont` (0.595). Write-up: `docs/article-kan.md`.
 
+**Added 2026-11-27.** Arm `mlp-rational-n1` (learnable rational activation, FFN norm gains reset) completes the reset chain `mlp-silu-n1` → `mlp-rational-n1` → `gr-kan-n1`. Seeds 1 and 2 are added for these three arms and for `ds-fresh` (`SEED=<k> configs/run_b10.sh <arm>`; seed changes the fresh FFN init and data order). `configs/analyze.py` reports each pair per seed and pooled over common seeds, with the spread of the per-seed differences.
+
 **Outputs.** Per-arm `metrics.jsonl` and agreement summaries in `results/<run_id>/`, byte budgets from `configs/budget.py` in each manifest.

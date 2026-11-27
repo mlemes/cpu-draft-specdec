@@ -1,8 +1,10 @@
 # Kolmogorov-Arnold networks as the feed-forward block of a CPU draft model
 
-*Status: working article, 2026-11-26. Experiment b10 (`experiments/stage-b-distillation/b10-kan-ffn/`). Companion to `docs/article.md`, which explains the project, speculative decoding and the student model.*
+*Status: working article, 2026-11-26; three-seed update 2026-11-27. These are development results: the evaluation prompts were seen by the agents that ran the experiment, and an independent second pass on sealed prompts is planned before publication (`docs/proposal.md`, design change 2026-11-27). Experiment b10 (`experiments/stage-b-distillation/b10-kan-ffn/`). Companion to `docs/article.md`, which explains the project, speculative decoding and the student model.*
 
 **The answer in short.** No, not in this setup. At the same bytes per token, a B-spline KAN feed-forward block gives the draft *lower* agreement with the target than an ordinary block: −0.021 on general English and −0.018 on Portuguese financial text against the SwiGLU control, with 95% confidence intervals that exclude zero. Starting the KAN from a layer-by-layer imitation of the trained block helps early in training and adds +0.010 on English at the end, but it still finishes below both ordinary controls. The KAN also trains 2.3× slower per token. The group-rational KAN (GR-KAN) diverged at first because of the trained input scaling it inherits. With that scaling reset, it trains stably. Against a two-matrix MLP given the same reset, it is slightly better on JSON (+0.008) and no better on prose, and it does not beat the SwiGLU block the student already uses. The best result of the night came from simply training the existing SwiGLU student longer (`ds-cont`, 0.595 on English).
+
+**Three-seed update (2026-11-27).** The GR-KAN pair, the SwiGLU control and a new learnable-rational MLP arm (`mlp-rational-n1`) were rerun with seeds 1 and 2. With three seeds, GR-KAN is no different from its matched MLP on any domain, and it is below the SwiGLU block on English (−0.005) and Portuguese financial text (−0.013), both outside the seed-level interval. The single-seed JSON gain of GR-KAN (+0.008) shrinks to +0.004 and is no longer outside the seed-level interval. The rational MLP is the best of the three gains-reset arms: +0.005 on English and +0.009 on JSON over the matched SiLU MLP, but only the JSON gain survives the seed-level interval. It does not beat the SwiGLU block either: +0.003 on English (interval includes zero) and −0.011 on Portuguese financial text. The conclusion stands: no KAN or rational variant earns a place in the student. Section 6.7 has the numbers.
 
 ## 1. The question
 
@@ -55,7 +57,7 @@ The last arm is the second idea from the original question: a KAN made of functi
 ## 5. Setup
 
 - **Starting point.** All arms start from the trained b5 student (96M tokens of distillation; `docs/article.md` section 6.1) and keep its attention, embeddings and output head. Everything except `ds-cont` gets a new feed-forward block.
-- **Training.** 96M more tokens each, with forward-KL distillation from the target's top-32 probabilities, the b5 data mix, learning rate 6e-4 with cosine decay, 16 sequences of 1024 tokens per step, seed 0, `torch.compile`. Equal tokens for every arm.
+- **Training.** 96M more tokens each, with forward-KL distillation from the target's top-32 probabilities, the b5 data mix, learning rate 6e-4 with cosine decay, 16 sequences of 1024 tokens per step, seed 0 (seeds 0–2 for the arms in section 6.7; the seed sets both the new block's initialization and the data order), `torch.compile`. Equal tokens for every arm.
 - **Metric.** Offline greedy agreement: on 100 held-out prompts per domain, the fraction of positions where the student's most likely next token equals the target's. This tracks the acceptance rate of greedy speculative decoding (`docs/article.md` section 6). Each arm is scored on the same prompts, so differences are paired: their 95% confidence intervals come from resampling prompts (2000 draws, positions-weighted) with `configs/analyze.py`.
 - **Not measured.** Draft speed on the CPU. llama.cpp has no graph for these blocks, and the plan builds one only if a KAN variant wins on agreement.
 
@@ -129,9 +131,9 @@ A second weakness is built into the rational form itself. The SiLU-shaped starti
 
 **Second attempt: inputs reset.** In `gr-kan-n1`, the normalization gains in front of the new block are reset to 1 when the block is created. Since the block is new anyway, nothing learned is lost. On a CPU probe, this cut the first-step gradient norm from 7.9 × 10⁶ to 335. The run trained stably: it started slowest of all arms (0.286 on English at 4M tokens, against 0.38–0.51 for the others), caught up by about 20M tokens, and finished level with the two-matrix MLP trained without the reset (−0.000 on English, −0.006 on Portuguese financial text, +0.007 on JSON). It stays below the SwiGLU block on Portuguese financial text (−0.011, interval excludes zero) and on the other two domains within the interval.
 
-**The clean comparison.** The reset itself changes results: the two-matrix MLP with reset gains (`mlp-silu-n1`) gains 0.006 on English and loses 0.011 on Portuguese financial text against the same MLP without the reset. GR-KAN must therefore be compared with `mlp-silu-n1`, which received the same reset. Against it, GR-KAN is −0.006 on English and +0.005 on Portuguese financial text (both intervals include zero) and +0.008 on JSON (excludes zero). Learnable rational activations help slightly on structured output only, and they do not reach the SwiGLU block on the prose domains.
+**The clean comparison.** The reset itself changes results: the two-matrix MLP with reset gains (`mlp-silu-n1`) gains 0.006 on English and loses 0.011 on Portuguese financial text against the same MLP without the reset. GR-KAN must therefore be compared with `mlp-silu-n1`, which received the same reset. Against it, GR-KAN is −0.006 on English and +0.005 on Portuguese financial text (both intervals include zero) and +0.008 on JSON (excludes zero). Learnable rational activations help slightly on structured output only, and they do not reach the SwiGLU block on the prose domains. These are seed-0 numbers; with three seeds the JSON gain is +0.004 and no longer resolved (section 6.7).
 
-The rational MLP arm (`mlp-rational`) was not run: it shares the instability, and the night's GPU time went to the corrected GR-KAN.
+**The rational MLP.** The learnable-rational activation alone, on the two-matrix MLP and with the same gain reset (`mlp-rational-n1`), was run on 2026-11-27 with three seeds. It trained stably from the first step. It is the strongest of the gains-reset arms, and GR-KAN is below it on English (−0.008) and JSON (−0.005), both outside the seed-level interval: placing the rational unit on the inputs of both matrices, as GR-KAN does, is worse than using it once as the activation. The variant without the reset (`mlp-rational`) was not run.
 
 ### 6.6 Training cost
 
@@ -143,9 +145,52 @@ The rational MLP arm (`mlp-rational`) was not run: it shares the instability, an
 | `kan-bspline-fit` | 1 h 58 min, including a 17-minute fit | about 14,200 |
 | `gr-kan-n1` | 1 h 48 min | about 15,000 |
 
-Some runs shared the machine with analysis jobs, which slowed the SwiGLU control `ds-cont` to 1 h 26 min, so differences of 10–20% are not meaningful. The factor of about 2 between the KAN-type blocks and the ordinary ones is.
+The seed runs on 2026-11-27 ran one at a time on an otherwise quieter machine and are faster across the board. Median steady speed, same day, seeds 1–2:
+
+| Arm | Wall time for 96M tokens | Steady speed (tokens/s) |
+|---|---|---|
+| `ds-fresh` (SwiGLU) | 38–43 min | about 49,000 |
+| `mlp-silu-n1` | 37–40 min | about 47,000 |
+| `mlp-rational-n1` | 65–69 min | about 26,700 |
+| `gr-kan-n1` | 73–78 min | about 23,700 |
+
+`mlp-rational-n1` seed 0 took 2 h 7 min because an unrelated GPU job ran during its first half hour; its steady speed matches the other seeds. CPU scoring overlapped with part of `gr-kan-n1` seed 2 and slowed it by about 20% for 17 minutes. The rational blocks train at 0.48–0.57× the speed of the SwiGLU and SiLU blocks.
+
+Some runs on 2026-11-26 shared the machine with analysis jobs, which slowed the SwiGLU control `ds-cont` to 1 h 26 min, so differences of 10–20% between days are not meaningful. The factor of about 2 between the KAN-type blocks and the ordinary ones is.
 
 Without activation checkpointing (recomputing the block in the backward pass instead of storing its intermediate values), the rational and KAN blocks did not fit in 8 GB even at one sequence per step. With it, their peak memory matches SwiGLU, and `torch.compile` raises the KAN from 4,700 to 14,000–21,000 tokens/s. On the CPU, where the draft runs, the KAN's basis evaluation is extra work per token whose cost is unmeasured.
+
+### 6.7 Three seeds
+
+Seeds 1 and 2 were added on 2026-11-27 for `ds-fresh`, `mlp-silu-n1`, `gr-kan-n1` and the new `mlp-rational-n1` (seeds 0–2). Every model was rescored on the CPU in float32; the seed-0 scores reproduce section 6.1 exactly. Results: `experiments/stage-b-distillation/b10-kan-ffn/results/b10-20261127/analysis-cpu-seeds.json`.
+
+Agreement per seed, general English:
+
+| Arm | Seed 0 | Seed 1 | Seed 2 | Mean |
+|---|---|---|---|---|
+| `ds-fresh` (SwiGLU, new block) | 0.586 | 0.590 | 0.586 | 0.587 |
+| `mlp-silu-n1` (two-matrix MLP, gains reset) | 0.587 | 0.582 | 0.586 | 0.585 |
+| `mlp-rational-n1` (rational activation, gains reset) | 0.587 | 0.592 | 0.591 | **0.590** |
+| `gr-kan-n1` (GR-KAN, gains reset) | 0.581 | 0.586 | 0.579 | 0.582 |
+
+The same seed moves an arm by up to 0.007 on English, as much as most of the single-seed differences in section 6.2.
+
+Paired differences, mean over the three seeds. Each cell gives two 95% intervals. The first, in brackets, resamples prompts with the seed-summed difference, as in section 6.2; it ignores training-run variation. The second, in braces, treats the three per-seed differences as the sample (t distribution, 2 degrees of freedom); it is the honest one for a claim about the method, and it is wide.
+
+| Comparison | General English | Portuguese financial | JSON |
+|---|---|---|---|
+| `gr-kan-n1` − `mlp-silu-n1` | −0.003 [−0.006, +0.001] {−0.017, +0.011} | +0.002 [−0.003, +0.006] {−0.007, +0.010} | +0.004 [+0.002, +0.007] {−0.004, +0.013} |
+| `mlp-rational-n1` − `mlp-silu-n1` | +0.005 [+0.001, +0.009] {−0.007, +0.017} | +0.004 [+0.000, +0.009] {−0.002, +0.010} | **+0.009** [+0.006, +0.012] {+0.003, +0.015} |
+| `gr-kan-n1` − `mlp-rational-n1` | **−0.008** [−0.011, −0.005] {−0.016, −0.000} | −0.003 [−0.006, +0.001] {−0.010, +0.005} | **−0.005** [−0.008, −0.002] {−0.007, −0.003} |
+| `gr-kan-n1` − `ds-fresh` | **−0.005** [−0.009, −0.002] {−0.009, −0.001} | **−0.013** [−0.017, −0.009] {−0.019, −0.008} | −0.000 [−0.003, +0.003] {−0.009, +0.009} |
+| `mlp-rational-n1` − `ds-fresh` | +0.003 [−0.000, +0.006] {−0.001, +0.007} | **−0.011** [−0.015, −0.006] {−0.016, −0.005} | +0.005 [+0.002, +0.007] {−0.006, +0.015} |
+
+Bold: both intervals exclude zero. Per-seed differences and their standard deviation are in the results file.
+
+- **GR-KAN fails the stop rule with three seeds as with one.** It is not different from its matched MLP anywhere, and it is below the SwiGLU block on both prose domains.
+- **The learnable rational activation is a small, real improvement over SiLU only on JSON** (+0.009). Its English gain (+0.005) is inside the seed-level interval.
+- **No variant beats the SwiGLU block the student already uses.** The rational MLP is level with it on English and JSON and loses 0.011 on Portuguese financial text.
+- **Single-seed conclusions were too confident in one place.** The +0.008 JSON gain of GR-KAN over its matched MLP (section 6.5) is +0.004 on three seeds, inside the seed-level interval.
 
 ## 7. Reading the results
 
@@ -157,7 +202,8 @@ Without activation checkpointing (recomputing the block in the backward pass ins
 
 ## 8. Limitations
 
-- **One seed per arm.** The paired intervals cover prompt variation, not training-run variation.
+- **Seeds.** The B-spline arms, `mlp-silu` and `ds-cont` have one seed; their intervals cover prompt variation only. `ds-fresh`, `mlp-silu-n1`, `mlp-rational-n1` and `gr-kan-n1` have three seeds (section 6.7). Three seeds give wide seed-level intervals: a difference of 0.005 on English is not resolved.
+- **Development evaluation.** The 100 prompts per domain were used throughout development by the same agents that ran and scored the experiment. They are not a sealed test set (see the status note).
 - **Agreement, not speed.** No KAN draft ran inside llama.cpp, so there is no end-to-end speed. Because the KAN loses on agreement, the speed test was not built.
 - **Inherited input scaling.** The B-spline arms kept the trained gains (only GR-KAN was rerun with them reset). Each fresh block receives its input through the b5 student's trained normalization gains, which reach 191 in the last layer. In the trained KAN, 0.5–8.5% of the spline inputs fall outside the spline grid [−2, 2] in layers 0–10, and 37% in layer 11; there, only the block's ordinary weight path is active. A grid sized to the inputs might narrow the gap.
 - **Untuned KAN settings.** One grid size (G = 5), one grid range, and one fitting schedule were tried.
@@ -165,8 +211,9 @@ Without activation checkpointing (recomputing the block in the backward pass ins
 
 ## 9. What next
 
-- **Drop KANs as the student's feed-forward block.** Neither the spline nor the rational form beats the existing SwiGLU block at the same bytes, and both train about 2× slower. The llama.cpp work they would need (a new graph and a basis-evaluation kernel for the CPU) is not justified by these results.
+- **Drop KANs as the student's feed-forward block.** Three seeds confirm it for GR-KAN. Neither the spline nor the rational form beats the existing SwiGLU block at the same bytes, and both train about 2× slower. The llama.cpp work they would need (a new graph and a basis-evaluation kernel for the CPU) is not justified by these results.
 - **Train the SwiGLU student longer.** `ds-cont` gained +0.026 on English from 96M more tokens. The next experiment should continue it, since agreement is what the speed depends on (`docs/article.md` section 3.3).
+- **A learnable rational activation is not worth the runtime work either.** Its only resolved gain is +0.009 on JSON against the SiLU MLP, it does not beat SwiGLU, and it trains about 1.8× slower.
 - **If KANs are revisited**, the fair retest is all fresh-block arms with the input gains reset, several seeds, and a spline grid sized to the measured inputs.
 
 

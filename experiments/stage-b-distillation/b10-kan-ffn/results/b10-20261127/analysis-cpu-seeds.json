@@ -1,0 +1,1599 @@
+{
+  "arms": {
+    "ds-ref": {
+      "general": [
+        0.569286331161184,
+        0.5509912067205779,
+        0.589228232707859
+      ],
+      "pt_fin": [
+        0.6481335643408411,
+        0.634375,
+        0.662580078125
+      ],
+      "json": [
+        0.8880549548403511,
+        0.8774702964897246,
+        0.8978053810887525
+      ]
+    },
+    "ds-cont": {
+      "general": [
+        0.5950380780403549,
+        0.5757016907864391,
+        0.6151567744057767
+      ],
+      "pt_fin": [
+        0.6665616632540557,
+        0.65249426405208,
+        0.6812105987115191
+      ],
+      "json": [
+        0.8833481745325023,
+        0.8729549642960528,
+        0.8929364397909748
+      ]
+    },
+    "ds-fresh": {
+      "general": [
+        0.5854596843840779,
+        0.5668860518594877,
+        0.60625
+      ],
+      "pt_fin": [
+        0.6859347928807686,
+        0.6712012588525821,
+        0.700976470280786
+      ],
+      "json": [
+        0.8850019081541789,
+        0.8756721706285356,
+        0.8933214543462109
+      ]
+    },
+    "mlp-silu": {
+      "general": [
+        0.5809845332495878,
+        0.5619839776892616,
+        0.60203293837285
+      ],
+      "pt_fin": [
+        0.6810521341943613,
+        0.6655322454815719,
+        0.696881398645456
+      ],
+      "json": [
+        0.874061824195395,
+        0.8657693272900753,
+        0.8821248294353569
+      ]
+    },
+    "mlp-silu-n1": {
+      "general": [
+        0.5867158671586716,
+        0.5668510869845235,
+        0.6086738281249999
+      ],
+      "pt_fin": [
+        0.6697905181918412,
+        0.6554558791861907,
+        0.6849815874315217
+      ],
+      "json": [
+        0.8726625111308994,
+        0.8625280136919868,
+        0.8814489749928645
+      ]
+    },
+    "gr-kan-n1": {
+      "general": [
+        0.5809060218261757,
+        0.5620159281986086,
+        0.6010733228305359
+      ],
+      "pt_fin": [
+        0.6751456922349977,
+        0.6608107575996219,
+        0.6901874310915105
+      ],
+      "json": [
+        0.880803968960692,
+        0.8718140176915155,
+        0.8894180859081557
+      ]
+    },
+    "kan-bspline": {
+      "general": [
+        0.5644971343330455,
+        0.5447642907658299,
+        0.5852951727577126
+      ],
+      "pt_fin": [
+        0.667979209324303,
+        0.6525872507720822,
+        0.68459764432063
+      ],
+      "json": [
+        0.8792774456176059,
+        0.8689409769257832,
+        0.8886249519935138
+      ]
+    },
+    "kan-bspline-fit": {
+      "general": [
+        0.5742325508361467,
+        0.55476151954362,
+        0.5954336178977006
+      ],
+      "pt_fin": [
+        0.662781540400063,
+        0.649060546875,
+        0.6767227122381477
+      ],
+      "json": [
+        0.8682101513802315,
+        0.8595294127194519,
+        0.8765303703389679
+      ]
+    },
+    "mlp-rational-n1": {
+      "general": [
+        0.5869514014289079,
+        0.5685933994587619,
+        0.6065846977248861
+      ],
+      "pt_fin": [
+        0.6749094345566231,
+        0.660543677215408,
+        0.690503297253874
+      ],
+      "json": [
+        0.8846202773184073,
+        0.8756754238263823,
+        0.8930415957273842
+      ]
+    },
+    "ds-fresh@s1": {
+      "general": [
+        0.5897778126717438,
+        0.5715638483539123,
+        0.6100798408035151
+      ],
+      "pt_fin": [
+        0.6902661836509687,
+        0.6753694170900106,
+        0.7060197681803747
+      ],
+      "json": [
+        0.8827121231395497,
+        0.8743335570255328,
+        0.8909349551222399
+      ]
+    },
+    "ds-fresh@s2": {
+      "general": [
+        0.5860877757713747,
+        0.5668491338595234,
+        0.6062671743738713
+      ],
+      "pt_fin": [
+        0.687824854307765,
+        0.6731502064147349,
+        0.7037328713183179
+      ],
+      "json": [
+        0.8797862867319679,
+        0.870488853586312,
+        0.8880505762215372
+      ]
+    },
+    "gr-kan-n1@s1": {
+      "general": [
+        0.5859307529245505,
+        0.5662493596412028,
+        0.6077382812500001
+      ],
+      "pt_fin": [
+        0.6764844857457868,
+        0.6619142556898725,
+        0.6912112143644669
+      ],
+      "json": [
+        0.8852563287113598,
+        0.8763281857406982,
+        0.8936482294645209
+      ]
+    },
+    "gr-kan-n1@s2": {
+      "general": [
+        0.5791002590876972,
+        0.5601745308942452,
+        0.5999093251599353
+      ],
+      "pt_fin": [
+        0.6727831154512521,
+        0.6579846776754525,
+        0.687814453125
+      ],
+      "json": [
+        0.8809311792392825,
+        0.8710130410416228,
+        0.8899897141278533
+      ]
+    },
+    "mlp-rational-n1@s1": {
+      "general": [
+        0.592211666797519,
+        0.5721949501952992,
+        0.613677734375
+      ],
+      "pt_fin": [
+        0.6820759174673177,
+        0.6666384469995275,
+        0.6976712309847831
+      ],
+      "json": [
+        0.8900903192977992,
+        0.8818216827848813,
+        0.8978272221657735
+      ]
+    },
+    "mlp-rational-n1@s2": {
+      "general": [
+        0.590719949752689,
+        0.5717182225013739,
+        0.6111390206462257
+      ],
+      "pt_fin": [
+        0.6755394550322885,
+        0.6613995333291885,
+        0.69054773297222
+      ],
+      "json": [
+        0.886528431497265,
+        0.8783564170612808,
+        0.8945697021134827
+      ]
+    },
+    "mlp-silu-n1@s1": {
+      "general": [
+        0.5821622046007694,
+        0.5631229362277103,
+        0.6042208419000746
+      ],
+      "pt_fin": [
+        0.6757757127106631,
+        0.6602607814099661,
+        0.691875
+      ],
+      "json": [
+        0.8829665436967307,
+        0.8737961822450313,
+        0.8919485684827637
+      ]
+    },
+    "mlp-silu-n1@s2": {
+      "general": [
+        0.5856167072309021,
+        0.5663235687306174,
+        0.6073677622281541
+      ],
+      "pt_fin": [
+        0.6738068987242085,
+        0.65859375,
+        0.6906298112891794
+      ],
+      "json": [
+        0.8783869736674723,
+        0.8696561878959379,
+        0.8865782981999013
+      ]
+    }
+  },
+  "pairs": [
+    {
+      "domain": "general",
+      "candidate": "ds-fresh",
+      "reference": "ds-cont",
+      "delta": -0.009578393656276989,
+      "ci95": [
+        -0.01617787695250239,
+        -0.0033755758015525657
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-silu",
+      "reference": "ds-fresh",
+      "delta": -0.0044751511344900685,
+      "ci95": [
+        -0.009844224026550418,
+        0.0011009778045752434
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "kan-bspline",
+      "reference": "mlp-silu",
+      "delta": -0.016487398916542356,
+      "ci95": [
+        -0.022725906629714375,
+        -0.010234375
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "kan-bspline",
+      "reference": "ds-fresh",
+      "delta": -0.020962550051032425,
+      "ci95": [
+        -0.027715006736540416,
+        -0.014288882224923298
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "kan-bspline-fit",
+      "reference": "kan-bspline",
+      "delta": 0.009735416503101202,
+      "ci95": [
+        0.003359375,
+        0.01601633037606972
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "kan-bspline-fit",
+      "reference": "ds-cont",
+      "delta": -0.020805527204208214,
+      "ci95": [
+        -0.027654320453625866,
+        -0.013547167003705774
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "kan-bspline-fit",
+      "reference": "ds-fresh",
+      "delta": -0.011227133547931223,
+      "ci95": [
+        -0.018149360896323182,
+        -0.0040625
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "kan-bspline-fit",
+      "reference": "mlp-silu",
+      "delta": -0.0067519824134411556,
+      "ci95": [
+        -0.012133646345452383,
+        -0.0014130317308824693
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "ds-cont",
+      "reference": "ds-ref",
+      "delta": 0.02575174687917092,
+      "ci95": [
+        0.018748742504339593,
+        0.032896286409672605
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "ds-fresh",
+      "reference": "ds-ref",
+      "delta": 0.01617335322289393,
+      "ci95": [
+        0.009656556727481693,
+        0.022769417469773096
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": -0.005809845332495878,
+      "ci95": [
+        -0.012485279108110231,
+        0.00047106854047263875
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.00376854832378111,
+      "ci95": [
+        -0.0017272513150663421,
+        0.008985758805556649
+      ],
+      "excludes_zero": false,
+      "seed": 1
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": -0.006516448143204836,
+      "ci95": [
+        -0.012405231651635,
+        -0.000859375
+      ],
+      "excludes_zero": true,
+      "seed": 2
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-silu-n1",
+      "reference": "mlp-silu",
+      "delta": 0.005731333909083772,
+      "ci95": [
+        0.0008635193910948418,
+        0.010810777415871067
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu",
+      "delta": -7.851142341210646e-05,
+      "ci95": [
+        -0.005781433681409087,
+        0.005809845332495878
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.004553662557902175,
+      "ci95": [
+        -0.009547886541738312,
+        0.0007032119452677235
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.0038470597471932165,
+      "ci95": [
+        -0.00950066642704326,
+        0.0018151944002286991
+      ],
+      "excludes_zero": false,
+      "seed": 1
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.006987516683677475,
+      "ci95": [
+        -0.012861347680237703,
+        -0.0004734101309768029
+      ],
+      "excludes_zero": true,
+      "seed": 2
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.00023553427023631938,
+      "ci95": [
+        -0.006362188125388182,
+        0.0065172579432541886
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.010049462196749627,
+      "ci95": [
+        0.004317596955474209,
+        0.015625757052533946
+      ],
+      "excludes_zero": true,
+      "seed": 1
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.00510324252178692,
+      "ci95": [
+        -0.0011009778045752532,
+        0.01099219992075253
+      ],
+      "excludes_zero": false,
+      "seed": 2
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.0060453796027321975,
+      "ci95": [
+        -0.012370588342318384,
+        0.00046880796351181565
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.006280913872968517,
+      "ci95": [
+        -0.011619690664991756,
+        -0.00109375
+      ],
+      "excludes_zero": true,
+      "seed": 1
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.011619690664991756,
+      "ci95": [
+        -0.017900604537960274,
+        -0.0052583025830258414
+      ],
+      "excludes_zero": true,
+      "seed": 2
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": 0.0014917170448300228,
+      "ci95": [
+        -0.004140625,
+        0.007224855141567803
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": 0.0024338541257753004,
+      "ci95": [
+        -0.0031572439763492186,
+        0.008167150820444365
+      ],
+      "excludes_zero": false,
+      "seed": 1
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": 0.004632173981314281,
+      "ci95": [
+        -0.0006312135079690705,
+        0.010128680529657685
+      ],
+      "excludes_zero": false,
+      "seed": 2
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "ds-fresh",
+      "reference": "ds-cont",
+      "delta": 0.01937312962671287,
+      "ci95": [
+        0.012029296875,
+        0.02669711765632383
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-silu",
+      "reference": "ds-fresh",
+      "delta": -0.004882658686407308,
+      "ci95": [
+        -0.010789100645770988,
+        0.0011218212867176174
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "kan-bspline",
+      "reference": "mlp-silu",
+      "delta": -0.013072924870058277,
+      "ci95": [
+        -0.01920938052785419,
+        -0.006928256418333606
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "kan-bspline",
+      "reference": "ds-fresh",
+      "delta": -0.017955583556465586,
+      "ci95": [
+        -0.024177035753661993,
+        -0.011717165719995284
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "kan-bspline-fit",
+      "reference": "kan-bspline",
+      "delta": -0.005197668924240038,
+      "ci95": [
+        -0.012941256261563823,
+        0.0025404890441409972
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "kan-bspline-fit",
+      "reference": "ds-cont",
+      "delta": -0.003780122853992755,
+      "ci95": [
+        -0.011036970825440364,
+        0.003515625
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "kan-bspline-fit",
+      "reference": "ds-fresh",
+      "delta": -0.023153252480705624,
+      "ci95": [
+        -0.03024098283194204,
+        -0.015908017010552843
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "kan-bspline-fit",
+      "reference": "mlp-silu",
+      "delta": -0.018270593794298316,
+      "ci95": [
+        -0.025314453125,
+        -0.011033033197467467
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "ds-cont",
+      "reference": "ds-ref",
+      "delta": 0.018428098913214678,
+      "ci95": [
+        0.012733576755517624,
+        0.023817360794101298
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "ds-fresh",
+      "reference": "ds-ref",
+      "delta": 0.037801228539927546,
+      "ci95": [
+        0.029535109634849444,
+        0.0459954323515514
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.005355174043156403,
+      "ci95": [
+        -0.0008664535279120928,
+        0.012109375
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.0007087730351236415,
+      "ci95": [
+        -0.006323035056827277,
+        0.007657787520672538
+      ],
+      "excludes_zero": false,
+      "seed": 1
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": -0.0010237832729563712,
+      "ci95": [
+        -0.008177199110828835,
+        0.0056710077989643995
+      ],
+      "excludes_zero": false,
+      "seed": 2
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-silu-n1",
+      "reference": "mlp-silu",
+      "delta": -0.011261616002520082,
+      "ci95": [
+        -0.017089305402425578,
+        -0.005682414123592682
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu",
+      "delta": -0.005906441959363679,
+      "ci95": [
+        -0.012500541423846276,
+        0.0010336155823277146
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.010789100645770988,
+      "ci95": [
+        -0.01672013862911482,
+        -0.004295769080268553
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.013781697905181918,
+      "ci95": [
+        -0.019215624507796503,
+        -0.008111171004292955
+      ],
+      "excludes_zero": true,
+      "seed": 1
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.015041738856512837,
+      "ci95": [
+        -0.021833849818243895,
+        -0.00785805961546244
+      ],
+      "excludes_zero": true,
+      "seed": 2
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.005118916364781855,
+      "ci95": [
+        -0.00125,
+        0.011126503534196409
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.006300204756654592,
+      "ci95": [
+        -0.0007146583742222306,
+        0.012891874776714822
+      ],
+      "excludes_zero": false,
+      "seed": 1
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.0017325563080800126,
+      "ci95": [
+        -0.005081926545194491,
+        0.008046875
+      ],
+      "excludes_zero": false,
+      "seed": 2
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": 0.00023625767837454718,
+      "ci95": [
+        -0.0059375,
+        0.00671875
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.00559143172153095,
+      "ci95": [
+        -0.01171913453398173,
+        0.0006355175975118069
+      ],
+      "excludes_zero": false,
+      "seed": 1
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.0027563395810363835,
+      "ci95": [
+        -0.009056544337690976,
+        0.0030719715989610532
+      ],
+      "excludes_zero": false,
+      "seed": 2
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": -0.011025358324145534,
+      "ci95": [
+        -0.017168544012836667,
+        -0.004724212228303675
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": -0.00819026618365097,
+      "ci95": [
+        -0.014962986297054654,
+        -0.0016668611305526387
+      ],
+      "excludes_zero": true,
+      "seed": 1
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": -0.012285399275476453,
+      "ci95": [
+        -0.0184375,
+        -0.005937133574115578
+      ],
+      "excludes_zero": true,
+      "seed": 2
+    },
+    {
+      "domain": "json",
+      "candidate": "ds-fresh",
+      "reference": "ds-cont",
+      "delta": 0.0016537336216766315,
+      "ci95": [
+        -0.002489195450363285,
+        0.005866263108150679
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-silu",
+      "reference": "ds-fresh",
+      "delta": -0.01094008395878387,
+      "ci95": [
+        -0.01656475862552225,
+        -0.005687646298740122
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "kan-bspline",
+      "reference": "mlp-silu",
+      "delta": 0.005215621422210915,
+      "ci95": [
+        -0.00013008967706310825,
+        0.010357988967722602
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "kan-bspline",
+      "reference": "ds-fresh",
+      "delta": -0.005724462536572955,
+      "ci95": [
+        -0.0106357146587348,
+        -0.0009057052424301123
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "kan-bspline-fit",
+      "reference": "kan-bspline",
+      "delta": -0.01106729423737438,
+      "ci95": [
+        -0.016219943058867932,
+        -0.006021152267076812
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "kan-bspline-fit",
+      "reference": "ds-cont",
+      "delta": -0.015138023152270703,
+      "ci95": [
+        -0.01999399184131184,
+        -0.0102829946503727
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "kan-bspline-fit",
+      "reference": "ds-fresh",
+      "delta": -0.016791756773947335,
+      "ci95": [
+        -0.02190781682053979,
+        -0.01234073175025303
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "kan-bspline-fit",
+      "reference": "mlp-silu",
+      "delta": -0.005851672815163465,
+      "ci95": [
+        -0.00997786964187084,
+        -0.001604586514471082
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "ds-cont",
+      "reference": "ds-ref",
+      "delta": -0.004706780307848874,
+      "ci95": [
+        -0.008955858080754935,
+        -0.000494390392288211
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "ds-fresh",
+      "reference": "ds-ref",
+      "delta": -0.0030530466861722425,
+      "ci95": [
+        -0.008109805945856498,
+        0.0024547229158839857
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.008141457829792647,
+      "ci95": [
+        0.0032046506717913607,
+        0.013070478272624586
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.002289785014629182,
+      "ci95": [
+        -0.0019984681119758815,
+        0.006746818817102123
+      ],
+      "excludes_zero": false,
+      "seed": 1
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.0025442055718102024,
+      "ci95": [
+        -0.0023580102056514965,
+        0.00731260482455707
+      ],
+      "excludes_zero": false,
+      "seed": 2
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-silu-n1",
+      "reference": "mlp-silu",
+      "delta": -0.0013993130644956112,
+      "ci95": [
+        -0.006616473403133779,
+        0.0037383993491280133
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu",
+      "delta": 0.006742144765297036,
+      "ci95": [
+        0.0015294125381480966,
+        0.0116884998816234
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.004197939193486834,
+      "ci95": [
+        -0.008614932673116556,
+        0.00037959746214755185
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": 0.0025442055718102024,
+      "ci95": [
+        -0.0016054665556889261,
+        0.0067197162561218535
+      ],
+      "excludes_zero": false,
+      "seed": 1
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": 0.001144892507314591,
+      "ci95": [
+        -0.0033410794821411823,
+        0.005719072410370596
+      ],
+      "excludes_zero": false,
+      "seed": 2
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.01195776618750795,
+      "ci95": [
+        0.00716914734958098,
+        0.016383570490738002
+      ],
+      "excludes_zero": true,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.007123775601068566,
+      "ci95": [
+        0.002757199021953279,
+        0.011716593468903221
+      ],
+      "excludes_zero": true,
+      "seed": 1
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.008141457829792647,
+      "ci95": [
+        0.0036339831623098764,
+        0.012724999942742591
+      ],
+      "excludes_zero": true,
+      "seed": 2
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.0038163083577153036,
+      "ci95": [
+        -0.008599627786543674,
+        0.0012556133959398348
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.004833990586439385,
+      "ci95": [
+        -0.009163151818545535,
+        -0.00039815447710184865
+      ],
+      "excludes_zero": true,
+      "seed": 1
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.005597252257982445,
+      "ci95": [
+        -0.010605697455629018,
+        -0.0010024342375368638
+      ],
+      "excludes_zero": true,
+      "seed": 2
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": -0.0003816308357715303,
+      "ci95": [
+        -0.005714001364638188,
+        0.0047106447913096185
+      ],
+      "excludes_zero": false,
+      "seed": 0
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": 0.007378196158249586,
+      "ci95": [
+        0.0023439087625734666,
+        0.01230512834399261
+      ],
+      "excludes_zero": true,
+      "seed": 1
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": 0.006742144765297036,
+      "ci95": [
+        0.0024904571450814106,
+        0.011264864260700032
+      ],
+      "excludes_zero": true,
+      "seed": 2
+    }
+  ],
+  "pooled": [
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": -0.0028525817173065348,
+      "ci95": [
+        -0.006339093156593551,
+        0.0006019957136339211
+      ],
+      "excludes_zero": false,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        -0.005809845332495878,
+        0.00376854832378111,
+        -0.006516448143204836
+      ],
+      "seed_sd": 0.005744940743712715
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.005129412996257622,
+      "ci95": [
+        -0.00854206862879799,
+        -0.001561848958333337
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        -0.004553662557902175,
+        -0.0038470597471932165,
+        -0.006987516683677475
+      ],
+      "seed_sd": 0.0016474932072478754
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.005129412996257622,
+      "ci95": [
+        0.001104487046166464,
+        0.008906697044862733
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        0.00023553427023631938,
+        0.010049462196749627,
+        0.00510324252178692
+      ],
+      "seed_sd": 0.004907016303926447
+    },
+    {
+      "domain": "general",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.007981994713564157,
+      "ci95": [
+        -0.01110187870253813,
+        -0.004730874779871411
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        -0.0060453796027321975,
+        -0.006280913872968517,
+        -0.011619690664991756
+      ],
+      "seed_sd": 0.0031525375452781685
+    },
+    {
+      "domain": "general",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": 0.0028525817173065348,
+      "ci95": [
+        -0.00013150281416022302,
+        0.006067804376930072
+      ],
+      "excludes_zero": false,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        0.0014917170448300228,
+        0.0024338541257753004,
+        0.004632173981314281
+      ],
+      "seed_sd": 0.0016115573335783572
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.0016800546017745578,
+      "ci95": [
+        -0.0028315867471154863,
+        0.006060876732979369
+      ],
+      "excludes_zero": false,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        0.005355174043156403,
+        0.0007087730351236415,
+        -0.0010237832729563712
+      ],
+      "seed_sd": 0.003298532252606311
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.013204179135821914,
+      "ci95": [
+        -0.01717638494694083,
+        -0.009344647451042161
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        -0.010789100645770988,
+        -0.013781697905181918,
+        -0.015041738856512837
+      ],
+      "seed_sd": 0.0021843486179151275
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.0043838924765054865,
+      "ci95": [
+        0.00010498249396230378,
+        0.008776491520154089
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        0.005118916364781855,
+        0.006300204756654592,
+        0.0017325563080800126
+      ],
+      "seed_sd": 0.0023708749808233507
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.002703837874730929,
+      "ci95": [
+        -0.006379560220091657,
+        0.0010502467004995053
+      ],
+      "excludes_zero": false,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        0.00023625767837454718,
+        -0.00559143172153095,
+        -0.0027563395810363835
+      ],
+      "seed_sd": 0.0029141994196205
+    },
+    {
+      "domain": "pt_fin",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": -0.010500341261090985,
+      "ci95": [
+        -0.014805832134288727,
+        -0.006274676929929918
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        -0.011025358324145534,
+        -0.00819026618365097,
+        -0.012285399275476453
+      ],
+      "seed_sd": 0.002097441524170544
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.004325149472077344,
+      "ci95": [
+        0.0015641356915112245,
+        0.007239049583818794
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        0.008141457829792647,
+        0.002289785014629182,
+        0.0025442055718102024
+      ],
+      "seed_sd": 0.003307467243353263
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "ds-fresh",
+      "delta": -0.00016961370478734683,
+      "ci95": [
+        -0.0029178228582823706,
+        0.002489913122584889
+      ],
+      "excludes_zero": false,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        -0.004197939193486834,
+        0.0025442055718102024,
+        0.001144892507314591
+      ],
+      "seed_sd": 0.0035580997660684694
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-rational-n1",
+      "reference": "mlp-silu-n1",
+      "delta": 0.009074333206123055,
+      "ci95": [
+        0.006254434843958541,
+        0.011882053197070284
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        0.01195776618750795,
+        0.007123775601068566,
+        0.008141457829792647
+      ],
+      "seed_sd": 0.00254844238668816
+    },
+    {
+      "domain": "json",
+      "candidate": "gr-kan-n1",
+      "reference": "mlp-rational-n1",
+      "delta": -0.004749183734045711,
+      "ci95": [
+        -0.007462085225912184,
+        -0.002007760621202106
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        -0.0038163083577153036,
+        -0.004833990586439385,
+        -0.005597252257982445
+      ],
+      "seed_sd": 0.0008934956326890334
+    },
+    {
+      "domain": "json",
+      "candidate": "mlp-rational-n1",
+      "reference": "ds-fresh",
+      "delta": 0.004579570029258364,
+      "ci95": [
+        0.0017740219701336205,
+        0.007375537799631223
+      ],
+      "excludes_zero": true,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_deltas": [
+        -0.0003816308357715303,
+        0.007378196158249586,
+        0.006742144765297036
+      ],
+      "seed_sd": 0.00430827991906274
+    }
+  ]
+}

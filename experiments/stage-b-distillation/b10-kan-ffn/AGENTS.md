@@ -36,4 +36,6 @@ Every trained arm copies attention, norms, embeddings and the V′ head from `ds
 
 **Added 2026-11-27.** Arm `mlp-rational-n1` (learnable rational activation, FFN norm gains reset) completes the reset chain `mlp-silu-n1` → `mlp-rational-n1` → `gr-kan-n1`. Seeds 1 and 2 are added for these three arms and for `ds-fresh` (`SEED=<k> configs/run_b10.sh <arm>`; seed changes the fresh FFN init and data order). `configs/analyze.py` reports each pair per seed and pooled over common seeds, with the spread of the per-seed differences.
 
+**Result, three seeds (2026-11-27, `results/b10-20261127/analysis-cpu-seeds.json`).** Mean paired differences over seeds 0–2, with t-based seed-level 95% CIs: `gr-kan-n1` − `mlp-silu-n1` −0.003 general (CI includes 0); `gr-kan-n1` − `ds-fresh` −0.005 general, −0.013 pt_fin (exclude 0); `mlp-rational-n1` − `mlp-silu-n1` +0.005 general (includes 0), +0.009 json (excludes 0); `mlp-rational-n1` − `ds-fresh` +0.003 general (includes 0), −0.011 pt_fin (excludes 0). H5 rejection stands. Development results only, pending the ml-referee pass (`docs/proposal.md`, design change 2026-11-27).
+
 **Outputs.** Per-arm `metrics.jsonl` and agreement summaries in `results/<run_id>/`, byte budgets from `configs/budget.py` in each manifest.

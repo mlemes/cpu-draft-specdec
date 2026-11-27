@@ -1,0 +1,17 @@
+ds-ref=/mnt/hdd1/cpu-draft-specdec/runs/b2/kd-pruned-prose45json23-20261122T105044Z/final.pt
+ds-cont=/mnt/hdd1/cpu-draft-specdec/runs/b10/ds-cont-20261126T071130Z/final.pt
+ds-fresh=/mnt/hdd1/cpu-draft-specdec/runs/b10/ds-fresh-20261126T011244Z/final.pt
+mlp-silu=/mnt/hdd1/cpu-draft-specdec/runs/b10/mlp-silu-20261126T040014Z/final.pt
+mlp-silu-n1=/mnt/hdd1/cpu-draft-specdec/runs/b10/mlp-silu-n1-20261126T102639Z/final.pt
+gr-kan-n1=/mnt/hdd1/cpu-draft-specdec/runs/b10/gr-kan-n1-20261126T083810Z/final.pt
+kan-bspline=/mnt/hdd1/cpu-draft-specdec/runs/b10/kan-bspline-20261126T020257Z/final.pt
+kan-bspline-fit=/mnt/hdd1/cpu-draft-specdec/runs/b10/kan-bspline-fit-20261126T052016Z/final.pt
+mlp-rational-n1=/mnt/hdd1/cpu-draft-specdec/runs/b10/mlp-rational-n1-20261127T130719Z/final.pt
+ds-fresh@s1=/mnt/hdd1/cpu-draft-specdec/runs/b10/ds-fresh-s1-20261127T211728Z/final.pt
+ds-fresh@s2=/mnt/hdd1/cpu-draft-specdec/runs/b10/ds-fresh-s2-20261127T215504Z/final.pt
+gr-kan-n1@s1=/mnt/hdd1/cpu-draft-specdec/runs/b10/gr-kan-n1-s1-20261127T155451Z/final.pt
+gr-kan-n1@s2=/mnt/hdd1/cpu-draft-specdec/runs/b10/gr-kan-n1-s2-20261127T184950Z/final.pt
+mlp-rational-n1@s1=/mnt/hdd1/cpu-draft-specdec/runs/b10/mlp-rational-n1-s1-20261127T170743Z/final.pt
+mlp-rational-n1@s2=/mnt/hdd1/cpu-draft-specdec/runs/b10/mlp-rational-n1-s2-20261127T200853Z/final.pt
+mlp-silu-n1@s1=/mnt/hdd1/cpu-draft-specdec/runs/b10/mlp-silu-n1-s1-20261127T151449Z/final.pt
+mlp-silu-n1@s2=/mnt/hdd1/cpu-draft-specdec/runs/b10/mlp-silu-n1-s2-20261127T181227Z/final.pt

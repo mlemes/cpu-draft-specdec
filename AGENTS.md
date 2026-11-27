@@ -31,6 +31,8 @@ These are hypotheses. A well-measured negative result is a valid outcome, and ea
 | `data/` | Local pointers only; large data lives on `/mnt/hdd1/cpu-draft-specdec/` |
 | `third_party/` | Pinned llama.cpp checkout (git-ignored) |
 
+**Second pass, required before publishing:** all results so far are development results from a pipeline where the same agents produce and score them. The whole experiment is re-scored under ml-referee on freshly sealed evaluation prompts; plan in `docs/proposal.md`, "Design change 2026-11-27".
+
 Stages run in order, and each stage's gate decides whether the next one starts: A (feasibility) → B (distillation and cache) → C (end-to-end) → D (adaptation). Experiment `a0-counter-validation` must pass before any cache claim is made.
 
 ## Rules for agents

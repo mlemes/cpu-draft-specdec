@@ -243,6 +243,20 @@ Adds H5 as an exploratory Stage B arm. The operator asked whether Kolmogorov-Arn
 - **Order.** Runs after the D-S gate, on a dedicated GPU, and does not delay Stage C.
 - **Result (2026-11-26).** H5 rejected for this setup (one seed): at matched bytes, the B-spline KAN loses 0.021 general-prose agreement against D-S with a fresh FFN (paired 95% CI excludes 0), the fitted-start KAN loses 0.011, and GR-KAN (with FFN input gains reset after a divergence) ties the two-matrix MLP and stays below D-S. No llama.cpp path is built. Details: `docs/article-kan.md`, `experiments/stage-b-distillation/b10-kan-ffn/results/b10-20261126/`.
 
+### Design change 2026-11-27: second evaluation pass under ml-referee (planned)
+
+Every result so far, through b10, was produced and scored by the same agents: training scripts, `eval_alpha.py` and `analyze.py` were written or delegated by the orchestrating agent, which also read the evaluation prompts and their scores. Nothing certifies that scoring is independent of the producer [V, 2026-11-27: no `.ml-referee.toml` in this repository, plugin not loaded].
+
+Before any result is published, the whole experiment gets a second pass under ml-referee (`/home/mlemes/Projects/plugins/claude/ml-referee/ml-referee`), which separates the agent that produces a result from the evidence that certifies it:
+
+1. Load the plugin (`claude --plugin-dir <ml-referee>`) and add `.ml-referee.toml` plus an evaluator script that wraps the offline agreement scoring (and, in stage C, the end-to-end timing).
+2. The operator runs `ml-referee seal --evaluator <evaluator.py>` from their own terminal. Agents cannot seal.
+3. Fresh, held-out evaluation prompts are drawn and sealed. The current `eval/<tag>/eval_*.jsonl` sets have been seen by agents, so they stay as development sets only.
+4. Every checkpoint behind a reported claim (stage B arms, b10 seeds, the stage C drafts) is re-scored through `ml-referee eval`. The operator runs the final `ml-referee claim`.
+5. Claims are reported from the sealed pass. Where they differ from the first-pass numbers, both are shown.
+
+The first pass (current pipeline) continues unchanged until then; its numbers are development results, not certified ones.
+
 ### Adaptation cost model
 
 For an update u:
